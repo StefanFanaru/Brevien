@@ -49,7 +49,6 @@ export class ClientsComponent
   isManagingChildren: boolean;
   childTypeManaged: ClientChildType;
   apiScopesOptions: Observable<BaseOption<string>[]>;
-  clientSelectedScopes: string[];
   apiScopesFormControl = new FormControl();
   uriPatternValidator = environment.envName == 'local' ?
     '(https?://)?(localhost+)\\:([0-9]{1,5})[/\\w .-]*/?' :
@@ -90,14 +89,16 @@ export class ClientsComponent
       this.convertDisplayName();
       this.isFormVisible = true;
     } else {
-      this.httpService.get(item.id).subscribe(x => {
-        this.httpService.getOptions<BaseOption<string>>(`api-scope/client/${this.itemSelected.id}`).subscribe(clientOptions => {
+      this.httpService.get(item.id).subscribe(client => {
+        this.setUpEditForm(client);
+        this.convertDisplayName();
+      })
+      this.httpService.getOptions<BaseOption<string>>(`api-scope/client/${this.itemSelected.id}`)
+        .subscribe(clientOptions => {
           this.apiScopesFormControl.setValue(clientOptions.map(x => x.value));
-          this.setUpEditForm(x);
-          this.convertDisplayName();
+          this.editForm.addControl('apiScopes', this.apiScopesFormControl);
           this.isFormVisible = true;
-        })
-      });
+        });
     }
   }
 
@@ -150,8 +151,6 @@ export class ClientsComponent
         ])
       ]
     });
-
-    this.editForm.addControl('apiScopes', this.apiScopesFormControl);
   }
 
   onFilterSelect(value) {

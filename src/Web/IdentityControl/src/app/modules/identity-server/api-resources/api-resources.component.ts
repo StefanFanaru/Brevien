@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import 'src/app/helpers/stringExtensions';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IdentityServerBaseService } from '../../../services/identity-server/identity-server-base-service';
@@ -7,7 +7,8 @@ import { ApiResource } from '../../../models/identity-server/apiResource';
 import { IdentityServerApiResourceService } from '../../../services/identity-server/identity-server-api-resource.service';
 import { SearchService } from '../../../services/search.service';
 import { SortDirection } from '../../../models/sortDirection';
-import { ApiScope } from '../../../models/identity-server/apiScope';
+import { Observable } from 'rxjs';
+import { BaseOption } from '../../../models/option';
 
 enum ApiResourceFilter {
   Enabled,
@@ -38,6 +39,8 @@ export class ApiResourcesComponent
   apiScopeEditForm: FormGroup;
   addMode: boolean;
   pageTitle = 'API Resources';
+  apiScopesOptions: Observable<BaseOption<string>[]>;
+  apiScopesFormControl = new FormControl();
 
   constructor(
     public httpService: IdentityServerApiResourceService,
@@ -61,19 +64,44 @@ export class ApiResourcesComponent
 
   ngOnInit(): void {
     this.initialize();
+    this.apiScopesOptions = this.httpService.getOptions<BaseOption<string>>(`api-scope`)
   }
 
-  buildForm(item: ApiScope = null) {
-    this.isFormVisible = true;
+  buildForm(item: ApiResource = null) {
     this.addMode = !item;
-
-    this.editForm = this.formBuilder.group({
-      name: [this.addMode ? '' : item.name, Validators.required],
-      displayName: [this.addMode ? '' : item.displayName, Validators.required],
-      description: [this.addMode ? '' : item.description]
-    });
-    this.convertDisplayName();
+    if (!item) {
+      this.apiScopesFormControl.setValue(null);
+      this.setUpAddForm();
+      this.convertDisplayName();
+      this.isFormVisible = true;
+    } else {
+      this.httpService.getOptions<BaseOption<string>>(`api-scope/api-resource/${this.itemSelected.id}`)
+        .subscribe(apiScopeOptions => {
+          this.setUpEditForm(item);
+          this.convertDisplayName();
+          this.apiScopesFormControl.setValue(apiScopeOptions.map(x => x.value));
+          this.editForm.addControl('apiScopes', this.apiScopesFormControl);
+          this.isFormVisible = true;
+        })
+    }
   }
+
+  setUpAddForm() {
+    this.editForm = this.formBuilder.group({
+      name: ['', Validators.required],
+      displayName: ['', Validators.required],
+      description: ['']
+    });
+  }
+
+  setUpEditForm(item: ApiResource) {
+    this.editForm = this.formBuilder.group({
+      name: [item.name, Validators.required],
+      displayName: [item.displayName, Validators.required],
+      description: [item.description]
+    });
+  }
+
 
   onFilterSelect(value) {
     let filter = null;
