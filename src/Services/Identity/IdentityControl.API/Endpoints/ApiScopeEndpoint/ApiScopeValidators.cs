@@ -12,7 +12,7 @@ namespace IdentityControl.API.Endpoints.ApiScopeEndpoint
             {
                 RuleFor(x => x.Name).NotEmpty().MaximumLength(100);
                 RuleFor(x => x.DisplayName).NotEmpty().MaximumLength(100);
-                RuleFor(x => x.Description).NotEmpty().MaximumLength(500);
+                RuleFor(x => x.Description).MaximumLength(500);
             }
         }
 
@@ -22,7 +22,7 @@ namespace IdentityControl.API.Endpoints.ApiScopeEndpoint
             {
                 RuleFor(x => x.Name).NotEmpty().MaximumLength(100);
                 RuleFor(x => x.DisplayName).NotEmpty().MaximumLength(100);
-                RuleFor(x => x.Description).NotEmpty().MaximumLength(500);
+                RuleFor(x => x.Description).MaximumLength(500);
             }
         }
     }

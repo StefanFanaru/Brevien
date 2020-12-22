@@ -51,7 +51,8 @@ namespace IdentityControl.API.Endpoints.ClientEndpoint.Update
                 return NotFound(id);
             }
 
-            if (_clientRepository.Query().Any(e => e.ClientId == request.Name || e.ClientUri == request.ClientUri))
+            if (_clientRepository.Query()
+                .Any(e => (e.ClientId == request.Name || e.ClientUri == request.ClientUri) && e.Id != id))
             {
                 return AspExtensions.GetBadRequestWithError<UpdateClientResponse>($"Client \"{request.Name}\" already exists.");
             }
@@ -71,11 +72,17 @@ namespace IdentityControl.API.Endpoints.ClientEndpoint.Update
                 AllowAccessTokensViaBrowser = request.AllowAccessTokensViaBrowser
             }, cancellationToken);
 
-            await _clientScopeRepository.Query().Where(x => x.ClientId == id).DeleteAsync(cancellationToken);
-            var clientApiScopes = request.ApiScopes.Select(x => new ClientScope {Scope = x, ClientId = id});
+            // Assignment of API Scopes
+            if (request.ApiScopes != null && request.ApiScopes.Length > 0)
+            {
+                // Clean current relations
+                await _clientScopeRepository.Query().Where(x => x.ClientId == id).DeleteAsync(cancellationToken);
 
-            await _clientScopeRepository.InsertRange(clientApiScopes);
-            await _clientRepository.SaveAsync(toaster);
+                // Add new ones
+                var clientApiScopes = request.ApiScopes.Select(x => new ClientScope {Scope = x, ClientId = id});
+                await _clientScopeRepository.InsertRange(clientApiScopes);
+                await _clientRepository.SaveAsync(toaster);
+            }
 
             return validation.Response;
         }

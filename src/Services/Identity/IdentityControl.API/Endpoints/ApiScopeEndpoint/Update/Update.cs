@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Annotations;
+using Z.EntityFramework.Plus;
 using static IdentityControl.API.Endpoints.ApiScopeEndpoint.ApiScopeValidators;
 
 namespace IdentityControl.API.Endpoints.ApiScopeEndpoint.Update
@@ -18,12 +19,20 @@ namespace IdentityControl.API.Endpoints.ApiScopeEndpoint.Update
     [Authorize(Policy = "AdminOnly")]
     public class Update : BaseAsyncEndpoint
     {
-        private readonly IIdentityRepository<ApiScope> _repository;
+        private readonly IIdentityRepository<ApiResourceScope> _apiResourceScopeRepo;
+        private readonly IIdentityRepository<ApiScope> _apiScopeRepository;
+        private readonly IIdentityRepository<ClientScope> _clientScopeRepository;
         private readonly IAspValidator _validator;
 
-        public Update(IIdentityRepository<ApiScope> repository, IAspValidator validator)
+        public Update(
+            IIdentityRepository<ApiScope> apiScopeRepository,
+            IIdentityRepository<ClientScope> clientScopeRepository,
+            IIdentityRepository<ApiResourceScope> apiResourceScopeRepo,
+            IAspValidator validator)
         {
-            _repository = repository;
+            _apiScopeRepository = apiScopeRepository;
+            _clientScopeRepository = clientScopeRepository;
+            _apiResourceScopeRepo = apiResourceScopeRepo;
             _validator = validator;
         }
 
@@ -42,25 +51,39 @@ namespace IdentityControl.API.Endpoints.ApiScopeEndpoint.Update
                 return validation.Response;
             }
 
-            if (!_repository.Query().Any(e => e.Id == id && e.Name != AppConstants.ReadOnlyEntities.IdentityControlApiScope))
+            if (!_apiScopeRepository.Query()
+                .Any(e => e.Id == id && e.Name != AppConstants.ReadOnlyEntities.IdentityControlApiScope))
             {
                 return NotFound(id);
             }
 
-            if (_repository.Query().Any(e => e.Name == request.Name))
+            if (_apiScopeRepository.Query().Any(e => e.Name == request.Name && e.Id != id))
             {
                 return AspExtensions.GetBadRequestWithError<UpdateApiScopeResponse>(
                     $"API Scope \"{request.Name}\" already exists.");
             }
 
-            var entity = await _repository.Query().FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
+            var entity = await _apiScopeRepository.Query().FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
 
-            entity.Name = request.Name;
+            if (entity.Name != request.Name)
+            {
+                entity.Name = request.Name;
+                await _clientScopeRepository.Query()
+                    .Where(x => x.Scope == entity.Name)
+                    .UpdateAsync(x => new ClientScope {Scope = request.Name}, cancellationToken);
+                await _clientScopeRepository.SaveAsync(toaster);
+
+                await _apiResourceScopeRepo.Query()
+                    .Where(x => x.Scope == entity.Name)
+                    .UpdateAsync(x => new ApiResourceScope {Scope = request.Name}, cancellationToken);
+                await _apiResourceScopeRepo.SaveAsync(toaster);
+            }
+
             entity.Description = request.Description;
             entity.DisplayName = request.DisplayName;
 
             toaster.Identifier = entity.Name;
-            await _repository.SaveAsync(toaster);
+            await _apiScopeRepository.SaveAsync(toaster);
             return validation.Response;
         }
     }

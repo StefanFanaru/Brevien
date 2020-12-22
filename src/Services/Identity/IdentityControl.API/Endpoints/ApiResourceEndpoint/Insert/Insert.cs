@@ -16,12 +16,15 @@ namespace IdentityControl.API.Endpoints.ApiResourceEndpoint.Insert
     [Authorize(Policy = "AdminOnly")]
     public class Insert : BaseAsyncEndpoint<InsertApiResourceRequest, InsertApiResourceResponse>
     {
-        private readonly IIdentityRepository<ApiResource> _repository;
+        private readonly IIdentityRepository<ApiResource> _apiResourceRepository;
+        private readonly IIdentityRepository<ApiResourceScope> _apiResourceScopeRepo;
         private readonly IAspValidator _validator;
 
-        public Insert(IIdentityRepository<ApiResource> repository, IAspValidator validator)
+        public Insert(IIdentityRepository<ApiResource> apiResourceRepository,
+            IIdentityRepository<ApiResourceScope> apiResourceScopeRepo, IAspValidator validator)
         {
-            _repository = repository;
+            _apiResourceRepository = apiResourceRepository;
+            _apiResourceScopeRepo = apiResourceScopeRepo;
             _validator = validator;
         }
 
@@ -40,7 +43,7 @@ namespace IdentityControl.API.Endpoints.ApiResourceEndpoint.Insert
                 return validation.Response;
             }
 
-            if (_repository.Query().Any(e => e.Name == request.Name))
+            if (_apiResourceRepository.Query().Any(e => e.Name == request.Name))
             {
                 return AspExtensions.GetBadRequestWithError<InsertApiResourceResponse>(
                     $"ApiResource \"{request.Name}\" already exists.");
@@ -54,8 +57,16 @@ namespace IdentityControl.API.Endpoints.ApiResourceEndpoint.Insert
             };
 
             toaster.Identifier = entity.Name;
-            await _repository.InsertAsync(entity);
-            await _repository.SaveAsync(toaster);
+            await _apiResourceRepository.InsertAsync(entity);
+            await _apiResourceRepository.SaveAsync(toaster);
+
+            // Assignment of API Scopes
+            if (request.ApiScopes != null && request.ApiScopes.Length > 0)
+            {
+                var apiResourceScopes =
+                    request.ApiScopes.Select(x => new ApiResourceScope {Scope = x, ApiResourceId = entity.Id});
+                await _apiResourceScopeRepo.InsertRange(apiResourceScopes);
+            }
 
             return validation.Response;
         }

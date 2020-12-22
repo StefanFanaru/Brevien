@@ -75,7 +75,7 @@ namespace Identity.API.Configuration
         public static IEnumerable<ApiResource> ApiResources =>
             new[]
             {
-                new ApiResource("identity_control_full", "Identity Control API")
+                new ApiResource("identity_control", "Identity Control API")
                 {
                     ApiSecrets = {new Secret(IdentityControlKey.Sha256())},
                     Scopes = {"identity_control_full"}

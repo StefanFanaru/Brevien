@@ -54,7 +54,7 @@ namespace IdentityControl.API
                 .AddJwtBearer("Bearer", options =>
                 {
                     options.Authority = authority;
-                    options.Audience = "identity_control_full";
+                    options.Audience = "identity_control";
                     options.RequireHttpsMetadata = false;
 
                     options.TokenValidationParameters = new TokenValidationParameters

@@ -67,9 +67,12 @@ namespace IdentityControl.API.Endpoints.ClientEndpoint.Insert
             await _clientRepository.InsertAsync(entity);
             await _clientRepository.SaveAsync(toaster);
 
-            var clientApiScopes = request.ApiScopes.Select(x => new ClientScope {Scope = x, ClientId = entity.Id});
-            await _clientScopeRepository.InsertRange(clientApiScopes);
-
+            // Assignment of API Scopes
+            if (request.ApiScopes != null && request.ApiScopes.Length > 0)
+            {
+                var clientApiScopes = request.ApiScopes.Select(x => new ClientScope {Scope = x, ClientId = entity.Id});
+                await _clientScopeRepository.InsertRange(clientApiScopes);
+            }
 
             return validation.Response;
         }

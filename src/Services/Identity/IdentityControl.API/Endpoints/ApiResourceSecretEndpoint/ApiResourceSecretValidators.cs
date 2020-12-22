@@ -11,7 +11,7 @@ namespace IdentityControl.API.Endpoints.ApiResourceSecretEndpoint
         {
             public InsertApiResourceSecretRequestValidator()
             {
-                RuleFor(s => s.Description).NotEmpty().MaximumLength(100);
+                RuleFor(s => s.Description).MaximumLength(100);
                 RuleFor(s => s.Value).NotEmpty().MaximumLength(100);
                 RuleFor(s => s.Type).NotNull();
                 RuleFor(s => s.Expiration).GreaterThan(DateTime.UtcNow).When(s => s.Expiration.HasValue);
@@ -22,7 +22,7 @@ namespace IdentityControl.API.Endpoints.ApiResourceSecretEndpoint
         {
             public UpdateApiResourceSecretRequestValidator()
             {
-                RuleFor(s => s.Description).NotEmpty().MaximumLength(100);
+                RuleFor(s => s.Description).MaximumLength(100);
                 RuleFor(s => s.ExpiresAt).GreaterThan(DateTime.UtcNow).When(s => s.ExpiresAt.HasValue);
             }
         }
