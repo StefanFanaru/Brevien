@@ -4,7 +4,7 @@ import { RouterModule } from '@angular/router';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { UsersComponent } from './users.component';
 import { SharedModule } from '../shared/shared.module';
-import { UserService } from '../../services/management/users/user.service';
+import { UserService } from '../../services/users/user.service';
 
 @NgModule({
   declarations: [UsersComponent],

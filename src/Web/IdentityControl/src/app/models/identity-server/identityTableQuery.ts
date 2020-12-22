@@ -1,5 +1,4 @@
-﻿import {Pagination} from '../pagination';
-import {SortDirection} from '../sortDirection';
+﻿import { SortDirection } from '../sortDirection';
 
 export interface IdentityTableQuery {
   pageIndex: number;

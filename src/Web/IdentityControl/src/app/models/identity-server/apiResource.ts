@@ -1,5 +1,4 @@
-﻿import {BaseOption} from '../option';
-import {BaseIdentityModel} from '../baseIdentityModel';
+﻿import { BaseIdentityModel } from '../baseIdentityModel';
 
 export interface ApiResource extends BaseIdentityModel {
   name: string;

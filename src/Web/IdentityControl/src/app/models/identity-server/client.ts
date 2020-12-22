@@ -1,5 +1,5 @@
-import {BaseIdentityModel} from '../baseIdentityModel';
-import {Secret} from './secret';
+import { BaseIdentityModel } from '../baseIdentityModel';
+import { Secret } from './secret';
 
 export interface Client extends BaseIdentityModel {
   name: string;

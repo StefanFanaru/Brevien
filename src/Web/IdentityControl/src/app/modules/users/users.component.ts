@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import 'src/app/helpers/stringExtensions';
 import { Router } from '@angular/router';
-import { UserService } from '../../services/management/users/user.service';
+import { UserService } from '../../services/users/user.service';
 
 @Component({
   selector: 'app-management-users',

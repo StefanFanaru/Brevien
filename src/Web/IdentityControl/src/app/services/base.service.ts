@@ -1,12 +1,10 @@
-import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {Inject, Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
-import {Guid} from '../helpers/guid';
-import {GetPaginatedResponse} from '../models/getPaginatedResponse';
-import {PageOf} from '../models/pageOf';
-import {Pagination} from '../models/pagination';
-import {SortDirection} from '../models/sortDirection';
-import {IdentityTableQuery} from '../models/management/identityTableQuery';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Inject, Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Guid } from '../helpers/guid';
+import { GetPaginatedResponse } from '../models/getPaginatedResponse';
+import { PageOf } from '../models/pageOf';
+import { IdentityTableQuery } from '../models/identity-server/identityTableQuery';
 
 @Injectable({
   providedIn: 'root'

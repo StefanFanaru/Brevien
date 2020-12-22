@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import 'src/app/helpers/stringExtensions';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IdentityServerBaseService } from '../../../services/management/identity-server/identity-server-base-service';
-import { IdentityServerApiScopeService } from '../../../services/management/identity-server/identity-server-api-scope.service';
-import { ApiScope } from '../../../models/management/apiScope';
+import { IdentityServerBaseService } from '../../../services/identity-server/identity-server-base-service';
+import { IdentityServerApiScopeService } from '../../../services/identity-server/identity-server-api-scope.service';
+import { ApiScope } from '../../../models/identity-server/apiScope';
 import { SearchService } from '../../../services/search.service';
 import { SortDirection } from '../../../models/sortDirection';
 
@@ -67,7 +67,7 @@ export class ApiScopesComponent
     this.editForm = this.formBuilder.group({
       name: [this.addMode ? '' : item.name, Validators.required],
       displayName: [this.addMode ? '' : item.displayName, Validators.required],
-      description: [this.addMode ? '' : item.description, Validators.required]
+      description: [this.addMode ? '' : item.description]
     });
     this.convertDisplayName();
   }

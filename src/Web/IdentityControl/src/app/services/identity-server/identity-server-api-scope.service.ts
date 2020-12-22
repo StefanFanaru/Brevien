@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { ServiceBase } from '../../base.service';
-import { environment } from '../../../../environments/environment';
-import { ApiScope } from '../../../models/management/apiScope';
+import { ServiceBase } from '../base.service';
+import { environment } from '../../../environments/environment';
+import { ApiScope } from '../../models/identity-server/apiScope';
 
 @Injectable({
   providedIn: 'root'

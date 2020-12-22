@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { ClientChild, ClientChildType } from '../../../../models/management/client';
-import { IdentityServerClientsChildrenService } from '../../../../services/management/identity-server/identity-server-clients-children.service';
+import { ClientChild, ClientChildType } from '../../../../models/identity-server/client';
+import { IdentityServerClientsChildrenService } from '../../../../services/identity-server/identity-server-clients-children.service';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { BaseOption } from '../../../../models/option';

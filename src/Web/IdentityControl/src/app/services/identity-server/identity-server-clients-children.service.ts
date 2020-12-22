@@ -1,8 +1,8 @@
-import {Injectable} from '@angular/core';
-import {ServiceBase} from '../../base.service';
-import {environment} from '../../../../environments/environment';
-import {ClientChild, ClientChildType} from '../../../models/management/client';
-import {Observable} from 'rxjs';
+import { Injectable } from '@angular/core';
+import { ServiceBase } from '../base.service';
+import { environment } from '../../../environments/environment';
+import { ClientChild, ClientChildType } from '../../models/identity-server/client';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'

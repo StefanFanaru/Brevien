@@ -2,12 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import 'src/app/helpers/stringExtensions';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IdentityServerBaseService } from '../../../services/management/identity-server/identity-server-base-service';
-import { ApiResource } from '../../../models/management/apiResource';
-import { IdentityServerApiResourceService } from '../../../services/management/identity-server/identity-server-api-resource.service';
+import { IdentityServerBaseService } from '../../../services/identity-server/identity-server-base-service';
+import { ApiResource } from '../../../models/identity-server/apiResource';
+import { IdentityServerApiResourceService } from '../../../services/identity-server/identity-server-api-resource.service';
 import { SearchService } from '../../../services/search.service';
 import { SortDirection } from '../../../models/sortDirection';
-import { ApiScope } from '../../../models/management/apiScope';
+import { ApiScope } from '../../../models/identity-server/apiScope';
 
 enum ApiResourceFilter {
   Enabled,
@@ -70,7 +70,7 @@ export class ApiResourcesComponent
     this.editForm = this.formBuilder.group({
       name: [this.addMode ? '' : item.name, Validators.required],
       displayName: [this.addMode ? '' : item.displayName, Validators.required],
-      description: [this.addMode ? '' : item.description, Validators.required]
+      description: [this.addMode ? '' : item.description]
     });
     this.convertDisplayName();
   }

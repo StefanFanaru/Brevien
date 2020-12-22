@@ -1,4 +1,4 @@
-import {BaseIdentityModel} from '../baseIdentityModel';
+import { BaseIdentityModel } from '../baseIdentityModel';
 
 export interface Secret extends BaseIdentityModel {
   value: string;

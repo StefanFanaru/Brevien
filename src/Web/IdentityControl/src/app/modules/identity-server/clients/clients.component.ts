@@ -1,14 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import 'src/app/helpers/stringExtensions';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IdentityServerBaseService } from '../../../services/management/identity-server/identity-server-base-service';
-import { IdentityServerClientService } from '../../../services/management/identity-server/identity-server-clients.service';
-import { Client, ClientChildType } from '../../../models/management/client';
+import { IdentityServerBaseService } from '../../../services/identity-server/identity-server-base-service';
+import { IdentityServerClientService } from '../../../services/identity-server/identity-server-clients.service';
+import { Client, ClientChildType } from '../../../models/identity-server/client';
 import { SearchService } from '../../../services/search.service';
 import { SortDirection } from '../../../models/sortDirection';
 import { toPascalCase } from '../../../helpers/stringExtensions';
 import { environment } from '../../../../environments/environment';
+import { BaseOption } from '../../../models/option';
+import { Observable } from 'rxjs';
 
 enum ClientsFilter {
   Enabled,
@@ -46,6 +48,12 @@ export class ClientsComponent
   displayNameInput: AbstractControl;
   isManagingChildren: boolean;
   childTypeManaged: ClientChildType;
+  apiScopesOptions: Observable<BaseOption<string>[]>;
+  clientSelectedScopes: string[];
+  apiScopesFormControl = new FormControl();
+  uriPatternValidator = environment.envName == 'local' ?
+    '(https?://)?(localhost+)\\:([0-9]{1,5})[/\\w .-]*/?' :
+    '(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})[/\\w .-]*/?'
 
   // noinspection JSUnusedGlobalSymbols
   constructor(
@@ -70,20 +78,25 @@ export class ClientsComponent
 
   ngOnInit(): void {
     this.initialize();
+    this.apiScopesOptions = this.httpService.getOptions<BaseOption<string>>(`api-scope`)
   }
 
   buildForm(item: Client = null) {
     this.addMode = !item;
 
     if (!item) {
+      this.apiScopesFormControl.setValue(null);
       this.setUpAddForm();
       this.convertDisplayName();
       this.isFormVisible = true;
     } else {
       this.httpService.get(item.id).subscribe(x => {
-        this.setUpEditForm(x);
-        this.convertDisplayName();
-        this.isFormVisible = true;
+        this.httpService.getOptions<BaseOption<string>>(`api-scope/client/${this.itemSelected.id}`).subscribe(clientOptions => {
+          this.apiScopesFormControl.setValue(clientOptions.map(x => x.value));
+          this.setUpEditForm(x);
+          this.convertDisplayName();
+          this.isFormVisible = true;
+        })
       });
     }
   }
@@ -92,7 +105,7 @@ export class ClientsComponent
     this.editForm = this.formBuilder.group({
       name: ['', Validators.required],
       displayName: ['', Validators.required],
-      description: ['', Validators.required],
+      description: [''],
       requirePkce: [true, Validators.required],
       requireClientSecret: [false, Validators.required],
       allowOfflineAccess: [false, Validators.required],
@@ -102,26 +115,22 @@ export class ClientsComponent
         Validators.compose([Validators.required, Validators.min(1)])
       ],
       clientUri: [
-        '',
+        'https://',
         Validators.compose([
           Validators.required,
-          Validators.pattern(
-            '(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})[/\\w .-]*/?'
-          )
+          Validators.pattern(this.uriPatternValidator)
         ])
       ]
     });
+
+    this.editForm.addControl('apiScopes', this.apiScopesFormControl);
   }
 
   setUpEditForm(item: Client) {
-    let uriPattern = environment.envName == 'local' ?
-      '(https?://)?(localhost+)\\:([0-9]{1,5})' :
-      '(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})[/\\w .-]*/?'
-
     this.editForm = this.formBuilder.group({
       name: [item.name, Validators.required],
       displayName: [item.displayName, Validators.required],
-      description: [item.description, Validators.required],
+      description: [item.description],
       requirePkce: [item.requirePkce, Validators.required],
       requireClientSecret: [item.requireClientSecret, Validators.required],
       allowOfflineAccess: [item.allowOfflineAccess, Validators.required],
@@ -137,10 +146,12 @@ export class ClientsComponent
         item.clientUri,
         Validators.compose([
           Validators.required,
-          Validators.pattern(uriPattern)
+          Validators.pattern(this.uriPatternValidator)
         ])
       ]
     });
+
+    this.editForm.addControl('apiScopes', this.apiScopesFormControl);
   }
 
   onFilterSelect(value) {

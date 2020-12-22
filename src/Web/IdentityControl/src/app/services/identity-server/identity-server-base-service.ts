@@ -1,17 +1,17 @@
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { AbstractControl, FormGroup } from '@angular/forms';
-import { ServiceBase } from '../../base.service';
-import { BaseIdentityModel } from '../../../models/baseIdentityModel';
+import { ServiceBase } from '../base.service';
+import { BaseIdentityModel } from '../../models/baseIdentityModel';
 import { DateTime } from 'luxon';
 import { PageEvent } from '@angular/material/paginator';
 import { ActivatedRoute, Router } from '@angular/router';
-import { toSnakeCase } from '../../../helpers/stringExtensions';
-import { SortDirection } from '../../../models/sortDirection';
+import { toSnakeCase } from '../../helpers/stringExtensions';
+import { SortDirection } from '../../models/sortDirection';
 import { Sort } from '@angular/material/sort';
 import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
-import { SearchService } from '../../search.service';
-import { IdentityTableQuery } from '../../../models/management/identityTableQuery';
-import { PageOf } from '../../../models/pageOf';
+import { SearchService } from '../search.service';
+import { IdentityTableQuery } from '../../models/identity-server/identityTableQuery';
+import { PageOf } from '../../models/pageOf';
 
 export abstract class IdentityServerBaseService<TItem extends BaseIdentityModel,
   ItemService extends ServiceBase<TItem>> {

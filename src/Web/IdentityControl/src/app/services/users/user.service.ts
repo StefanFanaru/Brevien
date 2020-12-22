@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { ServiceBase } from '../../base.service';
-import { environment } from '../../../../environments/environment';
-import { ApplicationUser } from '../../../models/management/applicationUser';
+import { ServiceBase } from '../base.service';
+import { ApplicationUser } from '../../models/identity-server/applicationUser';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'

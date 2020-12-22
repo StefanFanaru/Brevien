@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Secret, SecretType } from '../../../models/management/secret';
+import { Secret, SecretType } from '../../../models/identity-server/secret';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { MatSelect, MatSelectChange } from '@angular/material/select';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
@@ -7,9 +7,9 @@ import 'src/app/helpers/dateExtensions';
 import { DateTime } from 'luxon';
 import { getDateFromLocale } from '../../../helpers/dateExtensions';
 import { charSet64, Entropy } from 'entropy-string';
-import { IdentityServerBaseService } from '../../../services/management/identity-server/identity-server-base-service';
+import { IdentityServerBaseService } from '../../../services/identity-server/identity-server-base-service';
 import { BaseOption } from '../../../models/option';
-import { IdentityServerSecretService } from '../../../services/management/identity-server/identity-server-secret.service';
+import { IdentityServerSecretService } from '../../../services/identity-server/identity-server-secret.service';
 import { SortDirection } from '../../../models/sortDirection';
 import { SearchService } from '../../../services/search.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -127,7 +127,7 @@ export class SecretsComponent
   setUpAddForm() {
     return this.formBuilder.group({
       value: [this.generateSecret(), Validators.required],
-      description: ['', Validators.required],
+      description: [''],
       type: ['SharedSecret', Validators.required],
       ownerId: [null, Validators.required],
       expiresAt: new FormControl(

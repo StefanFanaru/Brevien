@@ -7,11 +7,11 @@ import { SecretsComponent } from './secrets/secrets.component';
 import { ApiResourcesComponent } from './api-resources/api-resources.component';
 import { ClientsComponent } from './clients/clients.component';
 import { ClientChildrenComponent } from './clients/client-children/client-children.component';
-import { IdentityServerApiScopeService } from '../../services/management/identity-server/identity-server-api-scope.service';
-import { IdentityServerApiResourceService } from '../../services/management/identity-server/identity-server-api-resource.service';
-import { IdentityServerClientsChildrenService } from '../../services/management/identity-server/identity-server-clients-children.service';
-import { IdentityServerClientService } from '../../services/management/identity-server/identity-server-clients.service';
-import { IdentityServerSecretService } from '../../services/management/identity-server/identity-server-secret.service';
+import { IdentityServerApiScopeService } from '../../services/identity-server/identity-server-api-scope.service';
+import { IdentityServerApiResourceService } from '../../services/identity-server/identity-server-api-resource.service';
+import { IdentityServerClientsChildrenService } from '../../services/identity-server/identity-server-clients-children.service';
+import { IdentityServerClientService } from '../../services/identity-server/identity-server-clients.service';
+import { IdentityServerSecretService } from '../../services/identity-server/identity-server-secret.service';
 import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
