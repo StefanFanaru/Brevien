@@ -4,6 +4,7 @@ import { IdentityServerClientsChildrenService } from '../../../../services/ident
 import { BehaviorSubject, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { BaseOption } from '../../../../models/option';
+import { DialogService } from '../../../../services/dialog.service';
 
 @Component({
   selector: 'client-children',
@@ -53,7 +54,8 @@ export class ClientChildrenComponent implements OnInit {
   filterSelectHasValue: boolean;
 
   constructor(
-    private clientChildrenService: IdentityServerClientsChildrenService
+    private clientChildrenService: IdentityServerClientsChildrenService,
+    private dialogService: DialogService
   ) {
   }
 
@@ -86,10 +88,13 @@ export class ClientChildrenComponent implements OnInit {
     this.closePanel.emit();
   }
 
-  deleteChild(childId: string) {
-    this.clientChildrenService
-      .deleteChild(this.clientId, this.childType, childId)
-      .subscribe(() => this.refresh());
+  deleteChild(childId: number) {
+    this.dialogService.openConfirmationDialog(`Delete ${ClientChildType[this.childType].formatKey()}`,
+      `Are you sure you want to delete "${this.rows.find(x => x.id === childId).value}"?`, true, () => {
+        this.clientChildrenService
+          .deleteChild(this.clientId, this.childType, childId)
+          .subscribe(() => this.refresh());
+      })
   }
 
   refresh() {

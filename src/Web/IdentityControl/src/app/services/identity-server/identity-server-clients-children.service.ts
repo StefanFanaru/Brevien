@@ -18,7 +18,7 @@ export class IdentityServerClientsChildrenService extends ServiceBase<ClientChil
     return this.getAny<ClientChild[]>(clientId, `children/${childType}`);
   }
 
-  deleteChild(clientId: string, childType: ClientChildType, childId: string) {
+  deleteChild(clientId: string, childType: ClientChildType, childId: number) {
     return this.delete(`${clientId}/children/${childType}/delete/${childId}`);
   }
 
