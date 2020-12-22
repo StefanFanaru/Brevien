@@ -1,23 +1,18 @@
-import {Observable, Subscription, throwError} from 'rxjs';
-import {
-  HttpErrorResponse,
-  HttpEvent,
-  HttpHandler,
-  HttpInterceptor,
-  HttpRequest
-} from '@angular/common/http';
-import {catchError, finalize} from 'rxjs/operators';
-import {Injectable} from '@angular/core';
-import {ErrorDialogService} from '../../modules/shared/errors/error-dialog.service';
-import {SpinnerOverlayService} from '../../modules/shared/loading/loading-dialog.service';
-import {ErrorType} from '../../modules/shared/errors/error-dialog/error-dialog.component';
+import { Observable, Subscription, throwError } from 'rxjs';
+import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
+import { catchError, finalize } from 'rxjs/operators';
+import { Injectable } from '@angular/core';
+import { SpinnerOverlayService } from '../../modules/shared/loading/loading-dialog.service';
+import { DialogService } from '../../services/dialog.service';
+import { ErrorType } from '../../components/dialog/dialog-error/dialog-error.component';
 
 @Injectable()
 export class CustomHttpInterceptor implements HttpInterceptor {
   constructor(
-    private errorDialogService: ErrorDialogService,
+    private dialogService: DialogService,
     private readonly spinnerOverlayService: SpinnerOverlayService
-  ) {}
+  ) {
+  }
 
   intercept(
     request: HttpRequest<any>,
@@ -55,7 +50,7 @@ export class CustomHttpInterceptor implements HttpInterceptor {
             break;
         }
 
-        this.errorDialogService.openErrorDialog(
+        this.dialogService.openErrorDialog(
           content,
           errorType,
           error.status

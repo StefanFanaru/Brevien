@@ -30,8 +30,6 @@ namespace IdentityControl.API.Asp
             Log.Information($"Incoming {context.Request.Method} Request{Environment.NewLine}" +
                             $"{context.Request.Scheme.ToUpper()} Endpoint: {context.Request.Path}{Environment.NewLine}" +
                             queryString);
-            Log.Information("Headers: " + string.Join(',', context.Request.Headers.Keys));
-            Log.Information("TOKEN: " + context.Request.Headers["Authorization"]);
             return Task.CompletedTask;
         }
 

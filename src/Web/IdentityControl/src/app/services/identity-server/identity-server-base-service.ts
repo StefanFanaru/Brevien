@@ -12,12 +12,14 @@ import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
 import { SearchService } from '../search.service';
 import { IdentityTableQuery } from '../../models/identity-server/identityTableQuery';
 import { PageOf } from '../../models/pageOf';
+import { DialogService } from '../dialog.service';
 
 export abstract class IdentityServerBaseService<TItem extends BaseIdentityModel,
   ItemService extends ServiceBase<TItem>> {
   protected constructor() {
   }
 
+  dialogService: DialogService
   httpService: ItemService;
   router: Router;
   route: ActivatedRoute;
@@ -221,20 +223,23 @@ export abstract class IdentityServerBaseService<TItem extends BaseIdentityModel,
     this.submitResponse = this.httpService.patch(item, item.id);
   }
 
-  delete() {
-    if (this.selectMultiple) {
-      this.selectedRows.forEach(x => this.throwIfReadOnly(x));
-      let ids = this.selectedRows.map(x => x.id);
-      this.httpService.patchBatch('delete-batch', ids).subscribe(() => {
-        this.allSelected = false;
-        this.getData();
-      });
-    } else {
-      this.throwIfReadOnly(this.itemSelected);
-      this.httpService
-        .delete(this.itemSelected.id)
-        .subscribe(() => this.getData());
-    }
+  delete(itemName: string) {
+    this.dialogService.openConfirmationDialog(`Delete ${itemName}`, `Are you sure you want to delete "${itemName}"?`, true,
+      () => {
+        if (this.selectMultiple) {
+          this.selectedRows.forEach(x => this.throwIfReadOnly(x));
+          let ids = this.selectedRows.map(x => x.id);
+          this.httpService.patchBatch('delete-batch', ids).subscribe(() => {
+            this.allSelected = false;
+            this.getData();
+          });
+        } else {
+          this.throwIfReadOnly(this.itemSelected);
+          this.httpService
+            .delete(this.itemSelected.id)
+            .subscribe(() => this.getData());
+        }
+      })
   }
 
   changeEnabledState() {

@@ -1,15 +1,15 @@
 import { ErrorHandler, Injectable } from '@angular/core';
-import { ErrorDialogService } from '../../modules/shared/errors/error-dialog.service';
+import { DialogService } from '../../services/dialog.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GlobalErrorHandler implements ErrorHandler {
-  constructor(private errorDialogService: ErrorDialogService) {
+  constructor(private dialogService: DialogService) {
   }
 
   handleError(error: Error) {
-    this.errorDialogService.openErrorDialog(
+    this.dialogService.openErrorDialog(
       error.stack || 'Undefined client error',
       'TypeScript'
     );

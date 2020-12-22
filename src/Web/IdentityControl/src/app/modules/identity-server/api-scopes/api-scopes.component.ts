@@ -7,6 +7,7 @@ import { IdentityServerApiScopeService } from '../../../services/identity-server
 import { ApiScope } from '../../../models/identity-server/apiScope';
 import { SearchService } from '../../../services/search.service';
 import { SortDirection } from '../../../models/sortDirection';
+import { DialogService } from '../../../services/dialog.service';
 
 enum ApiScopesFilter {
   Enabled,
@@ -42,7 +43,8 @@ export class ApiScopesComponent
     public formBuilder: FormBuilder,
     public searchService: SearchService,
     public route: ActivatedRoute,
-    public router: Router
+    public router: Router,
+    public dialogService: DialogService
   ) {
     super();
     this.queryParams.sortColumn = 'DisplayName';

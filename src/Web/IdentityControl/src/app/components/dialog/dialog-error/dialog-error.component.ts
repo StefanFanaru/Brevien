@@ -3,10 +3,10 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-error-dialog',
-  templateUrl: './error-dialog.component.html',
-  styleUrls: ['./error-dialog.component.scss']
+  templateUrl: './dialog-error.component.html',
+  styleUrls: ['./dialog-error.component.scss']
 })
-export class ErrorDialogComponent {
+export class DialogErrorComponent {
   constructor(
     @Inject(MAT_DIALOG_DATA)
     public data: {
@@ -14,7 +14,7 @@ export class ErrorDialogComponent {
       type: ErrorType;
       status?: number;
       title: string;
-    }, public dialogRef: MatDialogRef<ErrorDialogComponent>, private ngZone: NgZone
+    }, public dialogRef: MatDialogRef<DialogErrorComponent>, private ngZone: NgZone
   ) {
     // console.log(data)
   }

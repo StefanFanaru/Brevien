@@ -22,23 +22,22 @@ import { MatTableModule } from '@angular/material/table';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { ErrorDialogComponent } from './errors/error-dialog/error-dialog.component';
-// import {LoadingDialogComponent} from './loading/loading-dialog/loading-dialog.component';
-// import {LoadingDialogService} from './loading/loading-dialog.service';
 import { MatDialogModule } from '@angular/material/dialog';
-// import {ErrorHandlerModule} from '../../core/errors/error-handler.module';
-import { DialogInjectableComponent } from '../../components/dialog-injectable/dialog-injectable.component';
+import { DialogMessageComponent } from '../../components/dialog/dialog-message/dialog-message.component';
 import { EventService } from '../../services/event.service';
 import { FormDialogComponent } from './forms/form-dialog/form-dialog.component';
 import { FormDialogService } from './forms/form-dialog.service';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSortModule } from '@angular/material/sort';
+import { DialogConfirmationComponent } from '../../components/dialog/dialog-confirmation/dialog-confirmation.component';
+import { DialogErrorComponent } from '../../components/dialog/dialog-error/dialog-error.component';
 
 @NgModule({
   declarations: [
-    ErrorDialogComponent,
-    DialogInjectableComponent,
+    DialogMessageComponent,
+    DialogConfirmationComponent,
+    DialogErrorComponent,
     FormDialogComponent
   ],
   imports: [

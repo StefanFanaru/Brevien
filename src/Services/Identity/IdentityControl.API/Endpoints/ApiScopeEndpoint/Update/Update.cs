@@ -67,16 +67,14 @@ namespace IdentityControl.API.Endpoints.ApiScopeEndpoint.Update
 
             if (entity.Name != request.Name)
             {
-                entity.Name = request.Name;
                 await _clientScopeRepository.Query()
                     .Where(x => x.Scope == entity.Name)
                     .UpdateAsync(x => new ClientScope {Scope = request.Name}, cancellationToken);
-                await _clientScopeRepository.SaveAsync(toaster);
 
                 await _apiResourceScopeRepo.Query()
                     .Where(x => x.Scope == entity.Name)
                     .UpdateAsync(x => new ApiResourceScope {Scope = request.Name}, cancellationToken);
-                await _apiResourceScopeRepo.SaveAsync(toaster);
+                entity.Name = request.Name;
             }
 
             entity.Description = request.Description;
