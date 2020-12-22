@@ -5,7 +5,7 @@ namespace IdentityControl.API.Common.Extensions
     public static class SecretsExtensions
     {
         private static readonly IConfiguration Configuration = Startup.StaticConfiguration;
-        
+
         // TODO: Find a better way to deal with this
         /// <summary>
         ///     Adds the secret stamp to any secret value to prepare it for storage

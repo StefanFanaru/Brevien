@@ -1,8 +1,6 @@
 using System;
-using AutoMapper.Configuration;
 using Identity.Data;
 using IdentityControl.API.Asp;
-using IdentityControl.API.Common;
 using IdentityControl.API.Data;
 using IdentityControl.API.Services.ApiResourceSecrets;
 using IdentityControl.API.Services.ApiScopes;
@@ -14,7 +12,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 namespace IdentityControl.API.Configuration
 {
