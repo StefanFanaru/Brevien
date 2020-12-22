@@ -41,10 +41,15 @@ namespace IdentityControl.API.Endpoints.ApiResourceSecretEndpoint.Insert
                             InsertApiResourceSecretRequestValidator>
                         (request, toaster, cancellationToken);
 
-            if (validation.Failed) return validation.Response;
+            if (validation.Failed)
+            {
+                return validation.Response;
+            }
 
             if (_repository.Query().Any(e => e.Value == request.Value && e.Type != AppConstants.SecretTypes.VisibleOneTime))
+            {
                 return AspExtensions.GetBadRequestWithError<InsertApiResourceSecretResponse>("This secret already exists.");
+            }
 
             var entity = new ApiResourceSecret
             {

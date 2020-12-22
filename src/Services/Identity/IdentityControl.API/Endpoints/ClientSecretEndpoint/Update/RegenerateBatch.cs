@@ -51,6 +51,13 @@ namespace IdentityControl.API.Endpoints.ClientSecretEndpoint.Update
                 if (validation.Failed) return validation.Response;
             }
 
+            if (_repository.Query().Any(e => request.Any(x => x.Value == e.Value)
+                                             && e.Type != AppConstants.SecretTypes.VisibleOneTime))
+            {
+                return AspExtensions.GetBadRequestWithError<UpdateClientSecretResponse>(
+                    "One of the new values is already registered.");
+            }
+
             await _repository.Query()
                 .Where(entity => request.Select(r => r.Id)
                     .Contains(entity.Id) && entity.Type != AppConstants.SecretTypes.VisibleOneTime)

@@ -32,6 +32,8 @@ namespace Identity.API.Configuration
             {
                 new Client
                 {
+                    ClientName = "IdentityControl SPA",
+                    Description = "Angular client",
                     ClientId = "identity_control_ng",
                     AllowedGrantTypes = GrantTypes.Code,
                     AllowOfflineAccess = true,
@@ -55,6 +57,8 @@ namespace Identity.API.Configuration
 
                 new Client
                 {
+                    ClientName = "IdentityControl Swagger",
+                    Description = "Swagger UI",
                     ClientId = "swagger_ui_identity_control",
                     ClientSecrets = {new Secret(IdentityControlSwaggerKey.Sha256())},
 

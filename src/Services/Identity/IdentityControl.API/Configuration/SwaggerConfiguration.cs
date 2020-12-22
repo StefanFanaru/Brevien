@@ -45,11 +45,11 @@ namespace IdentityControl.API.Configuration
             return services;
         }
 
-        public static IApplicationBuilder ConfigureSwaggerUi(this IApplicationBuilder app)
+        public static IApplicationBuilder ConfigureSwaggerUi(this IApplicationBuilder app, string pathBase)
         {
             app.UseSwaggerUI(options =>
             {
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", "IdentityControl API V1");
+                options.SwaggerEndpoint($"{pathBase}/swagger/v1/swagger.json", "IdentityControl.API V1");
 
                 options.OAuthClientId("swagger_ui_identity_control");
                 options.OAuthAppName("IdentityControl API - Swagger");

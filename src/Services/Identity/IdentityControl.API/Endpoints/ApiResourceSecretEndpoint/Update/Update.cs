@@ -39,15 +39,21 @@ namespace IdentityControl.API.Endpoints.ApiResourceSecretEndpoint.Update
                     .ValidateAsync<UpdateApiResourceSecretRequest, UpdateApiResourceSecretResponse,
                             UpdateApiResourceSecretRequestValidator>
                         (request, toaster, cancellationToken);
-            if (validation.Failed) return validation.Response;
+            if (validation.Failed)
+            {
+                return validation.Response;
+            }
 
             if (!_repository.Query().Any(e => e.Id == id && e.Type != AppConstants.SecretTypes.VisibleOneTime))
+            {
                 return NotFound(id);
+            }
 
             var entity = await _repository.Query().FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
 
             entity.Expiration = request.ExpiresAt;
             entity.Description = request.Description;
+            entity.ApiResourceId = request.OwnerId;
 
             await _repository.SaveAsync(toaster);
 

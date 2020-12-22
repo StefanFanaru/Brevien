@@ -17,12 +17,15 @@ namespace IdentityControl.API.Endpoints.ClientEndpoint.Insert
     [Authorize(Policy = "AdminOnly")]
     public class Insert : BaseAsyncEndpoint<InsertClientRequest, InsertClientResponse>
     {
-        private readonly IIdentityRepository<Client> _repository;
+        private readonly IIdentityRepository<Client> _clientRepository;
+        private readonly IIdentityRepository<ClientScope> _clientScopeRepository;
         private readonly IAspValidator _validator;
 
-        public Insert(IIdentityRepository<Client> repository, IAspValidator validator)
+        public Insert(IIdentityRepository<Client> clientRepository, IIdentityRepository<ClientScope> clientScopeRepository,
+            IAspValidator validator)
         {
-            _repository = repository;
+            _clientRepository = clientRepository;
+            _clientScopeRepository = clientScopeRepository;
             _validator = validator;
         }
 
@@ -35,10 +38,15 @@ namespace IdentityControl.API.Endpoints.ClientEndpoint.Insert
             var validation =
                 await _validator.ValidateAsync<InsertClientRequest, InsertClientResponse, InsertClientValidator>
                     (request, toaster, cancellationToken);
-            if (validation.Failed) return validation.Response;
+            if (validation.Failed)
+            {
+                return validation.Response;
+            }
 
-            if (_repository.Query().Any(e => e.ClientId == request.Name))
+            if (_clientRepository.Query().Any(e => e.ClientId == request.Name || e.ClientUri == request.ClientUri))
+            {
                 return AspExtensions.GetBadRequestWithError<InsertClientResponse>($"Client \"{request.Name}\" already exists.");
+            }
 
             var entity = new Client
             {
@@ -56,8 +64,12 @@ namespace IdentityControl.API.Endpoints.ClientEndpoint.Insert
             };
 
             toaster.Identifier = entity.ClientName;
-            await _repository.InsertAsync(entity);
-            await _repository.SaveAsync(toaster);
+            await _clientRepository.InsertAsync(entity);
+            await _clientRepository.SaveAsync(toaster);
+
+            var clientApiScopes = request.ApiScopes.Select(x => new ClientScope {Scope = x, ClientId = entity.Id});
+            await _clientScopeRepository.InsertRange(clientApiScopes);
+
 
             return validation.Response;
         }

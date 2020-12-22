@@ -10,8 +10,8 @@ using IdentityControl.API.Services.ToasterEvents;
 using IdentityServer4.EntityFramework.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Annotations;
+using Z.EntityFramework.Plus;
 using static IdentityControl.API.Endpoints.ClientEndpoint.ClientValidators;
 
 namespace IdentityControl.API.Endpoints.ClientEndpoint.Update
@@ -19,12 +19,15 @@ namespace IdentityControl.API.Endpoints.ClientEndpoint.Update
     [Authorize(Policy = "AdminOnly")]
     public class Update : BaseAsyncEndpoint
     {
-        private readonly IIdentityRepository<Client> _repository;
+        private readonly IIdentityRepository<Client> _clientRepository;
+        private readonly IIdentityRepository<ClientScope> _clientScopeRepository;
         private readonly IAspValidator _validator;
 
-        public Update(IIdentityRepository<Client> repository, IAspValidator validator)
+        public Update(IIdentityRepository<Client> clientRepository, IIdentityRepository<ClientScope> clientScopeRepository,
+            IAspValidator validator)
         {
-            _repository = repository;
+            _clientRepository = clientRepository;
+            _clientScopeRepository = clientScopeRepository;
             _validator = validator;
         }
 
@@ -38,28 +41,42 @@ namespace IdentityControl.API.Endpoints.ClientEndpoint.Update
                 await _validator.ValidateAsync<UpdateClientRequest, UpdateClientResponse, UpdateClientValidator>
                     (request, toaster, cancellationToken);
 
-            if (validation.Failed) return validation.Response;
+            if (validation.Failed)
+            {
+                return validation.Response;
+            }
 
-            if (!_repository.Query()
-                .Any(e => e.Id == id && e.ClientId != AppConstants.ReadOnlyEntities.AngularClient))
+            if (!_clientRepository.Query().Any(e => e.Id == id && e.ClientId != AppConstants.ReadOnlyEntities.AngularClient))
+            {
                 return NotFound(id);
+            }
 
-            var entity = await _repository.Query().FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
+            if (_clientRepository.Query().Any(e => e.ClientId == request.Name || e.ClientUri == request.ClientUri))
+            {
+                return AspExtensions.GetBadRequestWithError<UpdateClientResponse>($"Client \"{request.Name}\" already exists.");
+            }
 
-            entity.ClientId = request.Name;
-            entity.ClientName = request.DisplayName;
-            entity.Description = request.Description;
-            entity.NonEditable = request.IsReadOnly;
-            entity.Updated = DateTime.UtcNow;
-            entity.RequirePkce = request.RequirePkce;
-            entity.AccessTokenLifetime = request.AccessTokenLifetime * 60; // transform minutes in seconds;
-            entity.ClientUri = request.ClientUri;
-            entity.AllowOfflineAccess = request.AllowOfflineAccess;
-            entity.RequireClientSecret = request.RequireClientSecret;
-            entity.AllowAccessTokensViaBrowser = request.AllowAccessTokensViaBrowser;
+            await _clientRepository.Query().Where(e => e.Id == id).UpdateAsync(x => new Client
+            {
+                ClientId = request.Name,
+                ClientName = request.DisplayName,
+                Description = request.Description,
+                NonEditable = request.IsReadOnly,
+                Updated = DateTime.UtcNow,
+                RequirePkce = request.RequirePkce,
+                AccessTokenLifetime = request.AccessTokenLifetime * 60, // transform minutes in seconds,
+                ClientUri = request.ClientUri,
+                AllowOfflineAccess = request.AllowOfflineAccess,
+                RequireClientSecret = request.RequireClientSecret,
+                AllowAccessTokensViaBrowser = request.AllowAccessTokensViaBrowser
+            }, cancellationToken);
 
-            toaster.Identifier = entity.ClientName;
-            await _repository.SaveAsync(toaster);
+            await _clientScopeRepository.Query().Where(x => x.ClientId == id).DeleteAsync(cancellationToken);
+            var clientApiScopes = request.ApiScopes.Select(x => new ClientScope {Scope = x, ClientId = id});
+
+            await _clientScopeRepository.InsertRange(clientApiScopes);
+            await _clientRepository.SaveAsync(toaster);
+
             return validation.Response;
         }
     }

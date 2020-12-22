@@ -6,8 +6,10 @@ using IdentityControl.API.Asp;
 using IdentityControl.API.Configuration;
 using IdentityControl.API.Services.SignalR;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using JsonExtensions = IdentityControl.API.Extensions.JsonExtensions;
 
@@ -79,8 +81,11 @@ namespace IdentityControl.API
             });
         }
 
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            var pathBase = Configuration["PATH_BASE"];
+            app.UsePathBase(pathBase);
+
             app.UseCors(policy =>
             {
                 policy.WithOrigins(
@@ -91,7 +96,11 @@ namespace IdentityControl.API
                 policy.AllowCredentials();
             });
 
-            if (Environment == "local") app.UseRequestResponseLogging();
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseRequestResponseLogging();
+            }
 
             app.UseRouting();
 
@@ -99,7 +108,7 @@ namespace IdentityControl.API
             app.UseAuthorization();
 
             app.UseSwagger();
-            app.ConfigureSwaggerUi();
+            app.ConfigureSwaggerUi(pathBase);
 
             app.UseEndpoints(endpoints =>
             {

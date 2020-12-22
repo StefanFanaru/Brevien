@@ -40,11 +40,21 @@ namespace IdentityControl.API.Endpoints.ApiResourceSecretEndpoint.Update
                         RegenerateApiResourceSecretRequestValidator>
                     (request, toaster, cancellationToken);
 
-            if (validation.Failed) return validation.Response;
+            if (validation.Failed)
+            {
+                return validation.Response;
+            }
 
             if (!_repository.Query().Any(e =>
                 e.Id == request.Id && e.Type != AppConstants.SecretTypes.VisibleOneTime))
                 return NotFound(request.Id);
+
+
+            if (_repository.Query().Any(e => e.Value == request.Value && e.Type != AppConstants.SecretTypes.VisibleOneTime))
+            {
+                return AspExtensions.GetBadRequestWithError<UpdateApiResourceSecretResponse>(
+                    "This client secret already exists.");
+            }
 
             var entity = await _repository.Query().FirstOrDefaultAsync(e => e.Id == request.Id, cancellationToken);
 

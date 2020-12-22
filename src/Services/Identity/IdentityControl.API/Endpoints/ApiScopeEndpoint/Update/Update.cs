@@ -37,11 +37,21 @@ namespace IdentityControl.API.Endpoints.ApiScopeEndpoint.Update
                 await _validator.ValidateAsync<UpdateApiScopeRequest, UpdateApiScopeResponse, UpdateApiScopeValidator>
                     (request, toaster, cancellationToken);
 
-            if (validation.Failed) return validation.Response;
+            if (validation.Failed)
+            {
+                return validation.Response;
+            }
 
-            if (!_repository.Query()
-                .Any(e => e.Id == id && e.Name != AppConstants.ReadOnlyEntities.IdentityControlApiScope))
+            if (!_repository.Query().Any(e => e.Id == id && e.Name != AppConstants.ReadOnlyEntities.IdentityControlApiScope))
+            {
                 return NotFound(id);
+            }
+
+            if (_repository.Query().Any(e => e.Name == request.Name))
+            {
+                return AspExtensions.GetBadRequestWithError<UpdateApiScopeResponse>(
+                    $"API Scope \"{request.Name}\" already exists.");
+            }
 
             var entity = await _repository.Query().FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
 

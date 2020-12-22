@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityControl.API.Extensions;
@@ -42,6 +43,11 @@ namespace IdentityControl.API.Data
         public async Task InsertAsync(T entity)
         {
             await _context.Set<T>().AddAsync(entity);
+        }
+
+        public async Task InsertRange(IEnumerable<T> entities)
+        {
+            await _context.Set<T>().AddRangeAsync(entities);
         }
 
         public void Delete(object id)

@@ -37,11 +37,22 @@ namespace IdentityControl.API.Endpoints.ApiResourceEndpoint.Update
                 await _validator.ValidateAsync<UpdateApiResourceRequest, UpdateApiResourceResponse, UpdateApiResourceValidator>
                     (request, toaster, cancellationToken);
 
-            if (validation.Failed) return validation.Response;
+            if (validation.Failed)
+            {
+                return validation.Response;
+            }
 
             if (!_repository.Query()
                 .Any(e => e.Id == id && e.Name != AppConstants.ReadOnlyEntities.IdentityControlApiScope))
+            {
                 return NotFound(id);
+            }
+
+            if (_repository.Query().Any(e => e.Name == request.Name))
+            {
+                return AspExtensions.GetBadRequestWithError<UpdateApiResourceResponse>(
+                    $"API Resource \"{request.Name}\" already exists.");
+            }
 
             var entity = await _repository.Query().FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
 

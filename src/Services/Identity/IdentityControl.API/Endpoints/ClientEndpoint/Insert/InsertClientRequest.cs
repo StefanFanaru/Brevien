@@ -12,5 +12,6 @@ namespace IdentityControl.API.Endpoints.ClientEndpoint.Insert
         public bool AllowOfflineAccess { get; set; }
         public bool RequireClientSecret { get; set; }
         public bool AllowAccessTokensViaBrowser { get; set; }
+        public string[] ApiScopes { get; set; }
     }
 }

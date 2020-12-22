@@ -34,11 +34,18 @@ namespace IdentityControl.API.Endpoints.ApiScopeEndpoint.Insert
             var validation =
                 await _validator.ValidateAsync<InsertApiScopeRequest, InsertApiScopeResponse, InsertApiScopeValidator>
                     (request, toaster, cancellationToken);
-            if (validation.Failed) return validation.Response;
+            if (validation.Failed)
+            {
+                return validation.Response;
+            }
+
+            ;
 
             if (_repository.Query().Any(e => e.Name == request.Name))
+            {
                 return AspExtensions.GetBadRequestWithError<InsertApiScopeResponse>(
-                    $"ApiScope \"{request.Name}\" already exists.");
+                    $"API Scope \"{request.Name}\" already exists.");
+            }
 
             var entity = new ApiScope
             {

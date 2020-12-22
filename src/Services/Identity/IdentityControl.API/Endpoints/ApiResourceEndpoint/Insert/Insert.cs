@@ -35,11 +35,16 @@ namespace IdentityControl.API.Endpoints.ApiResourceEndpoint.Insert
                 .ValidateAsync<InsertApiResourceRequest, InsertApiResourceResponse, InsertApiResourceValidator>
                     (request, toaster, cancellationToken);
 
-            if (validation.Failed) return validation.Response;
+            if (validation.Failed)
+            {
+                return validation.Response;
+            }
 
             if (_repository.Query().Any(e => e.Name == request.Name))
+            {
                 return AspExtensions.GetBadRequestWithError<InsertApiResourceResponse>(
                     $"ApiResource \"{request.Name}\" already exists.");
+            }
 
             var entity = new ApiResource
             {
