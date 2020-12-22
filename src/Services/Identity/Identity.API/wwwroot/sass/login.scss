@@ -1,0 +1,83 @@
+﻿.auth-container-body-small-margin-bottom {
+  margin-bottom: 15px !important;
+}
+
+.text-hr-line {
+  min-height: 1px;
+  position: relative;
+}
+
+.text-hr-line::before {
+  left: 0;
+  top: 52%;
+  right: 0;
+  height: 1px;
+  content: "";
+  position: absolute;
+  background: #e5e5e5;
+}
+
+.register-info {
+  margin-top: 18px;
+}
+
+.login-options {
+  font-size: 13px;
+  font-weight: 550;
+  color: #0082e6;
+  margin-top: 25px;
+  display: flex;
+  align-content: center;
+  justify-content: space-between;
+
+  .form-check-input {
+    cursor: pointer;
+  }
+
+  .form-check-label {
+    margin-left: 25px;
+    cursor: pointer;
+  }
+
+  a {
+    text-decoration: none;
+  }
+}
+
+.form-check-label:hover, .form-check-label:focus {
+  color: #5e6469;
+  text-decoration: none;
+}
+
+
+.need-help-text {
+  font-weight: 550;
+  text-decoration: none;
+}
+
+.need-help-text:hover, .need-help-text:focus {
+  color: #2A6496;
+  text-decoration: none;
+}
+
+.user-email {
+  font-size: 13px;
+}
+
+.btn {
+  padding: .375rem 2rem;
+}
+
+.form-check-input {
+  position: fixed !important;
+  width: 16px;
+  height: 16px;
+  margin-top: 0.12rem;
+  margin-right: 5px;
+}
+
+.validation-summary-custom > ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}

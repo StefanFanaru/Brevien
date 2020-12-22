@@ -1,0 +1,105 @@
+﻿#code-dialog {
+  margin-top: 45px;
+
+  h3 {
+    margin: 0 0 10px;
+    padding: 0;
+    line-height: 1.25;
+  }
+
+  span {
+    font-size: 90%;
+  }
+
+  #form {
+    margin: 25px 0 20px 0;
+    input {
+      margin: 0 5px;
+      text-align: center;
+      line-height: 40px;
+      font-size: 40px;
+      border: solid 1px #ccc;
+      box-shadow: 0 0 5px #ccc inset;
+      outline: none;
+      width: 12%;
+      transition: all .2s ease-in-out;
+      border-radius: 3px;
+      color: transparent;
+      text-shadow: 0 0 0 black;
+
+      &:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px #007bff inset;
+        color: transparent;
+      }
+
+      &::selection {
+        background: transparent;
+      }
+    }
+  }
+
+  button {
+    &.close {
+      border: solid 2px;
+      border-radius: 30px;
+      line-height: 19px;
+      font-size: 120%;
+      width: 22px;
+      position: absolute;
+      right: 5px;
+      top: 5px;
+    }
+  }
+
+  div {
+    position: relative;
+    z-index: 1;
+  }
+
+  img {
+    position: absolute;
+    bottom: -70px;
+    right: -63px;
+  }
+
+  #twofactor-options {
+    margin-top: 25px;
+    
+    span {
+      font-size: 100% !important;
+    }
+
+    a {
+      text-decoration: none;
+    }
+  }
+}
+
+.verify-button {
+  margin-top: 25px;
+  width: 110px;
+  font-size: 16px;
+  height: 40px;
+}
+
+.verify-code-error {
+  font-size: 100% !important;
+}
+
+#code-timer{
+  font-size: 100% !important;
+}
+
+#timer-button {
+  text-decoration: none;
+}
+
+#timer-text {
+  display: inline;
+  margin-bottom: 10px;
+}
+
+#allowed-to-resend-at {
+  display: none;
+}

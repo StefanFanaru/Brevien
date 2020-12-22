@@ -1,0 +1,15 @@
+﻿@using IdentityServer4.Extensions
+@{
+    string name = null;
+    if (!true.Equals(ViewData["signed-out"]))
+    {
+        name = Context.User?.GetDisplayName();
+    }
+}
+
+@if (!string.IsNullOrWhiteSpace(name))
+{
+    <div class="nav-bar">
+        <a class="button-custom" asp-action="Logout" asp-controller="Account">Logout</a>
+    </div>
+}

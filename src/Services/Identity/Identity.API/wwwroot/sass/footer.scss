@@ -1,0 +1,63 @@
+﻿.auth-footer {
+  bottom: 0;
+  width: 100%;
+  position: absolute;
+  padding-bottom: 10px;
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    display: flex;
+    justify-content: center;
+    font-size: 13px;
+    text-align: center;
+  }
+
+  .footer-links {
+    font-size: 13px;
+    text-align: center;
+    font-weight: 500;
+    display: -webkit-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    li.first-footer-link::before {
+      content: none;
+    }
+
+    .first-footer-link {
+      margin-left: 0;
+      padding-left: 0;
+    }
+
+    li::before {
+      content: "";
+      width: 1px;
+      background: #575757;
+      top: 7px;
+      left: 0;
+      bottom: 7px;
+      position: absolute;
+    }
+
+    li {
+      margin-left: 7px;
+      padding-left: 7px;
+      position: relative;
+    }
+
+    a {
+      padding: 5px 0;
+      display: inline-block;
+      color: #575757;
+      text-decoration: none;
+
+      &:hover {
+        color: #373737;
+      }
+    }
+  }
+}

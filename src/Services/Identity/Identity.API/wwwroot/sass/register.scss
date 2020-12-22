@@ -1,0 +1,36 @@
+﻿.agree-section {
+    display: flex;
+    flex-direction: column;
+    align-content: flex-start;
+    align-items: flex-start;
+    color: #0082e6;
+    font-size: 14px;
+    font-weight: 400;
+    cursor: pointer;
+    width: 100%;
+
+    .form-group {
+        margin-bottom: 10px;
+    }
+}
+
+.register-head {
+    margin-top: 15px;
+}
+
+.register-input-info {
+    margin-bottom: 5px !important;
+    margin-top: 0 !important;
+}
+
+.register-check {
+    margin-top: 0.05rem !important;
+}
+
+.confirm-password-input {
+    margin-bottom: 0;
+}
+
+.form-group {
+    margin-bottom: 0;
+}

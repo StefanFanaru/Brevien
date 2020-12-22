@@ -1,0 +1,51 @@
+@model LoginViewModel
+@inject IOptions<ApplicationUrls> ApplicationUrls
+
+<div class="auth-wrapper">
+    <a tabIndex="-1" href="#">
+        <img alt="" class="logo-brevien" src="~/images/logo-brevien.svg">
+    </a>
+    <div class="auth-container">
+        <div class="auth-container-head">
+            <div class="slot-back">
+                <a class="btn-back" href="@ApplicationUrls.Value.AngularClient">Home</a>
+            </div>
+            Hello!
+        </div>
+        <div class="auth-container-body auth-container-body-small-margin-bottom">
+            <form asp-route="Login">
+                <input type="hidden" asp-for="ReturnUrl"/>
+                <div class="form-group">
+                    <label asp-for="Username" class="input-info"></label>
+                    <input class="form-control" type="email" asp-for="Username" autofocus>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Password" class="input-info"></label>
+                    <input type="password" class="form-control" asp-for="Password" autocomplete="off">
+                </div>
+                <button class="button-custom" name="button" value="login">Login</button>
+                <partial name="_ValidationSummary"/>
+                <div class="login-options">
+                    @if (Model.AllowRememberLogin)
+                    {
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input class="form-check-input primary-bg" asp-for="RememberLogin">
+                                <label class="form-check-label primary-txt" asp-for="RememberLogin">
+                                    Remember me
+                                </label>
+                            </div>
+                        </div>
+                    }
+                    <a asp-action="ForgotPassword">Forgot Password</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="text-center">
+        <a class="need-help-text" asp-controller="Account"
+           asp-action="Register">
+            Register a new account
+        </a>
+    </div>
+</div>

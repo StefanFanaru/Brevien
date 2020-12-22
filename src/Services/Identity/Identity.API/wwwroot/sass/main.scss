@@ -1,0 +1,359 @@
+﻿@import 'register.scss';
+@import 'login.scss';
+@import 'footer.scss';
+@import 'twofactor.scss';
+@import "bootstrap.scss";
+
+html, body {
+  height: 100%;
+}
+
+/* roboto-regular - latin */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  src: url('wwwroot/lib/fonts/roboto-v20-latin-regular.eot'); /* IE9 Compat Modes */
+  src: local('Roboto'), local('Roboto-Regular'),
+  url('../lib/fonts/roboto-v20-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('../lib/fonts/roboto-v20-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+  url('../lib/fonts/roboto-v20-latin-regular.woff') format('woff'), /* Modern Browsers */
+  url('../lib/fonts/roboto-v20-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+  url('../lib/fonts/roboto-v20-latin-regular.svg#Roboto') format('svg'); /* Legacy iOS */
+}
+
+body {
+  font-size: 15px;
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-weight: 400;
+  color: #000;
+}
+
+.body-container {
+  margin-top: 60px;
+  padding-bottom: 40px;
+}
+
+.welcome-page {
+  li {
+    list-style: none;
+    padding: 4px;
+  }
+}
+
+.logged-out-page {
+  iframe {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+}
+
+.grants-page {
+  .card {
+    margin-top: 20px;
+    border-bottom: 1px solid lightgray;
+
+    .card-title {
+      img {
+        width: 100px;
+        height: 100px;
+      }
+
+      font-size: 120%;
+      font-weight: bold;
+    }
+
+    label {
+      font-weight: bold;
+    }
+  }
+}
+
+.welcome-page li {
+  list-style: none;
+  padding: 4px;
+}
+
+.logged-out-page iframe {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.grants-page .card {
+  margin-top: 20px;
+  border-bottom: 1px solid lightgray;
+}
+
+.grants-page .card .card-title {
+  font-size: 120%;
+  font-weight: bold;
+}
+
+.grants-page .card .card-title img {
+  width: 100px;
+  height: 100px;
+}
+
+.grants-page .card label {
+  font-weight: bold;
+}
+
+/* Rules for sizing the icon. */
+.material-icons.md-18 {
+  font-size: 18px;
+}
+
+.material-icons.md-24 {
+  font-size: 24px;
+}
+
+.material-icons.md-36 {
+  font-size: 36px;
+}
+
+.material-icons.md-48 {
+  font-size: 48px;
+}
+
+/* Rules for using icons as black on a light background. */
+.material-icons.md-dark {
+  color: rgba(0, 0, 0, 0.54);
+}
+
+.material-icons.md-blue {
+  color: rgba(0, 130, 230, 1);
+}
+
+.material-icons.md-dark.md-inactive {
+  color: rgba(0, 0, 0, 0.26);
+}
+
+/* Rules for using icons as white on a dark background. */
+.material-icons.md-light {
+  color: rgba(255, 255, 255, 1);
+}
+
+.material-icons.md-light.md-inactive {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.material-icons-outlined, .material-icons.material-icons--outlined, .material-icons-two-tone, .material-icons.material-icons--two-tone, .material-icons-round, .material-icons.material-icons--round, .material-icons-sharp, .material-icons.material-icons--sharp {
+  font-weight: normal;
+  font-style: normal;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
+.material-icons-outlined, .material-icons.material-icons--outlined {
+  font-family: 'Material Icons Outlined';
+}
+
+.material-icons-two-tone, .material-icons.material-icons--two-tone {
+  font-family: 'Material Icons Two Tone';
+}
+
+.material-icons-round, .material-icons.material-icons--round {
+  font-family: 'Material Icons Round';
+}
+
+.material-icons-sharp, .material-icons.material-icons--sharp {
+  font-family: 'Material Icons Sharp';
+}
+
+button:focus {
+  outline: none !important;
+}
+
+a:focus {
+  outline: none !important;
+}
+
+.logo-brevien {
+  height: 70px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.logo-brevien:focus {
+  outline: none;
+}
+
+.auth-wrapper {
+  padding-top: 45px;
+  padding-bottom: 20px;
+  text-align: center;
+}
+
+.auth-container {
+  width: 440px;
+  padding-left: 30px;
+  padding-right: 30px;
+  margin: 20px auto 20px;
+  position: relative;
+  background-color: #fff;
+  display: inline-block;
+  border-radius: 5px;
+  box-shadow: 1px 2px 5px #ccc;
+}
+
+.auth-container-body {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.auth-container .auth-container-body {
+  .submit-button {
+    margin-top: 10px;
+    width: 110px;
+    font-size: 16px;
+    height: 40px;
+  }
+
+  .input-info {
+    font-weight: 580;
+    margin-bottom: 10px;
+    margin-top: 14px;
+    color: #4f4f4f;
+    -webkit-tap-highlight-color: transparent;
+    font-size: 14px;
+    line-height: 1.42857;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  span {
+    background: #fff;
+    position: relative;
+    display: inline-block;
+    margin-top: 3px !important;
+  }
+}
+
+.auth-container-head {
+  font-size: 30px;
+  margin-top: 30px;
+  color: #999;
+}
+
+.slot-back {
+  position: absolute;
+  left: 0;
+  top: 0;
+
+  .btn-back {
+    line-height: 1.42857;
+    display: block;
+    border-radius: 5px 0 13px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 400;
+    outline: none;
+    background: #eee;
+    -webkit-tap-highlight-color: transparent;
+
+    &:hover {
+      background: #cdcdcd;
+    }
+
+    &::before {
+      content: '< ';
+    }
+  }
+
+  a {
+    color: #0082e6;
+    text-decoration: none;
+  }
+}
+
+.user-icon-container {
+  fill: #cecece;
+  width: 35%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 15px;
+}
+
+.check-icon {
+  width: 15%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 12px;
+  fill: #090;
+}
+
+.user-email {
+  display: block !important;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  color: #999;
+}
+
+.custom-error {
+  color: #f44336;
+  font-size: 11px;
+  margin-bottom: 15px;
+}
+
+.field-validation-error {
+  margin-bottom: 5px;
+}
+
+.user-fullName {
+  display: block !important;
+  margin-top: 5px;
+  font-size: 14px;
+  color: #999;
+}
+
+.confirm-text {
+  color: #090;
+}
+
+.validation-default {
+  margin-bottom: 8px;
+  margin-top: 7px !important;
+}
+
+
+.diagnostics-table {
+  color: #333;
+  width: 640px;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+td {
+  border: 1px solid #CCC;
+  height: 30px;
+}
+
+td {
+  background: #FAFAFA;
+}
+
+.diagnostics-page {
+  margin-left: auto;
+  margin-right: auto;
+  display: table;
+  text-align: center;
+}
+
+.nav-bar {
+  top: 25px;
+  display: inline;
+  position: absolute;
+  right: 25px;
+}

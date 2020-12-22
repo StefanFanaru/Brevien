@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  infrastructure-apigw:
+    volumes:
+      - ./ApiGateways/Envoy/Infrastructure/https.crt:/etc/ssl/certs/https.crt
+      - ./ApiGateways/Envoy/Infrastructure/key.pem:/etc/ssl/certs/key.pem
+      - ./ApiGateways/Envoy/Infrastructure:/etc/envoy
+    ports:
+      - "9901:9901"
+      - "8000:8000"
+
+  sqldata:
+    environment:
+      - SA_PASSWORD=SqlS3rv3r#34
+      - ACCEPT_EULA=Y
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - brevien-sqldata:/var/opt/mssql
+
+  identity-api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ConnectionString=Server=sqldata;Database=brevien-identity-local;User Id=SA;Password=SqlS3rv3r#34
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=Pa55w0rd!
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    ports:
+      - "5001:443"
+    volumes:
+      - ${USERPROFILE}/.aspnet/https:/https:ro
+
+  identity-control-api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionString=Server=sqldata;Database=brevien-identity-local;User Id=SA;Password=SqlS3rv3r#34
+      - Urls__IdentityAPI=http://identity-api
+    volumes:
+      - ${USERPROFILE}/.aspnet/https:/https:ro
+
+volumes:
+  brevien-sqldata:

@@ -1,0 +1,62 @@
+@model DiagnosticsViewModel
+
+<div class="diagnostics-page">
+    <div>
+        <h1>Authentication Cookie</h1>
+    </div>
+
+    <div>
+        <div>
+            <div>
+                <h2>Claims</h2>
+                <table class="diagnostics-table">
+                    @foreach (var claim in Model.AuthenticateResult.Principal.Claims)
+                    {
+                        <tr>
+                            <td>
+                                <b>@claim.Type</b>
+                            </td>
+                            <td>@claim.Value</td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+
+        <div>
+            <div>
+                <h2>Properties</h2>
+                <table class="diagnostics-table">
+
+                    @foreach (var prop in Model.AuthenticateResult.Properties.Items)
+                    {
+                        <tr>
+                            <td>
+                                <b>@prop.Key</b>
+                            </td>
+                            <td>@prop.Value</td>
+                        </tr>
+                    }
+                    @if (Model.Clients.Any())
+                    {
+                        <h2>Clients</h2>
+                        <div>
+                            @{
+                                var clients = Model.Clients.ToArray();
+                                for (var i = 0; i < clients.Length; i++)
+                                {
+                                    <text>@clients[i]</text>
+                                    if (i < clients.Length - 1)
+                                    {
+                                        <text>, </text>
+                                    }
+                                }
+                            }
+                        </div>
+                    }
+
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

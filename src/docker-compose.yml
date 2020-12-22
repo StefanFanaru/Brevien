@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  infrastructure-apigw:
+    image: envoyproxy/envoy-alpine:v1.16-latest
+
+  sqldata:
+    image: mcr.microsoft.com/mssql/server:2017-latest
+
+  identity-api:
+    image: brevien/identity.api
+    build:
+      context: .
+      dockerfile: Services/Identity/Identity.API/Dockerfile
+    depends_on:
+      - sqldata
+
+  identity-control-api:
+    image: brevien/identity-control.api
+    build:
+      context: .
+      dockerfile: Services/Identity/IdentityControl.API/Dockerfile
+    depends_on:
+      - sqldata

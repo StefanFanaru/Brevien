@@ -1,0 +1,69 @@
+﻿@model RegisterViewModel
+
+<div class="auth-wrapper">
+    <a tabIndex="-1" href="#">
+        <img alt="" class="logo-brevien" src="~/images/logo-brevien.svg">
+    </a>
+    <div class="auth-container">
+        <div class="auth-container-head register-head">
+            <div class="slot-back">
+                <a tabIndex="-1" class="btn-back" asp-controller="Account"
+                   asp-action="Login">
+                    Back
+                </a>
+            </div>
+            Hello!
+        </div>
+        <div class="auth-container-body">
+            <form asp-route="Register">
+                <div class="form-group form-inputs">
+                    <label asp-for="Email" class="input-info register-input-info"></label>
+                    <input class="form-control" type="email" asp-for="Email" autofocus>
+                    <span asp-validation-for="Email" class="text-danger validation-default"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="LastName" class="input-info register-input-info"></label>
+                    <input class="form-control" type="text" asp-for="LastName" autofocus>
+                    <span asp-validation-for="LastName" class="text-danger validation-default"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="FirstName" class="input-info register-input-info"></label>
+                    <input class="form-control" type="text" asp-for="FirstName" autofocus>
+                    <span asp-validation-for="FirstName" class="text-danger validation-default"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Password" class="input-info register-input-info"></label>
+                    <input type="password" class="form-control" asp-for="Password" autocomplete="off">
+                    <span asp-validation-for="Password" class="text-danger validation-default"></span>
+                </div>
+                <div class="form-group confirm-password-input">
+                    <label asp-for="ConfirmPassword" class="input-info register-input-info"></label>
+                    <input type="password" class="form-control" asp-for="ConfirmPassword" autocomplete="off">
+                    <span asp-validation-for="ConfirmPassword" class="text-danger validation-default"></span>
+                </div>
+                <div class="agree-section">
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input class="form-check-input primary-bg register-check" asp-for="AcceptsInformativeEmails">
+                            <label class="form-check-label primary-txt" asp-for="AcceptsInformativeEmails">
+                                I accept to recieve marketing email.
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input class="form-check-input primary-bg register-check" asp-for="AcceptTerms">
+                            <label class="form-check-label primary-txt" asp-for="AcceptTerms">
+                                I accept the Terms and Conditions and the Privacy Policy.
+                            </label>
+                        </div>
+                        <span asp-validation-for="AcceptTerms" class="text-danger validation-default"></span>
+                    </div>
+                </div>
+                <span class="text-danger validation-default">@Html.ValidationMessage("RegisterErrors")</span>
+
+                <button class="button-custom" name="button" value="register">Register</button>
+            </form>
+        </div>
+    </div>
+</div>
