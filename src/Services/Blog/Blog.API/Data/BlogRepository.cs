@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Blog.API.Data.Models;
 using Microsoft.Extensions.Options;
-using MongoDB.Bson;
 using MongoDB.Driver;
 using static Blog.API.Data.MongoDb;
 
@@ -29,14 +27,14 @@ namespace Blog.API.Data
             return _blogs.InsertOneAsync(blog);
         }
 
-        public async Task<List<BlogModel>> GetAll()
+        public IFindFluent<BlogModel, BlogModel> GetByUser(string userId)
         {
-            return await _blogs.Find(new BsonDocument()).ToListAsync();
+            return _blogs.Find(x => x.OwnerId == userId && !x.DisabledAt.HasValue);
         }
 
-        public async Task<BlogModel> GetByIdAsync(string id)
+        public IFindFluent<BlogModel, BlogModel> GetByIdAsync(string id)
         {
-            return await _blogs.Find(x => x.Id == id).FirstOrDefaultAsync();
+            return _blogs.Find(x => x.Id == id && !x.DisabledAt.HasValue);
         }
 
         public async Task<ReplaceOneResult> UpdateAsync(BlogModel blog)

@@ -15,7 +15,6 @@ namespace Blog.API.Data.Models
         public string Heading { get; set; }
         public string Footer { get; set; }
         public string OwnerId { get; set; }
-        public string OwnerFullName { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DisabledAt { get; set; }
