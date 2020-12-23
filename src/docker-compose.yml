@@ -4,8 +4,14 @@ services:
   infrastructure-apigw:
     image: envoyproxy/envoy-alpine:v1.16-latest
 
+  blogging-apigw:
+    image: envoyproxy/envoy-alpine:v1.16-latest
+
   sqldata:
     image: mcr.microsoft.com/mssql/server:2017-latest
+
+  nosqldata:
+    image: mongo
 
   identity-api:
     image: brevien/identity.api
@@ -22,3 +28,11 @@ services:
       dockerfile: Services/Identity/IdentityControl.API/Dockerfile
     depends_on:
       - sqldata
+
+  blog-api:
+    image: brevien/blog.api
+    build:
+      context: .
+      dockerfile: Services/Blog/Blog.API/Dockerfile
+    depends_on:
+      - nosqldata

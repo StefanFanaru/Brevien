@@ -3,12 +3,21 @@ version: '3.8'
 services:
   infrastructure-apigw:
     volumes:
-      - ./ApiGateways/Envoy/Infrastructure/https.crt:/etc/ssl/certs/https.crt
-      - ./ApiGateways/Envoy/Infrastructure/key.pem:/etc/ssl/certs/key.pem
+      - ./ApiGateways/Envoy/https.crt:/etc/ssl/certs/https.crt
+      - ./ApiGateways/Envoy/key.pem:/etc/ssl/certs/key.pem
       - ./ApiGateways/Envoy/Infrastructure:/etc/envoy
     ports:
       - "9901:9901"
       - "8000:8000"
+
+  blogging-apigw:
+    volumes:
+      - ./ApiGateways/Envoy/https.crt:/etc/ssl/certs/https.crt
+      - ./ApiGateways/Envoy/key.pem:/etc/ssl/certs/key.pem
+      - ./ApiGateways/Envoy/Blogging:/etc/envoy
+    ports:
+      - "9911:9901"
+      - "8010:8010"
 
   sqldata:
     environment:
@@ -19,6 +28,12 @@ services:
       - "1433:1433"
     volumes:
       - brevien-sqldata:/var/opt/mssql
+
+  nosqldata:
+    ports:
+      - "27017:27017"
+    volumes:
+      - brevien-nosqldata:/data/db
 
   identity-api:
     environment:
@@ -37,9 +52,22 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
       - ConnectionString=Server=sqldata;Database=brevien-identity-local;User Id=SA;Password=SqlS3rv3r#34
-      - Urls__IdentityAPI=http://identity-api
+      - ApplicationUrls__IdentityAPI=http://identity-api
+      - PATH_BASE=/ic
+    volumes:
+      - ${USERPROFILE}/.aspnet/https:/https:ro
+
+  blog-api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ApplicationUrls__IdentityAPI=http://identity-api
+      - PATH_BASE=/b
+      - MongoDb__ConnectionString=mongodb://nosqldata
+      - MongoDb__Database=brevien-blog-local
     volumes:
       - ${USERPROFILE}/.aspnet/https:/https:ro
 
 volumes:
   brevien-sqldata:
+  brevien-nosqldata:
