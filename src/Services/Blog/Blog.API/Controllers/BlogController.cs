@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Blog.API.Asp;
+using Blog.API.Data;
 using Blog.API.Data.Models;
-using Blog.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace Blog.API.Controllers
 {
@@ -11,42 +15,42 @@ namespace Blog.API.Controllers
     [Route("")]
     public class BlogController : ControllerBase
     {
-        private readonly IBlogService _blogService;
+        private readonly IBlogRepository _repository;
+        private readonly IUserInfo _userInfo;
 
-        public BlogController(IBlogService blogService)
+        public BlogController(IBlogRepository repository, IUserInfo userInfo)
         {
-            _blogService = blogService;
+            _repository = repository;
+            _userInfo = userInfo;
         }
 
         [HttpGet]
         [Route("get-all")]
-        [Authorize(Policy = "AdminOnly")]
         public async Task<List<BlogModel>> GetAll()
         {
-            return await _blogService.GetAll();
+            return await _repository.Query().Find(new BsonDocument()).ToListAsync();
         }
 
         [HttpGet]
         [Route("get/{id}")]
-        [AllowAnonymous]
         public async Task<ActionResult<BlogModel>> Get(string id)
         {
-            return await _blogService.Get(id);
-        }
+            var blog = await _repository.GetByIdAsync(id);
 
-        [HttpGet]
-        [Route("get")]
-        public async Task<List<BlogModel>> Get()
-        {
-            return await _blogService.Get();
+            if (blog != null) return Ok(blog);
+
+            return NotFound();
         }
 
         [HttpPost]
         [Route("create")]
         public async Task<IActionResult> Create(BlogModel blog)
         {
-            // TODO: Validate this!
-            await _blogService.Create(blog);
+            blog.CreatedAt = DateTime.UtcNow;
+            blog.OwnerId = _userInfo.Id;
+
+            await _repository.InsertAsync(blog);
+
             return Ok();
         }
 
@@ -54,21 +58,23 @@ namespace Blog.API.Controllers
         [Route("update")]
         public async Task<IActionResult> Update(BlogModel blog)
         {
-            return await _blogService.Update(blog);
+            blog.UpdatedAt = DateTime.UtcNow;
+            var result = await _repository.UpdateAsync(blog);
+
+            if (result.IsModifiedCountAvailable && result.ModifiedCount == 1) return Ok();
+
+            return NotFound();
         }
 
         [HttpDelete]
         [Route("delete/{id}")]
         public async Task<IActionResult> Delete(string id)
         {
-            return await _blogService.SoftDelete(id);
-        }
+            var result = await _repository.DeleteAsync(id);
 
-        [HttpPatch]
-        [Route("change-owner/{blogId}/{newOwnerId}")]
-        public async Task<IActionResult> ChangeOwner(string blogId, string newOwnerId)
-        {
-            return await _blogService.ChangeOwner(blogId, newOwnerId);
+            if (result.DeletedCount == 1) return NoContent();
+
+            return NotFound();
         }
     }
 }

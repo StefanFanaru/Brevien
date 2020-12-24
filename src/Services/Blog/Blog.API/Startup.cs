@@ -2,8 +2,6 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using Blog.API.Asp;
 using Blog.API.Data;
-using Blog.API.Services;
-using Blog.API.Services.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -31,10 +29,9 @@ namespace Blog.API
             var authority = Configuration.GetSection("ApplicationUrls:IdentityAPI").Value;
 
             services.Configure<MongoSettings>(Configuration.GetSection("MongoDb"));
-            services.AddScoped<IBlogRepository, BlogRepository>();
+            services.AddSingleton<IBlogRepository, BlogRepository>();
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IUserInfo, AspUserInfo>();
-            services.AddTransient<IBlogService, BlogService>();
 
             services.AddControllers().AddNewtonsoftJson(options =>
             {
