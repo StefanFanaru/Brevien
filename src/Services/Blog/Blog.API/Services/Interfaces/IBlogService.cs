@@ -7,7 +7,7 @@ namespace Blog.API.Services.Interfaces
 {
     public interface IBlogService
     {
-        Task Create(BlogModel blog);
+        Task<IActionResult> Create(BlogModel blog);
         Task<IActionResult> ChangeOwner(string blogId, string newOwnerId);
         Task<IActionResult> SoftDelete(string blogId);
         Task<IActionResult> Update(BlogModel blog);

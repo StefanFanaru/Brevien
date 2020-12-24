@@ -23,12 +23,14 @@ namespace Blog.API.Services
             _repository = repository;
         }
 
-        public async Task Create(BlogModel blog)
+        public async Task<IActionResult> Create(BlogModel blog)
         {
             blog.CreatedAt = DateTime.UtcNow;
             blog.OwnerId = _userInfo.Id;
 
             await _repository.InsertAsync(blog);
+
+            return new OkResult();
         }
 
         public async Task<IActionResult> ChangeOwner(string blogId, string newOwnerId)

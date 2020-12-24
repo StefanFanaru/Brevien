@@ -46,8 +46,7 @@ namespace Blog.API.Controllers
         public async Task<IActionResult> Create(BlogModel blog)
         {
             // TODO: Validate this!
-            await _blogService.Create(blog);
-            return Ok();
+            return await _blogService.Create(blog);
         }
 
         [HttpPatch]
