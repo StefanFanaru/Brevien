@@ -17,12 +17,15 @@ namespace IdentityControl.API.Endpoints.ApiScopeEndpoint.Get
     {
         private readonly IIdentityRepository<ApiScope> _apiScopeRepository;
         private readonly IIdentityRepository<ClientScope> _clientScopeRepository;
+        private readonly IIdentityRepository<IdentityResource> _identityResourceRepo;
 
         public GetOptionsByClient(IIdentityRepository<ClientScope> clientScopeRepository,
-            IIdentityRepository<ApiScope> apiScopeRepository)
+            IIdentityRepository<ApiScope> apiScopeRepository,
+            IIdentityRepository<IdentityResource> identityResourceRepo)
         {
             _clientScopeRepository = clientScopeRepository;
             _apiScopeRepository = apiScopeRepository;
+            _identityResourceRepo = identityResourceRepo;
         }
 
         [HttpGet("api-scope/client/{clientId}/options")]
@@ -34,13 +37,24 @@ namespace IdentityControl.API.Endpoints.ApiScopeEndpoint.Get
                 .Select(x => x.Scope)
                 .ToListAsync(cancellationToken);
 
-            return await _apiScopeRepository.Query()
+            var apiScopes = await _apiScopeRepository.Query()
                 .Where(x => names.Contains(x.Name))
                 .Select(e => new BaseOption<string>
                 {
                     Value = e.Name,
                     Text = e.DisplayName
                 }).ToListAsync(cancellationToken);
+
+            // Including identity resources because they are requested as a scope
+            apiScopes.AddRange(_identityResourceRepo.Query()
+                .Where(x => names.Contains(x.Name))
+                .Select(x => new BaseOption<string>
+                {
+                    Value = x.Name,
+                    Text = x.DisplayName
+                }));
+
+            return apiScopes;
         }
     }
 }

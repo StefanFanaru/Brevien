@@ -15,23 +15,35 @@ namespace IdentityControl.API.Endpoints.ApiScopeEndpoint.Get
     [Authorize(Policy = "AdminOnly")]
     public class GetApiScopeOptions : BaseAsyncEndpoint
     {
-        private readonly IIdentityRepository<ApiScope> _repository;
+        private readonly IIdentityRepository<ApiScope> _apiScopeRepository;
+        private readonly IIdentityRepository<IdentityResource> _identityResourceRepo;
 
-        public GetApiScopeOptions(IIdentityRepository<ApiScope> repository)
+        public GetApiScopeOptions(IIdentityRepository<ApiScope> apiScopeRepository,
+            IIdentityRepository<IdentityResource> identityResourceRepo)
         {
-            _repository = repository;
+            _apiScopeRepository = apiScopeRepository;
+            _identityResourceRepo = identityResourceRepo;
         }
 
         [HttpGet("api-scope/options")]
         [SwaggerOperation(Summary = "Gets all possible API Scopes options for selection", Tags = new[] {"ApiScopeEndpoint"})]
         public async Task<List<BaseOption<string>>> HandleAsync(CancellationToken cancellationToken = default)
         {
-            return await _repository.Query()
+            var apiScopes = await _apiScopeRepository.Query()
                 .Select(e => new BaseOption<string>
                 {
                     Value = e.Name,
                     Text = e.DisplayName
                 }).ToListAsync(cancellationToken);
+
+            // Including identity resources because they are requested as a scope
+            apiScopes.AddRange(_identityResourceRepo.Query().Select(e => new BaseOption<string>
+            {
+                Value = e.Name,
+                Text = e.DisplayName,
+            }));
+
+            return apiScopes;
         }
     }
 }
