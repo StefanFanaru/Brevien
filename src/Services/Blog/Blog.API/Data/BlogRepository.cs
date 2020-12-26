@@ -1,50 +1,46 @@
 ﻿using System.Threading.Tasks;
 using Blog.API.Data.Models;
-using Microsoft.Extensions.Options;
 using MongoDB.Driver;
-using static Blog.API.Data.MongoDb;
 
 namespace Blog.API.Data
 {
     public class BlogRepository : IBlogRepository
     {
-        private readonly IMongoCollection<BlogModel> _blogs;
+        private readonly IMongoCollection<BlogModel> _collection;
 
-        public BlogRepository(IOptions<MongoSettings> settings)
+        public BlogRepository(MongoDbClient client)
         {
-            var client = new MongoClient(settings.Value.ConnectionString);
-            var database = client.GetDatabase(settings.Value.Database);
-            _blogs = database.GetCollection<BlogModel>("Blogs");
+            _collection = client.Database.GetCollection<BlogModel>("Blogs");
         }
 
         public IMongoCollection<BlogModel> Query()
         {
-            return _blogs;
+            return _collection;
         }
 
         public Task InsertAsync(BlogModel blog)
         {
-            return _blogs.InsertOneAsync(blog);
+            return _collection.InsertOneAsync(blog);
         }
 
         public IFindFluent<BlogModel, BlogModel> GetByUser(string userId)
         {
-            return _blogs.Find(x => x.OwnerId == userId && !x.DisabledAt.HasValue);
+            return _collection.Find(x => x.OwnerId == userId && !x.DisabledAt.HasValue);
         }
 
         public IFindFluent<BlogModel, BlogModel> GetByIdAsync(string id)
         {
-            return _blogs.Find(x => x.Id == id && !x.DisabledAt.HasValue);
+            return _collection.Find(x => x.Id == id && !x.DisabledAt.HasValue);
         }
 
         public async Task<ReplaceOneResult> UpdateAsync(BlogModel blog)
         {
-            return await _blogs.ReplaceOneAsync(x => x.Id == blog.Id, blog);
+            return await _collection.ReplaceOneAsync(x => x.Id == blog.Id, blog);
         }
 
         public async Task<DeleteResult> DeleteAsync(string id)
         {
-            return await _blogs.DeleteOneAsync(x => x.Id == id);
+            return await _collection.DeleteOneAsync(x => x.Id == id);
         }
     }
 }

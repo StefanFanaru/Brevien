@@ -1,7 +1,10 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
+using Blog.API.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
@@ -9,7 +12,7 @@ namespace Blog.API
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             Console.Title = "IdentityControl API";
 
@@ -27,6 +30,13 @@ namespace Blog.API
             try
             {
                 var host = CreateHostBuilder(args).Build();
+                using (var scope = host.Services.CreateScope())
+                {
+                    var services = scope.ServiceProvider;
+                    var dataMigrator = services.GetRequiredService<IDataMigrator>();
+                    await dataMigrator.MigrateDataAsync();
+                }
+
                 Log.Information("Starting host...");
                 host.Run();
             }

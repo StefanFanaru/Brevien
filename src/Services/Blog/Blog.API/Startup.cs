@@ -2,8 +2,10 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using Blog.API.Asp;
 using Blog.API.Data;
+using Blog.API.Data.Migrations;
 using Blog.API.Services;
 using Blog.API.Services.Interfaces;
+using Identity.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -35,6 +37,9 @@ namespace Blog.API
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IUserInfo, AspUserInfo>();
             services.AddTransient<IBlogService, BlogService>();
+            services.AddScoped<IDataMigration, M001_TestMigration>();
+            services.AddScoped<IDataMigrator, DataMigrator>();
+            services.AddScoped<MongoDbClient>();
 
             services.AddControllers().AddNewtonsoftJson(options =>
             {

@@ -18,5 +18,7 @@ namespace Blog.API.Data.Models
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DisabledAt { get; set; }
+        public string Uri { get; set; }
+        public string Path { get; set; }
     }
 }
