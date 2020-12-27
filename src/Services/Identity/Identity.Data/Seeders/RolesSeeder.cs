@@ -24,11 +24,7 @@ namespace Identity.Data.Seeders
             string[] rolesToSeed =
             {
                 Roles.Administrator,
-                Roles.Student,
-                Roles.Teacher,
-                Roles.Headmaster,
-                Roles.Secretary,
-                Roles.Partner
+                Roles.BasicUser,
             };
 
             if (!_roleManager.Roles.Any())

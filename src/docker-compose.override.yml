@@ -31,7 +31,7 @@ services:
 
   nosqldata:
     ports:
-      - "27017:27017"
+      - "27018:27017"
     volumes:
       - brevien-nosqldata:/data/db
 
@@ -67,7 +67,6 @@ services:
       - MongoDb__Database=brevien-blog-local
     volumes:
       - ${USERPROFILE}/.aspnet/https:/https:ro
-
 volumes:
   brevien-sqldata:
   brevien-nosqldata:

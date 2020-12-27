@@ -25,12 +25,12 @@ namespace Blog.API.Data
 
         public IFindFluent<BlogModel, BlogModel> GetByUser(string userId)
         {
-            return _collection.Find(x => x.OwnerId == userId && !x.DisabledAt.HasValue);
+            return _collection.Find(x => x.OwnerId == userId && !x.SoftDeletedAt.HasValue);
         }
 
         public IFindFluent<BlogModel, BlogModel> GetByIdAsync(string id)
         {
-            return _collection.Find(x => x.Id == id && !x.DisabledAt.HasValue);
+            return _collection.Find(x => x.Id == id && !x.SoftDeletedAt.HasValue);
         }
 
         public async Task<ReplaceOneResult> UpdateAsync(BlogModel blog)

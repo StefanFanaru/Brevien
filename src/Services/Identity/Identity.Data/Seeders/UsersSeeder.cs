@@ -18,9 +18,9 @@ namespace Identity.Data.Seeders
     public class UsersSeeder : ISeeder
     {
         private const string Path = "Seeders/JSON/applicationUsers.json";
+        private static (string email, string password) _adminAccount;
         private readonly IConfiguration _configuration;
         private readonly UserManager<ApplicationUser> _userManager;
-        private static (string email, string password) _adminAccount;
 
         public UsersSeeder(UserManager<ApplicationUser> userManager, IConfiguration configuration)
         {
@@ -88,25 +88,12 @@ namespace Identity.Data.Seeders
             var userModels = JsonConvert.DeserializeObject<List<ApplicationUserModel>>(userData);
             var randomUsers = BuildUserEntities(userModels);
 
-            var headmaster = randomUsers.ElementAt(39);
-
             var admin = ApplicationUser.Create(
                 _adminAccount.email, "Brevien", "Admin", true);
             admin.EmailConfirmed = true;
 
             usersForInsert.Add(BuildUserForInsert(admin, Roles.Administrator));
-            usersForInsert.Add(BuildUserForInsert(headmaster, Roles.Headmaster));
-
-            var students = randomUsers.GetRange(0, 25);
-            var teachers = randomUsers.GetRange(25, 5);
-            var secretaries = randomUsers.GetRange(30, 5);
-            var partners = randomUsers.GetRange(35, 3);
-
-            students.ForEach(x => usersForInsert.Add(BuildUserForInsert(x, Roles.Student)));
-            teachers.ForEach(x => usersForInsert.Add(BuildUserForInsert(x, Roles.Teacher)));
-            secretaries.ForEach(x => usersForInsert.Add(BuildUserForInsert(x, Roles.Secretary)));
-            partners.ForEach(x => usersForInsert.Add(BuildUserForInsert(x, Roles.Partner)));
-
+            randomUsers.ForEach(x => usersForInsert.Add(BuildUserForInsert(x, Roles.BasicUser)));
             return usersForInsert;
         }
 

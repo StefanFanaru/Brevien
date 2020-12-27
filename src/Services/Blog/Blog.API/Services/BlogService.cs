@@ -7,7 +7,6 @@ using Blog.API.Data;
 using Blog.API.Data.Models;
 using Blog.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Blog.API.Services
@@ -23,7 +22,7 @@ namespace Blog.API.Services
             _repository = repository;
         }
 
-        public async Task<IActionResult> Create(BlogModel blog)
+        public async Task<IActionResult> CreateAsync(BlogModel blog)
         {
             blog.CreatedAt = DateTime.UtcNow;
             blog.OwnerId = _userInfo.Id;
@@ -33,11 +32,11 @@ namespace Blog.API.Services
             return new OkResult();
         }
 
-        public async Task<IActionResult> ChangeOwner(string blogId, string newOwnerId)
+        public async Task<IActionResult> ChangeOwnerAsync(string blogId, string newOwnerId)
         {
             var blog = await _repository.GetByIdAsync(blogId).FirstOrDefaultAsync();
 
-            if (blog == null || blog.DisabledAt.HasValue)
+            if (blog == null || blog.SoftDeletedAt.HasValue)
             {
                 return new NotFoundResult();
             }
@@ -55,13 +54,18 @@ namespace Blog.API.Services
             return new OkResult();
         }
 
-        public async Task<IActionResult> SoftDelete(string blogId)
+        public async Task<IActionResult> DisableAsync(string blogId)
         {
             var blog = await _repository.GetByIdAsync(blogId).FirstOrDefaultAsync();
 
-            if (blog == null || blog.DisabledAt.HasValue)
+            if (blog == null)
             {
                 return new NotFoundResult();
+            }
+
+            if (blog.DisabledAt.HasValue)
+            {
+                return new BadRequestResult();
             }
 
             // For now. Will be changed after creating AccessControl
@@ -70,13 +74,13 @@ namespace Blog.API.Services
                 return new ForbidResult();
             }
 
-            blog.DisabledAt = DateTime.UtcNow;
+            blog.SoftDeletedAt = DateTime.UtcNow;
             await _repository.UpdateAsync(blog);
 
-            return new NoContentResult();
+            return new OkResult();
         }
 
-        public async Task<ActionResult<BlogModel>> Get(string id)
+        public async Task<IActionResult> GetAsync(string id)
         {
             var blog = await _repository.GetByIdAsync(id).FirstOrDefaultAsync();
 
@@ -88,17 +92,17 @@ namespace Blog.API.Services
             return new NotFoundResult();
         }
 
-        public async Task<List<BlogModel>> Get()
+        public async Task<List<BlogModel>> GetAsync()
         {
             return await _repository.GetByUser(_userInfo.Id).ToListAsync();
         }
 
-        public async Task<List<BlogModel>> GetAll()
+        public async Task<List<BlogModel>> GetAllAsync()
         {
-            return await _repository.Query().Find(new BsonDocument()).ToListAsync();
+            return await _repository.Query().Find(x => !x.SoftDeletedAt.HasValue).ToListAsync();
         }
 
-        public async Task<IActionResult> Update(BlogModel blog)
+        public async Task<IActionResult> UpdateAsync(BlogModel blog)
         {
             // TODO: Validate this!
             blog.UpdatedAt = DateTime.UtcNow;
@@ -106,6 +110,18 @@ namespace Blog.API.Services
             if (result.IsModifiedCountAvailable && result.ModifiedCount == 1)
             {
                 return new OkResult();
+            }
+
+            return new NotFoundResult();
+        }
+
+        public async Task<IActionResult> DeleteAsync(string blogId)
+        {
+            var result = await _repository.DeleteAsync(blogId);
+
+            if (result.DeletedCount == 1)
+            {
+                return new NoContentResult();
             }
 
             return new NotFoundResult();

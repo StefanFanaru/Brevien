@@ -54,7 +54,11 @@ namespace Blog.API
         {
             return Host.CreateDefaultBuilder(args)
                 .UseSerilog()
-                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseContentRoot(Directory.GetCurrentDirectory())
+                        .UseStartup<Startup>();
+                });
         }
     }
 }

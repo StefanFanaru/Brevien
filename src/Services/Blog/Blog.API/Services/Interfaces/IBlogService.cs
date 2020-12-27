@@ -7,12 +7,13 @@ namespace Blog.API.Services.Interfaces
 {
     public interface IBlogService
     {
-        Task<IActionResult> Create(BlogModel blog);
-        Task<IActionResult> ChangeOwner(string blogId, string newOwnerId);
-        Task<IActionResult> SoftDelete(string blogId);
-        Task<IActionResult> Update(BlogModel blog);
-        Task<List<BlogModel>> Get();
-        Task<List<BlogModel>> GetAll();
-        Task<ActionResult<BlogModel>> Get(string id);
+        Task<IActionResult> CreateAsync(BlogModel blog);
+        Task<IActionResult> ChangeOwnerAsync(string blogId, string newOwnerId);
+        Task<IActionResult> DisableAsync(string blogId);
+        Task<IActionResult> UpdateAsync(BlogModel blog);
+        Task<List<BlogModel>> GetAsync();
+        Task<List<BlogModel>> GetAllAsync();
+        Task<IActionResult> GetAsync(string id);
+        Task<IActionResult> DeleteAsync(string blogId);
     }
 }

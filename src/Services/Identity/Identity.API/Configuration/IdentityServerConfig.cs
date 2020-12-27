@@ -17,14 +17,23 @@ namespace Identity.API.Configuration
         public static IEnumerable<IdentityResource> IdentityResources =>
             new IdentityResource[]
             {
-                new IdentityResources.OpenId(),
-                new IdentityResources.Profile()
+                new IdentityResources.OpenId
+                {
+                    DisplayName = "OpenId"
+                },
+                new IdentityResources.Profile
+                {
+                    DisplayName = "Profile"
+                }
             };
 
         public static IEnumerable<ApiScope> ApiScopes =>
             new[]
             {
                 new ApiScope("identity_control_full")
+                {
+                    DisplayName = "Identity Control Full"
+                }
             };
 
         public static IEnumerable<Client> Clients =>

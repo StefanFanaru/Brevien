@@ -7,8 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Blog.API.Controllers
 {
+    [Route("api/v1/[controller]")]
     [Authorize]
-    [Route("")]
+    [ApiController]
     public class BlogController : ControllerBase
     {
         private readonly IBlogService _blogService;
@@ -23,22 +24,22 @@ namespace Blog.API.Controllers
         [Authorize(Policy = "AdminOnly")]
         public async Task<List<BlogModel>> GetAll()
         {
-            return await _blogService.GetAll();
+            return await _blogService.GetAllAsync();
         }
 
         [HttpGet]
         [Route("get/{id}")]
         [AllowAnonymous]
-        public async Task<ActionResult<BlogModel>> Get(string id)
+        public async Task<IActionResult> Get(string id)
         {
-            return await _blogService.Get(id);
+            return await _blogService.GetAsync(id);
         }
 
         [HttpGet]
-        [Route("get")]
+        // [Route("get")]
         public async Task<List<BlogModel>> Get()
         {
-            return await _blogService.Get();
+            return await _blogService.GetAsync();
         }
 
         [HttpPost]
@@ -46,28 +47,28 @@ namespace Blog.API.Controllers
         public async Task<IActionResult> Create(BlogModel blog)
         {
             // TODO: Validate this!
-            return await _blogService.Create(blog);
+            return await _blogService.CreateAsync(blog);
         }
 
         [HttpPatch]
         [Route("update")]
         public async Task<IActionResult> Update(BlogModel blog)
         {
-            return await _blogService.Update(blog);
+            return await _blogService.UpdateAsync(blog);
         }
 
         [HttpDelete]
-        [Route("delete/{id}")]
-        public async Task<IActionResult> Delete(string id)
+        [Route("disable/{id}")]
+        public async Task<IActionResult> Disable(string id)
         {
-            return await _blogService.SoftDelete(id);
+            return await _blogService.DisableAsync(id);
         }
 
         [HttpPatch]
         [Route("change-owner/{blogId}/{newOwnerId}")]
         public async Task<IActionResult> ChangeOwner(string blogId, string newOwnerId)
         {
-            return await _blogService.ChangeOwner(blogId, newOwnerId);
+            return await _blogService.ChangeOwnerAsync(blogId, newOwnerId);
         }
     }
 }

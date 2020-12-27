@@ -28,20 +28,18 @@ namespace Blog.API
 
         public IConfiguration Configuration { get; }
 
-        public void ConfigureServices(IServiceCollection services)
+        public virtual void ConfigureServices(IServiceCollection services)
         {
-            var authority = Configuration.GetSection("ApplicationUrls:IdentityAPI").Value;
-
             services.Configure<MongoSettings>(Configuration.GetSection("MongoDb"));
             services.AddScoped<IBlogRepository, BlogRepository>();
-            services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IUserInfo, AspUserInfo>();
             services.AddTransient<IBlogService, BlogService>();
             services.AddScoped<IDataMigration, M001_TestMigration>();
             services.AddScoped<IDataMigrator, DataMigrator>();
             services.AddScoped<MongoDbClient>();
 
-            services.AddControllers().AddNewtonsoftJson(options =>
+            services.AddControllers().AddApplicationPart(typeof(Startup).Assembly).AddNewtonsoftJson(options =>
             {
                 options.AllowInputFormatterExceptionMessages = true;
                 options.SerializerSettings.Converters.Add(new JsonExtensions.UtcDateTimeConverter());
@@ -49,8 +47,14 @@ namespace Blog.API
             });
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Blog.API", Version = "v1"}); });
 
+            ConfigureAuthService(services);
+        }
+
+        private void ConfigureAuthService(IServiceCollection services)
+        {
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
+            var authority = Configuration.GetSection("ApplicationUrls:IdentityAPI").Value;
             services.AddAuthentication("Bearer")
                 .AddJwtBearer("Bearer", options =>
                 {
@@ -82,10 +86,19 @@ namespace Blog.API
             });
         }
 
+        protected virtual void ConfigureAuth(IApplicationBuilder app)
+        {
+            app.UseAuthentication();
+            app.UseAuthorization();
+        }
+
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             var pathBase = Configuration["PATH_BASE"];
-            app.UsePathBase(pathBase);
+            if (!string.IsNullOrEmpty(pathBase))
+            {
+                app.UsePathBase(pathBase);
+            }
 
             if (env.IsDevelopment())
             {
@@ -100,8 +113,7 @@ namespace Blog.API
 
             app.UseRouting();
 
-            app.UseAuthentication();
-            app.UseAuthorization();
+            ConfigureAuth(app);
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers().RequireAuthorization("ApiScope"); });
         }
