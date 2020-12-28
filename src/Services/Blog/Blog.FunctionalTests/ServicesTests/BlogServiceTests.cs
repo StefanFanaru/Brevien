@@ -17,14 +17,14 @@ using Xunit;
 namespace Blog.FunctionalTests.ServicesTests
 {
     [UseCleanMongoDb]
-    public class BlogServiceTests : IClassFixture<ApiTestFixture>
+    public class BlogServiceTests : ApiTestBase
     {
         private readonly IBlogService _blogService;
         private readonly IBlogRepository _repository;
 
-        public BlogServiceTests(ApiTestFixture factory)
+        public BlogServiceTests()
         {
-            var serviceProvider = factory.Services.CreateScope().ServiceProvider;
+            var serviceProvider = CreateServer().Services;
             _blogService = serviceProvider.GetRequiredService<IBlogService>();
             _repository = serviceProvider.GetRequiredService<IBlogRepository>();
         }
