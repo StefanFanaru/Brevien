@@ -32,6 +32,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSortModule } from '@angular/material/sort';
 import { DialogConfirmationComponent } from '../../components/dialog/dialog-confirmation/dialog-confirmation.component';
 import { DialogErrorComponent } from '../../components/dialog/dialog-error/dialog-error.component';
+import { ClipboardModule } from '@angular/cdk/clipboard';
 
 @NgModule({
   declarations: [
@@ -73,7 +74,8 @@ import { DialogErrorComponent } from '../../components/dialog/dialog-error/dialo
     MatTooltipModule,
     MatPaginatorModule,
     MatButtonToggleModule,
-    MatSortModule
+    MatSortModule,
+    ClipboardModule
   ],
   exports: [
     NgxPermissionsModule,
@@ -105,7 +107,8 @@ import { DialogErrorComponent } from '../../components/dialog/dialog-error/dialo
     MatDialogModule,
     MatPaginatorModule,
     MatButtonToggleModule,
-    MatSortModule
+    MatSortModule,
+    ClipboardModule
   ],
   providers: [EventService, FormDialogService]
 })

@@ -92,13 +92,13 @@ export class ClientsComponent
       this.httpService.get(item.id).subscribe(client => {
         this.setUpEditForm(client);
         this.convertDisplayName();
+        this.httpService.getOptions<BaseOption<string>>(`api-scope/client/${this.itemSelected.id}`)
+          .subscribe(clientOptions => {
+            this.apiScopesFormControl.setValue(clientOptions.map(x => x.value));
+            this.editForm.addControl('apiScopes', this.apiScopesFormControl);
+            this.isFormVisible = true;
+          });
       })
-      this.httpService.getOptions<BaseOption<string>>(`api-scope/client/${this.itemSelected.id}`)
-        .subscribe(clientOptions => {
-          this.apiScopesFormControl.setValue(clientOptions.map(x => x.value));
-          this.editForm.addControl('apiScopes', this.apiScopesFormControl);
-          this.isFormVisible = true;
-        });
     }
   }
 

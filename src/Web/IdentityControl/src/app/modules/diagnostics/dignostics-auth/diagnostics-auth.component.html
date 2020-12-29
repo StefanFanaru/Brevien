@@ -45,7 +45,9 @@
         </td>
       </tr>
       <tr>
-        <th>AccessToken</th>
+        <th>AccessToken <br>
+          <button [cdkCopyToClipboard]="accessToken" mat-stroked-button>Copy</button>
+        </th>
         <td>
           <code class="break-all">{{ accessToken }}</code>
         </td>

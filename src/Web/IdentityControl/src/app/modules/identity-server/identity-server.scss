@@ -48,8 +48,11 @@
 }
 
 .form-pop-up {
-  width: 28%;
-  height: 96%;
+  width: 28vw;
+  height: 96vh;
+  max-height: 96vw;
+  overflow: auto;
+  padding-bottom: 30px;
   position: absolute;
   z-index: 101;
   left: 71%;
