@@ -7,6 +7,7 @@ using Blog.API.Data;
 using Blog.API.Data.Models;
 using Blog.API.Services;
 using Blog.API.Services.Interfaces;
+using Blog.FunctionalTests.Authorization;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,16 +18,15 @@ using Xunit;
 namespace Blog.FunctionalTests.ServicesTests
 {
     [UseCleanMongoDb]
-    public class BlogServiceTests : ApiTestBase
+    public class BlogServiceTests : IClassFixture<ApiTestFixture>
     {
         private readonly IBlogService _blogService;
         private readonly IBlogRepository _repository;
 
-        public BlogServiceTests()
+        public BlogServiceTests(ApiTestFixture factory)
         {
-            var serviceProvider = CreateServer().Services;
-            _blogService = serviceProvider.GetRequiredService<IBlogService>();
-            _repository = serviceProvider.GetRequiredService<IBlogRepository>();
+            _blogService = factory.Services.GetRequiredService<IBlogService>();
+            _repository = factory.Services.GetRequiredService<IBlogRepository>();
         }
 
         private BlogModel LastCreatedBlog()
@@ -57,17 +57,18 @@ namespace Blog.FunctionalTests.ServicesTests
         public async Task CreatedAt_userId_are_assigned_at_creation()
         {
             // Arrange
+            var testUserInfo = new TestUserInfo();
+            var blogService = new BlogService(testUserInfo, _repository); // Hard dependency :(
             var blog = Builders.GetDetailedBlog();
             blog.OwnerId = null;
 
             // Act
-            await _blogService.CreateAsync(blog);
+            await blogService.CreateAsync(blog);
 
             // Assert
             LastCreatedBlog().CreatedAt.Should().BeCloseTo(blog.CreatedAt, 100);
             LastCreatedBlog().OwnerId.Should().Be(TestConstants.UserId);
         }
-
 
         [Fact]
         public async Task Owner_not_changed_when_blog_soft_deleted_returns_404()
@@ -244,9 +245,15 @@ namespace Blog.FunctionalTests.ServicesTests
         }
 
         [Fact]
-        public async Task GetAll_returns_all_non_soft_deleted_blogs()
+        public async Task GetAll_returns_all_non_soft_deleted_blogs_if_admin()
         {
             // Arrange
+            var adminUser = new TestUserInfo
+            {
+                Id = Guid.NewGuid().ToString(),
+                Role = Roles.Administrator
+            };
+            var blogService = new BlogService(adminUser, _repository); // Hard dependency :(
             var blogs = new List<BlogModel>
                 {Builders.GetDetailedBlog(), Builders.GetDisabledBlog(), Builders.GetSoftDeletedBlog()};
 
@@ -254,19 +261,42 @@ namespace Blog.FunctionalTests.ServicesTests
             anotherUsersBlog.OwnerId = Guid.NewGuid().ToString();
 
             blogs.Add(anotherUsersBlog);
-            blogs.ForEach(x => _blogService.CreateAsync(x));
+            blogs.ForEach(x => blogService.CreateAsync(x));
             blogs = blogs.Where(x => !x.SoftDeletedAt.HasValue).ToList();
 
             // Act
-            var result = await _blogService.GetAllAsync();
+            var result = await blogService.GetAllAsync();
+            var objectResult = (OkObjectResult) result.Result;
+            var returnedBlogs = (List<BlogModel>) objectResult.Value;
 
             // Assert
-            result.Should().BeEquivalentTo(blogs, options =>
+            objectResult.Should().NotBeNull();
+            returnedBlogs.Should().BeEquivalentTo(blogs, options =>
             {
                 options.Excluding(x => x.DisabledAt);
                 options.Excluding(x => x.CreatedAt);
                 return options;
             });
+        }
+
+
+        [Fact]
+        public async Task GetAll_returns_403_if_requester_not_admin()
+        {
+            // Arrange
+            var nonAdminUser = new TestUserInfo
+            {
+                Id = Guid.NewGuid().ToString(),
+                Role = Roles.BasicUser
+            };
+            var blogService = new BlogService(nonAdminUser, _repository);
+
+            // Act
+            var result = await blogService.GetAllAsync();
+            var actionResult = (IActionResult) result.Result;
+
+            // Assert
+            actionResult.Should().BeEquivalentTo(new ForbidResult());
         }
 
         [Fact]

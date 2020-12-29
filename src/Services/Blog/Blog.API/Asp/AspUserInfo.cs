@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Serilog;
 
 namespace Blog.API.Asp
 {
@@ -8,7 +7,6 @@ namespace Blog.API.Asp
         public AspUserInfo(IHttpContextAccessor httpContextAccessor)
             : base(httpContextAccessor?.HttpContext?.User)
         {
-            Log.Debug(httpContextAccessor.HttpContext.User.ToString());
         }
     }
 }

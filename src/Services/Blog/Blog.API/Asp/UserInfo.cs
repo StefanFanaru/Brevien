@@ -6,11 +6,14 @@ namespace Blog.API.Asp
     {
         public UserInfo(ClaimsPrincipal user)
         {
-            Id = user.FindFirst(Claims.UserId).Value;
-            FirstName = user.FindFirst(Claims.FirstName).Value;
-            LastName = user.FindFirst(Claims.LastName).Value;
-            Email = user.FindFirst(Claims.Email).Value;
-            Role = user.FindFirst(Claims.Role).Value;
+            if (user != null)
+            {
+                Id = user.FindFirstValue(Claims.UserId);
+                FirstName = user.FindFirstValue(Claims.FirstName);
+                LastName = user.FindFirstValue(Claims.LastName);
+                Email = user.FindFirstValue(Claims.Email);
+                Role = user.FindFirstValue(Claims.Role);
+            }
         }
 
         public string Id { get; }

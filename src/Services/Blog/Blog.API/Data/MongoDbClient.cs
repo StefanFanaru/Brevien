@@ -5,7 +5,7 @@ namespace Blog.API.Data
 {
     public class MongoDbClient
     {
-        public MongoDbClient(IOptions<MongoDb.MongoSettings> settings)
+        public MongoDbClient(IOptions<MongoSettings> settings)
         {
             Client = new MongoClient(settings.Value.ConnectionString);
             Database = Client.GetDatabase(settings.Value.Database);

@@ -20,30 +20,28 @@ namespace Blog.API.Controllers
         }
 
         [HttpGet]
-        [Route("get-all")]
+        public async Task<List<BlogModel>> Get()
+        {
+            return await _blogService.GetAsync();
+        }
+
+        [HttpGet]
+        [Route("all")]
         [Authorize(Policy = "AdminOnly")]
-        public async Task<List<BlogModel>> GetAll()
+        public async Task<ActionResult<List<BlogModel>>> GetAll()
         {
             return await _blogService.GetAllAsync();
         }
 
         [HttpGet]
-        [Route("get/{id}")]
+        [Route("{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> Get(string id)
         {
             return await _blogService.GetAsync(id);
         }
 
-        [HttpGet]
-        // [Route("get")]
-        public async Task<List<BlogModel>> Get()
-        {
-            return await _blogService.GetAsync();
-        }
-
         [HttpPost]
-        [Route("create")]
         public async Task<IActionResult> Create(BlogModel blog)
         {
             // TODO: Validate this!
@@ -51,24 +49,23 @@ namespace Blog.API.Controllers
         }
 
         [HttpPatch]
-        [Route("update")]
         public async Task<IActionResult> Update(BlogModel blog)
         {
             return await _blogService.UpdateAsync(blog);
         }
 
-        [HttpDelete]
-        [Route("disable/{id}")]
+        [HttpPatch]
+        [Route("{id}/disable")]
         public async Task<IActionResult> Disable(string id)
         {
             return await _blogService.DisableAsync(id);
         }
 
         [HttpPatch]
-        [Route("change-owner/{blogId}/{newOwnerId}")]
-        public async Task<IActionResult> ChangeOwner(string blogId, string newOwnerId)
+        [Route("{id}/change-owner/{newOwnerId}")]
+        public async Task<IActionResult> ChangeOwner(string id, string newOwnerId)
         {
-            return await _blogService.ChangeOwnerAsync(blogId, newOwnerId);
+            return await _blogService.ChangeOwnerAsync(id, newOwnerId);
         }
     }
 }

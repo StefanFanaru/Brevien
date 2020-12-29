@@ -1,7 +1,7 @@
 ﻿using Blog.API.Asp;
 using Blog.API.Common;
 
-namespace Blog.FunctionalTests
+namespace Blog.FunctionalTests.Authorization
 {
     public class TestUserInfo : IUserInfo
     {

@@ -7,24 +7,31 @@ using Xunit;
 
 namespace Blog.FunctionalTests.ApiTests
 {
-    public class BlogControllerTests : ApiTestBase
+    public class BlogControllerTests : IClassFixture<ApiTestFixture>
     {
         private RuntimeMiddlewareService _runtimeMiddlewareService;
 
-        public BlogControllerTests()
+        public BlogControllerTests(ApiTestFixture factory)
         {
-            var server = CreateServer();
-            Client = server.CreateClient();
-            _runtimeMiddlewareService = server.Services.GetRequiredService<RuntimeMiddlewareService>();
+            Client = factory.Server.CreateClient();
+            _runtimeMiddlewareService = factory.Server.Services.GetRequiredService<RuntimeMiddlewareService>();
         }
 
         public HttpClient Client { get; set; }
 
+        private void SwitchToBasicUser()
+        {
+            _runtimeMiddlewareService.Configure(app => app.UseMiddleware<BasicUserAuthorizationMiddleware>());
+        }
+
+        private void SwitchToAdmin()
+        {
+            _runtimeMiddlewareService.Configure(app => app.UseMiddleware<AdminAuthorizationMiddleware>());
+        }
+
         [Fact]
         public async Task Get_returns_all_users_non_soft_deleted_blogs()
         {
-            _runtimeMiddlewareService.Configure(runtimeApp => { runtimeApp.UseMiddleware<AdminAuthorizationMiddleware>(); });
-
             var response = await Client.GetAsync("api/v1/blog");
             response.EnsureSuccessStatusCode();
         }

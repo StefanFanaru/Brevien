@@ -14,7 +14,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using static Blog.API.Data.MongoDb;
 using JsonExtensions = Blog.API.Extensions.JsonExtensions;
 
 namespace Blog.API

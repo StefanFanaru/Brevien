@@ -97,9 +97,15 @@ namespace Blog.API.Services
             return await _repository.GetByUser(_userInfo.Id).ToListAsync();
         }
 
-        public async Task<List<BlogModel>> GetAllAsync()
+        public async Task<ActionResult<List<BlogModel>>> GetAllAsync()
         {
-            return await _repository.Query().Find(x => !x.SoftDeletedAt.HasValue).ToListAsync();
+            if (_userInfo.Role != Roles.Administrator)
+            {
+                return new ForbidResult();
+            }
+
+            var blogs = await _repository.Query().Find(x => !x.SoftDeletedAt.HasValue).ToListAsync();
+            return new OkObjectResult(blogs);
         }
 
         public async Task<IActionResult> UpdateAsync(BlogModel blog)

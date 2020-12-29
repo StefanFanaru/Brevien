@@ -12,7 +12,7 @@ namespace Blog.API.Services.Interfaces
         Task<IActionResult> DisableAsync(string blogId);
         Task<IActionResult> UpdateAsync(BlogModel blog);
         Task<List<BlogModel>> GetAsync();
-        Task<List<BlogModel>> GetAllAsync();
+        Task<ActionResult<List<BlogModel>>> GetAllAsync();
         Task<IActionResult> GetAsync(string id);
         Task<IActionResult> DeleteAsync(string blogId);
     }

@@ -1,11 +1,9 @@
 ﻿using System.IO;
 using Blog.API;
-using Blog.API.Asp;
 using Blog.API.Data;
-using Blog.API.Services;
-using Blog.API.Services.Interfaces;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -23,13 +21,9 @@ namespace Blog.FunctionalTests
                     .AddJsonFile("appsettings.json", true)
                     .Build();
 
-                services.Configure<MongoDb.MongoSettings>(configuration.GetSection("MongoDb"));
-                services.AddScoped<MongoDbClient>();
-                services.AddScoped<IBlogRepository, BlogRepository>();
-                services.AddScoped<IUserInfo, TestUserInfo>();
-                services.AddScoped<IBlogService, BlogService>();
-                services.BuildServiceProvider();
-                var host = CreateHostBuilder().Build();
+                services.Configure<RouteOptions>(configuration);
+                services.Configure<MongoSettings>(configuration.GetSection("MongoDb"));
+                services.AddSingleton<RuntimeMiddlewareService>();
             });
         }
 
