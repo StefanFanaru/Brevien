@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Blog.API.Data.Models;
+using Blog.API.Dtos;
+using Blog.API.Infrastructure.Data.Models;
 using Blog.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -42,14 +43,15 @@ namespace Blog.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(BlogModel blog)
+        public async Task<IActionResult> Create(BlogCreateDto blog)
         {
             // TODO: Validate this!
-            return await _blogService.CreateAsync(blog);
+            var createdBlog = await _blogService.CreateAsync(blog);
+            return new OkObjectResult(createdBlog);
         }
 
         [HttpPatch]
-        public async Task<IActionResult> Update(BlogModel blog)
+        public async Task<IActionResult> Update(BlogUpdateDto blog)
         {
             return await _blogService.UpdateAsync(blog);
         }

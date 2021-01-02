@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Blog.API.Data.Models
+namespace Blog.API.Infrastructure.Data.Models
 {
     public class DataMigration
     {
@@ -11,8 +11,8 @@ namespace Blog.API.Data.Models
             InsertTime = DateTime.UtcNow;
         }
 
-        public string Name { get; private set; }
-        public DateTime InsertTime { get; private set; }
-        public string Id { get; private set; }
+        public string Name { get; }
+        public DateTime InsertTime { get; }
+        public string Id { get; }
     }
 }

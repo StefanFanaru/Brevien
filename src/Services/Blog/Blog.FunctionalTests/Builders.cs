@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
-using Blog.API.Data.Models;
+using Blog.API.Dtos;
+using Blog.API.Infrastructure.Data.Models;
 
 namespace Blog.FunctionalTests
 {
@@ -8,56 +9,32 @@ namespace Blog.FunctionalTests
     {
         private static readonly Random random = new();
 
-        public static BlogModel GetDetailedBlog(string id = null)
+        public static BlogCreateDto GetBlogDto()
         {
             return new()
             {
-                Id = string.IsNullOrEmpty(id) ? GetRandomMongoId() : id,
                 Title = "Title test",
                 Footer = "Footer test",
                 Heading = "Heading test",
                 Name = "Name test",
                 Path = "/test-blog",
-                Uri = "www.test.blog",
-                CreatedAt = TestConstants.BlogCreatedAt,
-                OwnerId = TestConstants.UserId
+                Uri = "www.test.blog"
             };
         }
 
-        public static BlogModel GetDisabledBlog()
+        public static BlogUpdateDto GetBlogUpdateDto(BlogModel blogCreateDto)
         {
             return new()
             {
-                Id = GetRandomMongoId(),
-                Title = "Title test",
-                Footer = "Footer test",
-                Heading = "Heading test",
-                Name = "Name test",
-                Path = "/test-blog",
-                Uri = "www.test.blog",
-                CreatedAt = TestConstants.BlogCreatedAt,
-                OwnerId = TestConstants.UserId,
-                DisabledAt = TestConstants.BlogCreatedAt.AddDays(1)
+                Id = blogCreateDto.Id,
+                Title = blogCreateDto.Title,
+                Footer = blogCreateDto.Footer,
+                Heading = blogCreateDto.Heading,
+                Name = blogCreateDto.Name,
+                Path = blogCreateDto.Path,
+                Uri = blogCreateDto.Path
             };
         }
-
-        public static BlogModel GetSoftDeletedBlog()
-        {
-            return new()
-            {
-                Id = GetRandomMongoId(),
-                Title = "Title test",
-                Footer = "Footer test",
-                Heading = "Heading test",
-                Name = "Name test",
-                Path = "/test-blog",
-                Uri = "www.test.blog",
-                CreatedAt = TestConstants.BlogCreatedAt,
-                OwnerId = TestConstants.UserId,
-                SoftDeletedAt = TestConstants.BlogCreatedAt.AddDays(1)
-            };
-        }
-
 
         public static string GetRandomMongoId()
         {

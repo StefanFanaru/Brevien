@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
-using Identity.Data;
 
-namespace Blog.API.Data.Migrations
+namespace Blog.API.Infrastructure.Data.Migrations
 {
     public class M001_TestMigration : IDataMigration
     {

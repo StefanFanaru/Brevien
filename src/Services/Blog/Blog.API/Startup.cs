@@ -1,11 +1,10 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using Blog.API.Asp;
-using Blog.API.Data;
-using Blog.API.Data.Migrations;
+using Blog.API.Infrastructure.Data;
+using Blog.API.Infrastructure.Data.Migrations;
 using Blog.API.Services;
 using Blog.API.Services.Interfaces;
-using Identity.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -14,7 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using JsonExtensions = Blog.API.Extensions.JsonExtensions;
+using JsonExtensions = Blog.API.Infrastructure.Extensions.JsonExtensions;
 
 namespace Blog.API
 {
@@ -94,10 +93,7 @@ namespace Blog.API
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             var pathBase = Configuration["PATH_BASE"];
-            if (!string.IsNullOrEmpty(pathBase))
-            {
-                app.UsePathBase(pathBase);
-            }
+            if (!string.IsNullOrEmpty(pathBase)) app.UsePathBase(pathBase);
 
             if (env.IsDevelopment())
             {

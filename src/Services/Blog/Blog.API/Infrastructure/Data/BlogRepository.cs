@@ -1,8 +1,9 @@
-﻿using System.Threading.Tasks;
-using Blog.API.Data.Models;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Blog.API.Infrastructure.Data.Models;
 using MongoDB.Driver;
 
-namespace Blog.API.Data
+namespace Blog.API.Infrastructure.Data
 {
     public class BlogRepository : IBlogRepository
     {
@@ -23,14 +24,14 @@ namespace Blog.API.Data
             return _collection.InsertOneAsync(blog);
         }
 
-        public IFindFluent<BlogModel, BlogModel> GetByUser(string userId)
+        public async Task<List<BlogModel>> GetByUserAsync(string userId)
         {
-            return _collection.Find(x => x.OwnerId == userId && !x.SoftDeletedAt.HasValue);
+            return await _collection.Find(x => x.OwnerId == userId && !x.SoftDeletedAt.HasValue).ToListAsync();
         }
 
-        public IFindFluent<BlogModel, BlogModel> GetById(string id)
+        public async Task<BlogModel> GetByIdAsync(string id)
         {
-            return _collection.Find(x => x.Id == id && !x.SoftDeletedAt.HasValue);
+            return await _collection.Find(x => x.Id == id && !x.SoftDeletedAt.HasValue).FirstOrDefaultAsync();
         }
 
         public async Task<ReplaceOneResult> UpdateAsync(BlogModel blog)

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
-namespace Blog.API.Data
+namespace Blog.API.Infrastructure.Data
 {
     public class MongoDbClient
     {
@@ -11,7 +11,7 @@ namespace Blog.API.Data
             Database = Client.GetDatabase(settings.Value.Database);
         }
 
-        public MongoClient Client { get; private set; }
-        public IMongoDatabase Database { get; private set; }
+        public MongoClient Client { get; }
+        public IMongoDatabase Database { get; }
     }
 }

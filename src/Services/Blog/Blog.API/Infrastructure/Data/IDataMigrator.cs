@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Blog.API.Data
+namespace Blog.API.Infrastructure.Data
 {
     public interface IDataMigrator
     {

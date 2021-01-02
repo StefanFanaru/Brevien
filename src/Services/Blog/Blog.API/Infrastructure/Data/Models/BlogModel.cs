@@ -2,7 +2,7 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Blog.API.Data.Models
+namespace Blog.API.Infrastructure.Data.Models
 {
     public class BlogModel
     {

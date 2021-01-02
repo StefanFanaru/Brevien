@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Blog.API.Asp;
 using Blog.API.Common;
-using Blog.API.Data;
-using Blog.API.Data.Models;
+using Blog.API.Dtos;
+using Blog.API.Infrastructure.Data;
+using Blog.API.Infrastructure.Data.Models;
 using Blog.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
@@ -22,30 +23,32 @@ namespace Blog.API.Services
             _repository = repository;
         }
 
-        public async Task<IActionResult> CreateAsync(BlogModel blog)
+        public async Task<BlogModel> CreateAsync(BlogCreateDto blog, string ownerId = null)
         {
-            blog.CreatedAt = DateTime.UtcNow;
-            blog.OwnerId = _userInfo.Id;
+            var entity = new BlogModel
+            {
+                Name = blog.Name,
+                Title = blog.Title,
+                Heading = blog.Heading,
+                Footer = blog.Footer,
+                Path = blog.Path,
+                Uri = blog.Uri,
+                CreatedAt = DateTime.UtcNow,
+                OwnerId = string.IsNullOrEmpty(ownerId) ? _userInfo.Id : ownerId
+            };
+            await _repository.InsertAsync(entity);
 
-            await _repository.InsertAsync(blog);
-
-            return new OkResult();
+            return entity;
         }
 
         public async Task<IActionResult> ChangeOwnerAsync(string blogId, string newOwnerId)
         {
-            var blog = await _repository.GetById(blogId).FirstOrDefaultAsync();
+            var blog = await _repository.GetByIdAsync(blogId);
 
-            if (blog == null || blog.SoftDeletedAt.HasValue)
-            {
-                return new NotFoundResult();
-            }
+            if (blog == null || blog.SoftDeletedAt.HasValue) return new NotFoundResult();
 
             // For now. Will be changed after creating AccessControl
-            if (blog.OwnerId != _userInfo.Id && _userInfo.Role != Roles.Administrator)
-            {
-                return new ForbidResult();
-            }
+            if (blog.OwnerId != _userInfo.Id && _userInfo.Role != Roles.Administrator) return new ForbidResult();
 
             blog.OwnerId = newOwnerId;
             blog.UpdatedAt = DateTime.UtcNow;
@@ -56,25 +59,16 @@ namespace Blog.API.Services
 
         public async Task<IActionResult> DisableAsync(string blogId)
         {
-            var blog = await _repository.GetById(blogId).FirstOrDefaultAsync();
+            var blog = await _repository.GetByIdAsync(blogId);
 
-            if (blog == null)
-            {
-                return new NotFoundResult();
-            }
+            if (blog == null) return new NotFoundResult();
 
-            if (blog.DisabledAt.HasValue)
-            {
-                return new BadRequestResult();
-            }
+            if (blog.DisabledAt.HasValue) return new BadRequestResult();
 
             // For now. Will be changed after creating AccessControl
-            if (blog.OwnerId != _userInfo.Id && _userInfo.Role != Roles.Administrator)
-            {
-                return new ForbidResult();
-            }
+            if (blog.OwnerId != _userInfo.Id && _userInfo.Role != Roles.Administrator) return new ForbidResult();
 
-            blog.SoftDeletedAt = DateTime.UtcNow;
+            blog.DisabledAt = DateTime.UtcNow;
             await _repository.UpdateAsync(blog);
 
             return new OkResult();
@@ -82,41 +76,41 @@ namespace Blog.API.Services
 
         public async Task<IActionResult> GetAsync(string id)
         {
-            var blog = await _repository.GetById(id).FirstOrDefaultAsync();
+            var blog = await _repository.GetByIdAsync(id);
 
-            if (blog != null)
-            {
-                return new OkObjectResult(blog);
-            }
+            if (blog != null) return new OkObjectResult(blog);
 
             return new NotFoundResult();
         }
 
         public async Task<List<BlogModel>> GetAsync()
         {
-            return await _repository.GetByUser(_userInfo.Id).ToListAsync();
+            return await _repository.GetByUserAsync(_userInfo.Id);
         }
 
         public async Task<ActionResult<List<BlogModel>>> GetAllAsync()
         {
-            if (_userInfo.Role != Roles.Administrator)
-            {
-                return new ForbidResult();
-            }
+            if (_userInfo.Role != Roles.Administrator) return new ForbidResult();
 
             var blogs = await _repository.Query().Find(x => !x.SoftDeletedAt.HasValue).ToListAsync();
             return new OkObjectResult(blogs);
         }
 
-        public async Task<IActionResult> UpdateAsync(BlogModel blog)
+        public async Task<IActionResult> UpdateAsync(BlogUpdateDto blog)
         {
-            // TODO: Validate this!
-            blog.UpdatedAt = DateTime.UtcNow;
-            var result = await _repository.UpdateAsync(blog);
-            if (result.IsModifiedCountAvailable && result.ModifiedCount == 1)
+            var entity = new BlogModel
             {
-                return new OkResult();
-            }
+                Id = blog.Id,
+                Name = blog.Name,
+                Title = blog.Title,
+                Heading = blog.Heading,
+                Footer = blog.Footer,
+                Path = blog.Path,
+                Uri = blog.Uri,
+                UpdatedAt = DateTime.UtcNow
+            };
+            var result = await _repository.UpdateAsync(entity);
+            if (result.IsModifiedCountAvailable && result.ModifiedCount == 1) return new OkResult();
 
             return new NotFoundResult();
         }
@@ -125,10 +119,18 @@ namespace Blog.API.Services
         {
             var result = await _repository.DeleteAsync(blogId);
 
-            if (result.DeletedCount == 1)
-            {
-                return new NoContentResult();
-            }
+            if (result.DeletedCount == 1) return new NoContentResult();
+
+            return new NotFoundResult();
+        }
+
+        public async Task<IActionResult> SoftDeleteAsync(string blogId)
+        {
+            var entity = await _repository.GetByIdAsync(blogId);
+            entity.SoftDeletedAt = DateTime.UtcNow;
+            var result = await _repository.UpdateAsync(entity);
+
+            if (result.ModifiedCount == 1) return new OkResult();
 
             return new NotFoundResult();
         }

@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Blog.API.Extensions
+namespace Blog.API.Infrastructure.Extensions
 {
     public static class StringExtensions
     {

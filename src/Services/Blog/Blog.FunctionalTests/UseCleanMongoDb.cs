@@ -10,19 +10,16 @@ namespace Blog.FunctionalTests
     {
         private readonly IMongoDatabase _database;
 
-        public UseCleanMongoDb()
+        public UseCleanMongoDb(string databaseName)
         {
-            var client = new MongoClient("mongodb://localhost:27017/");
-            _database = client.GetDatabase("brevien-blog-tests");
+            var client = new MongoClient("mongodb://localhost:27017");
+            _database = client.GetDatabase(databaseName);
         }
 
         public override void Before(MethodInfo methodUnderTest)
         {
-            var currentColletions = _database.ListCollectionNames().ToList();
-            if (currentColletions.Contains("Blogs"))
-            {
-                _database.DropCollection("Blogs");
-            }
+            var currentCollections = _database.ListCollectionNames().ToList();
+            if (currentCollections.Contains("Blogs")) _database.DropCollection("Blogs");
 
             _database.CreateCollection("Blogs");
         }

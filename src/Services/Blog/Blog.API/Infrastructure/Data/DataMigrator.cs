@@ -1,16 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Blog.API.Data.Models;
-using Identity.Data;
+using Blog.API.Infrastructure.Data.Models;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-namespace Blog.API.Data
+namespace Blog.API.Infrastructure.Data
 {
     public class DataMigrator : IDataMigrator
     {
         private readonly IEnumerable<IDataMigration> _dataMigrations;
-        private IMongoCollection<DataMigration> _migrationsCollection;
+        private readonly IMongoCollection<DataMigration> _migrationsCollection;
 
         public DataMigrator(MongoDbClient client, IEnumerable<IDataMigration> dataMigrations)
         {

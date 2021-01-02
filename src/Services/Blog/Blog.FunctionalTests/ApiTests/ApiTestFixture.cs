@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using Blog.API;
-using Blog.API.Data;
+using Blog.API.Infrastructure.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.Routing;
@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Blog.FunctionalTests
+namespace Blog.FunctionalTests.ApiTests
 {
     public class ApiTestFixture : WebApplicationFactory<Startup>
     {
@@ -22,7 +22,7 @@ namespace Blog.FunctionalTests
                     .Build();
 
                 services.Configure<RouteOptions>(configuration);
-                services.Configure<MongoSettings>(configuration.GetSection("MongoDb"));
+                services.Configure<MongoSettings>(configuration.GetSection("MongoDbApi"));
                 services.AddSingleton<RuntimeMiddlewareService>();
             });
         }
