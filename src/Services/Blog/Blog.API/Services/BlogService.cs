@@ -34,7 +34,7 @@ namespace Blog.API.Services
 
         public async Task<IActionResult> ChangeOwnerAsync(string blogId, string newOwnerId)
         {
-            var blog = await _repository.GetByIdAsync(blogId).FirstOrDefaultAsync();
+            var blog = await _repository.GetById(blogId).FirstOrDefaultAsync();
 
             if (blog == null || blog.SoftDeletedAt.HasValue)
             {
@@ -56,7 +56,7 @@ namespace Blog.API.Services
 
         public async Task<IActionResult> DisableAsync(string blogId)
         {
-            var blog = await _repository.GetByIdAsync(blogId).FirstOrDefaultAsync();
+            var blog = await _repository.GetById(blogId).FirstOrDefaultAsync();
 
             if (blog == null)
             {
@@ -82,7 +82,7 @@ namespace Blog.API.Services
 
         public async Task<IActionResult> GetAsync(string id)
         {
-            var blog = await _repository.GetByIdAsync(id).FirstOrDefaultAsync();
+            var blog = await _repository.GetById(id).FirstOrDefaultAsync();
 
             if (blog != null)
             {

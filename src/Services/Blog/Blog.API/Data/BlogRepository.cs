@@ -28,7 +28,7 @@ namespace Blog.API.Data
             return _collection.Find(x => x.OwnerId == userId && !x.SoftDeletedAt.HasValue);
         }
 
-        public IFindFluent<BlogModel, BlogModel> GetByIdAsync(string id)
+        public IFindFluent<BlogModel, BlogModel> GetById(string id)
         {
             return _collection.Find(x => x.Id == id && !x.SoftDeletedAt.HasValue);
         }

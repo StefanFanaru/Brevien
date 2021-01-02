@@ -9,7 +9,7 @@ namespace Blog.API.Data
         IMongoCollection<BlogModel> Query();
         Task InsertAsync(BlogModel blog);
         IFindFluent<BlogModel, BlogModel> GetByUser(string userId);
-        IFindFluent<BlogModel, BlogModel> GetByIdAsync(string id);
+        IFindFluent<BlogModel, BlogModel> GetById(string id);
         Task<ReplaceOneResult> UpdateAsync(BlogModel blog);
         Task<DeleteResult> DeleteAsync(string id);
     }

@@ -237,11 +237,7 @@ namespace Blog.FunctionalTests.ServicesTests
 
             // Assert
             result.Should().BeEquivalentTo(blogs, options =>
-            {
-                options.Excluding(x => x.DisabledAt);
-                options.Excluding(x => x.CreatedAt);
-                return options;
-            });
+                options.Excluding(x => x.DisabledAt).Excluding(x => x.CreatedAt));
         }
 
         [Fact]

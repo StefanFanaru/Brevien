@@ -1,4 +1,5 @@
 ﻿using System;
+using Blog.FunctionalTests.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,6 +35,16 @@ namespace Blog.FunctionalTests
             }
 
             return app;
+        }
+
+        public static void SwitchToBasicUser(this RuntimeMiddlewareService service)
+        {
+            service.Configure(app => app.UseMiddleware<BasicUserAuthorizationMiddleware>());
+        }
+
+        public static void SwitchToAdmin(this RuntimeMiddlewareService service)
+        {
+            service.Configure(app => app.UseMiddleware<AdminAuthorizationMiddleware>());
         }
     }
 }

@@ -8,11 +8,11 @@ namespace Blog.FunctionalTests
     {
         private static readonly Random random = new();
 
-        public static BlogModel GetDetailedBlog()
+        public static BlogModel GetDetailedBlog(string id = null)
         {
             return new()
             {
-                Id = GetRandomMongoId(),
+                Id = string.IsNullOrEmpty(id) ? GetRandomMongoId() : id,
                 Title = "Title test",
                 Footer = "Footer test",
                 Heading = "Heading test",
