@@ -31,11 +31,11 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Blog.API\Blog.API.csproj"/>
+        <None Remove=".bowerrc"/>
     </ItemGroup>
 
     <ItemGroup>
-        <None Remove=".bowerrc"/>
+        <ProjectReference Include="..\Blog.API\Blog.API.csproj"/>
     </ItemGroup>
 
 </Project>

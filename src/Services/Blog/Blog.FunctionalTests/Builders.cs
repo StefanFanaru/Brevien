@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Blog.API.Dtos;
-using Blog.API.Infrastructure.Data.Models;
 
 namespace Blog.FunctionalTests
 {
@@ -24,7 +23,7 @@ namespace Blog.FunctionalTests
             };
         }
 
-        public static BlogUpdateDto GetBlogUpdateDto(BlogModel blogCreateDto)
+        public static BlogUpdateDto GetBlogUpdateDto(API.Infrastructure.Data.Models.BlogModel blogCreateDto)
         {
             return new()
             {

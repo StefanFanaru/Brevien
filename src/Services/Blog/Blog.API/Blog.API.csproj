@@ -2,6 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
+        <RootNamespace>Blog.API</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

@@ -73,7 +73,7 @@ namespace Blog.API.Services
                 return new NotFoundResult();
             }
 
-            if ((enable && !blog.DisabledAt.HasValue) || (!enable && blog.DisabledAt.HasValue))
+            if (enable && !blog.DisabledAt.HasValue || !enable && blog.DisabledAt.HasValue)
             {
                 return new BadRequestResult();
             }
