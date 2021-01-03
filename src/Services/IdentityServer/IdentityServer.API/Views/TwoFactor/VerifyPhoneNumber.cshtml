@@ -1,0 +1,75 @@
+﻿@model IdentityServer.API.Controllers.TwoFactor.TwoFactorViewModel
+@inject IOptions<ApplicationUrls> ApplicationUrls
+
+<div class="auth-wrapper">
+    <a tabIndex="-1" href="#">
+        <img alt="" class="logo-brevien" src="~/images/logo-brevien.svg">
+    </a>
+    <div class="auth-container">
+        <div id="code-wrapper" class="auth-container-body">
+            <div class="slot-back">
+                <a class="btn-back" href="@ApplicationUrls.Value.AngularClient">Home</a>
+            </div>
+            <div id="code-dialog">
+                <h6 class="code-title">Please enter the 6-digit verification code we sent via SMS to </h6>
+                <form id="form" asp-route="VerifyPhoneNumber">
+                    <input type="hidden" asp-for="Email"/>
+                    <input type="hidden" asp-for="CodeRequestCooldown"/>
+                    <input type="hidden" asp-for="AllowedToResendAt"/>
+                    <input type="hidden" asp-for="HasNewCodeBeenReSent"/>
+                    <input asp-for="Digit1" type="text" maxLength="1" size="1" min="0" max="9" pattern="[0-9]{1}" autofocus/>
+                    <input asp-for="Digit2" type="text" maxLength="1" size="1" min="0" max="9" pattern="[0-9]{1}"/>
+                    <input asp-for="Digit3" type="text" maxLength="1" size="1" min="0" max="9" pattern="[0-9]{1}"/>
+                    <input asp-for="Digit4" type="text" maxLength="1" size="1" min="0" max="9" pattern="[0-9]{1}"/>
+                    <input asp-for="Digit5" type="text" maxLength="1" size="1" min="0" max="9" pattern="[0-9]{1}"/>
+                    <input asp-for="Digit6" type="text" maxLength="1" size="1" min="0" max="9" pattern="[0-9]{1}"/>
+                    <button class="button-custom">Verify</button>
+                </form>
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <span asp-validation-for="InputCode" class="text-danger validation-default"></span>
+                    <span class="text-danger verify-code-error">@Html.ValidationMessage("InvalidCode")</span>
+                }
+                @if (Model.CodeRequestCooldown)
+                {
+                    <div id="timer-text">
+                        @if (Model.HasNewCodeBeenReSent)
+                        {
+                            <div id="new-code-sent"> We have sent you a new code.</div>
+                        }
+                        <div>You can request another code in <br><span id="code-timer"></span></div>
+
+                    </div>
+                    <a asp-controller="TwoFactor"
+                       asp-action="VerifyPhoneNumber"
+                       asp-route-codeResent="true"
+                       id="timer-button"
+                       style="display: none">
+                        Send code again
+                    </a>                }
+
+                <div id="twofactor-options">
+                    @if (!Model.CodeRequestCooldown)
+                    {
+                        @if (!Model.HasNewCodeBeenReSent)
+                        {
+                            <span>Didn't receive the code?</span>
+                            <br/>
+                        }
+                        <a asp-controller="TwoFactor"
+                           asp-action="VerifyPhoneNumber"
+                           asp-route-codeResent="true">
+                            Send code again
+                        </a>
+                        <br/>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="allowed-to-resend-at">@Model.AllowedToResendAt</div>
+<script type="module" src="~/js/CountDownTimer.js"></script>
+<script type="module" src="~/js/two-factor-input.js"></script>
+<script type="module" src="~/js/two-factor-countdown.js"></script>

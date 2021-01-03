@@ -13,11 +13,11 @@ services:
   nosqldata:
     image: mongo
 
-  identity-api:
-    image: brevien/identity.api
+  identity-server-api:
+    image: brevien/identity-server.api
     build:
       context: .
-      dockerfile: Services/Identity/Identity.API/Dockerfile
+      dockerfile: Services/IdentityServer/IdentityServer.API/Dockerfile
     depends_on:
       - sqldata
 
@@ -25,7 +25,7 @@ services:
     image: brevien/identity-control.api
     build:
       context: .
-      dockerfile: Services/Identity/IdentityControl.API/Dockerfile
+      dockerfile: Services/IdentityControl/IdentityControl.API/Dockerfile
     depends_on:
       - sqldata
 

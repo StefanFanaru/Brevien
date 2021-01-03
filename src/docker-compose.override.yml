@@ -35,7 +35,7 @@ services:
     volumes:
       - brevien-nosqldata:/data/db
 
-  identity-api:
+  identity-server-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
@@ -52,7 +52,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
       - ConnectionString=Server=sqldata;Database=brevien-identity-local;User Id=SA;Password=SqlS3rv3r#34
-      - ApplicationUrls__IdentityAPI=http://identity-api
+      - ApplicationUrls__IdentityAPI=http://identity-server-api
       - PATH_BASE=/ic
     volumes:
       - ${USERPROFILE}/.aspnet/https:/https:ro
@@ -61,7 +61,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - ApplicationUrls__IdentityAPI=http://identity-api
+      - ApplicationUrls__IdentityAPI=http://identity-server-api
       - PATH_BASE=/b
       - MongoDb__ConnectionString=mongodb://nosqldata
       - MongoDb__Database=brevien-blog-local
