@@ -13,5 +13,7 @@ namespace Blog.API.Infrastructure.Data
         Task<BlogModel> GetByIdAsync(string id);
         Task<ReplaceOneResult> UpdateAsync(BlogModel blog);
         Task<DeleteResult> DeleteAsync(string id);
+        Task<BlogModel> GetSoftDeleted(string id);
+        Task<List<BlogModel>> GetUsersSoftDeleted(string userId);
     }
 }

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Blog.API.Dtos;
 using Blog.API.Infrastructure.Data.Models;
+using Blog.API.Infrastructure.Validators;
 using Blog.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -45,7 +46,14 @@ namespace Blog.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(BlogCreateDto blog)
         {
-            // TODO: Validate this!
+            var validator = new BlogControllerValidators.CreateValidator();
+            var validationResult = await validator.ValidateAsync(blog);
+
+            if (!validationResult.IsValid)
+            {
+                return new BadRequestObjectResult(validationResult.Errors);
+            }
+
             var createdBlog = await _blogService.CreateAsync(blog);
             return new OkObjectResult(createdBlog);
         }
@@ -53,6 +61,14 @@ namespace Blog.API.Controllers
         [HttpPatch]
         public async Task<IActionResult> Update(BlogUpdateDto blog)
         {
+            var validator = new BlogControllerValidators.UpdateValidator();
+            var validationResult = await validator.ValidateAsync(blog);
+
+            if (!validationResult.IsValid)
+            {
+                return new BadRequestObjectResult(validationResult.Errors);
+            }
+
             return await _blogService.UpdateAsync(blog);
         }
 
@@ -60,7 +76,14 @@ namespace Blog.API.Controllers
         [Route("{id}/disable")]
         public async Task<IActionResult> Disable(string id)
         {
-            return await _blogService.DisableAsync(id);
+            return await _blogService.ToggleEnabledState(id, false);
+        }
+
+        [HttpPatch]
+        [Route("{id}/enable")]
+        public async Task<IActionResult> Enable(string id)
+        {
+            return await _blogService.ToggleEnabledState(id, true);
         }
 
         [HttpPatch]
@@ -68,6 +91,20 @@ namespace Blog.API.Controllers
         public async Task<IActionResult> ChangeOwner(string id, string newOwnerId)
         {
             return await _blogService.ChangeOwnerAsync(id, newOwnerId);
+        }
+
+        [HttpPatch]
+        [Route("{id}/soft-delete")]
+        public async Task<IActionResult> SoftDelete(string id)
+        {
+            return await _blogService.SoftDeleteAsync(id);
+        }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            return await _blogService.DeleteAsync(id);
         }
     }
 }

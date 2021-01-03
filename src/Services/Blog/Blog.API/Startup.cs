@@ -1,13 +1,10 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using Blog.API.Asp;
-using Blog.API.Infrastructure.Data;
-using Blog.API.Infrastructure.Data.Migrations;
-using Blog.API.Services;
-using Blog.API.Services.Interfaces;
+using Blog.API.Configuration;
+using Blog.API.Infrastructure.Validators;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -28,14 +25,9 @@ namespace Blog.API
 
         public virtual void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<MongoSettings>(Configuration.GetSection("MongoDb"));
-            services.AddScoped<IBlogRepository, BlogRepository>();
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddScoped<IUserInfo, AspUserInfo>();
-            services.AddTransient<IBlogService, BlogService>();
-            services.AddScoped<IDataMigration, M001_TestMigration>();
-            services.AddScoped<IDataMigrator, DataMigrator>();
-            services.AddScoped<MongoDbClient>();
+            services
+                .AddApiServices(Configuration)
+                .AddFluentValidators(typeof(BlogControllerValidators.CreateValidator).Assembly);
 
             services.AddControllers().AddApplicationPart(typeof(Startup).Assembly).AddNewtonsoftJson(options =>
             {
@@ -43,6 +35,7 @@ namespace Blog.API
                 options.SerializerSettings.Converters.Add(new JsonExtensions.UtcDateTimeConverter());
                 options.SerializerSettings.Converters.Add(new JsonExtensions.TrimmingStringConverter());
             });
+
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Blog.API", Version = "v1"}); });
 
             ConfigureAuthService(services);

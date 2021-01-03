@@ -46,7 +46,7 @@ namespace Blog.FunctionalTests.ServicesTests
         public async Task Blog_is_created_and_returns_200()
         {
             // Arrange
-            var blog = Builders.GetBlogDto();
+            var blog = Builders.GetBlogCreateDto();
 
             // Act
             var result = await _blogService.CreateAsync(blog);
@@ -60,7 +60,7 @@ namespace Blog.FunctionalTests.ServicesTests
         public async Task CreatedAt_userId_are_assigned_at_creation()
         {
             // Arrange
-            var blog = Builders.GetBlogDto();
+            var blog = Builders.GetBlogCreateDto();
 
             // Act
             var result = await _blogService.CreateAsync(blog);
@@ -74,7 +74,7 @@ namespace Blog.FunctionalTests.ServicesTests
         public async Task Owner_not_changed_when_blog_soft_deleted_returns_404()
         {
             // Arrange
-            var blog = Builders.GetBlogDto();
+            var blog = Builders.GetBlogCreateDto();
             var targetBlog = await _blogService.CreateAsync(blog);
             await _blogService.SoftDeleteAsync(targetBlog.Id);
 
@@ -103,7 +103,7 @@ namespace Blog.FunctionalTests.ServicesTests
         public async Task Owner_not_changed_when_not_requested_by_owner_or_admin_returns_403()
         {
             // Arrange
-            var blog = Builders.GetBlogDto();
+            var blog = Builders.GetBlogCreateDto();
             var newOwnerId = Guid.NewGuid().ToString();
             var targetBlog = await _blogService.CreateAsync(blog, Guid.NewGuid().ToString());
 
@@ -119,7 +119,7 @@ namespace Blog.FunctionalTests.ServicesTests
         public async Task Owner_changed_when_requested_by_owner_returns_200()
         {
             // Arrange
-            var blog = Builders.GetBlogDto();
+            var blog = Builders.GetBlogCreateDto();
             var newOwnerId = Guid.NewGuid().ToString();
             var targetBlog = await _blogService.CreateAsync(blog);
 
@@ -136,7 +136,7 @@ namespace Blog.FunctionalTests.ServicesTests
         {
             // Arrange
             var blogService = new BlogService(_adminUserInfo, _repository); // Hard dependency :(
-            var blog = Builders.GetBlogDto();
+            var blog = Builders.GetBlogCreateDto();
             var newOwnerId = Guid.NewGuid().ToString();
             var targetBlog = await blogService.CreateAsync(blog);
 
@@ -148,33 +148,46 @@ namespace Blog.FunctionalTests.ServicesTests
             result.Should().BeEquivalentTo(new OkResult());
         }
 
-        [Fact]
-        public async Task Blog_not_disabled_when_already_disabled_returns_401()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task Blog_enabled_state_not_changed_to_same_state_returns_401(bool enabled)
         {
             // Arrange
-            var blog = Builders.GetBlogDto();
+            var blog = Builders.GetBlogCreateDto();
             var targetBlog = await _blogService.CreateAsync(blog);
-            await _blogService.DisableAsync(targetBlog.Id);
+            await _blogService.ToggleEnabledState(targetBlog.Id, enabled);
 
             // Act
-            var result = await _blogService.DisableAsync(targetBlog.Id);
+            var result = await _blogService.ToggleEnabledState(targetBlog.Id, enabled);
 
             // Assert
             result.Should().BeEquivalentTo(new BadRequestResult());
         }
 
-        [Fact]
-        public async Task Blog_is_disabled_when_not_already_disabled_returns_200()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task Blog_state_changed_returns_200(bool enabled)
         {
             // Arrange
-            var blog = Builders.GetBlogDto();
+            var blog = Builders.GetBlogCreateDto();
             var targetBlog = await _blogService.CreateAsync(blog);
+            await _blogService.ToggleEnabledState(targetBlog.Id, !enabled);
 
             // Act
-            var result = await _blogService.DisableAsync(targetBlog.Id);
+            var result = await _blogService.ToggleEnabledState(targetBlog.Id, enabled);
 
             // Assert
-            LastCreatedBlog().DisabledAt.Should().HaveValue();
+            if (enabled)
+            {
+                LastCreatedBlog().DisabledAt.Should().BeNull();
+            }
+            else
+            {
+                LastCreatedBlog().DisabledAt.Should().HaveValue();
+            }
+
             result.Should().BeEquivalentTo(new OkResult());
         }
 
@@ -182,7 +195,7 @@ namespace Blog.FunctionalTests.ServicesTests
         public async Task Get_successfully_retrieves_blog_when_exists()
         {
             // Arrange
-            var blog = Builders.GetBlogDto();
+            var blog = Builders.GetBlogCreateDto();
             var targetBlog = await _blogService.CreateAsync(blog);
 
             // Act
@@ -198,7 +211,7 @@ namespace Blog.FunctionalTests.ServicesTests
         public async Task Get_returns_404_when_blog_soft_deleted()
         {
             // Arrange
-            var blog = Builders.GetBlogDto();
+            var blog = Builders.GetBlogCreateDto();
             var targetBlog = await _blogService.CreateAsync(blog);
             await _blogService.SoftDeleteAsync(targetBlog.Id);
 
@@ -213,10 +226,10 @@ namespace Blog.FunctionalTests.ServicesTests
         public async Task Get_returns_all_user_non_soft_deleted_blogs()
         {
             // Arrange
-            var softDeletedBlog = Builders.GetBlogDto();
+            var softDeletedBlog = Builders.GetBlogCreateDto();
             var targetSoftDeletedBlog = await _blogService.CreateAsync(softDeletedBlog);
             await _blogService.SoftDeleteAsync(targetSoftDeletedBlog.Id);
-            var nonSoftDeletedBlog = Builders.GetBlogDto();
+            var nonSoftDeletedBlog = Builders.GetBlogCreateDto();
             var targetBlog = await _blogService.CreateAsync(nonSoftDeletedBlog);
 
             var blogs = new List<BlogModel> {targetBlog};
@@ -234,13 +247,13 @@ namespace Blog.FunctionalTests.ServicesTests
         {
             // Arrange
             var blogService = new BlogService(_adminUserInfo, _repository); // Hard dependency :(
-            var userOneBlog = await blogService.CreateAsync(Builders.GetBlogDto());
+            var userOneBlog = await blogService.CreateAsync(Builders.GetBlogCreateDto());
 
-            var userTwoBlog = await blogService.CreateAsync(Builders.GetBlogDto());
+            var userTwoBlog = await blogService.CreateAsync(Builders.GetBlogCreateDto());
             await blogService.ChangeOwnerAsync(userTwoBlog.Id, Guid.NewGuid().ToString());
             userTwoBlog = await _repository.GetByIdAsync(userTwoBlog.Id);
 
-            var softDeletedBlog = Builders.GetBlogDto();
+            var softDeletedBlog = Builders.GetBlogCreateDto();
             var targetSoftDeletedBlog = await _blogService.CreateAsync(softDeletedBlog);
             await _blogService.SoftDeleteAsync(targetSoftDeletedBlog.Id);
 
@@ -275,9 +288,10 @@ namespace Blog.FunctionalTests.ServicesTests
         public async Task Blog_is_updated_if_exists_returns_200()
         {
             // Arrange
-            var blog = Builders.GetBlogDto();
+            var blog = Builders.GetBlogCreateDto();
             var targetBlog = await _blogService.CreateAsync(blog);
             var newName = "Random new name";
+
             // Act
             targetBlog.Name = newName;
             var result = await _blogService.UpdateAsync(Builders.GetBlogUpdateDto(targetBlog));
@@ -292,7 +306,7 @@ namespace Blog.FunctionalTests.ServicesTests
         public async Task Blog_is_not_updated_if_does_not_exist_returns_404()
         {
             // Arrange
-            var blog = Builders.GetBlogDto();
+            var blog = Builders.GetBlogCreateDto();
             var oldName = blog.Name;
             var newName = "Random new name";
             var targetBlog = await _blogService.CreateAsync(blog);
@@ -308,20 +322,98 @@ namespace Blog.FunctionalTests.ServicesTests
         }
 
         [Fact]
+        public async Task Blog_is_soft_deleted_if_requested_by_owner()
+        {
+            // Arrange
+            var blog = Builders.GetBlogCreateDto();
+            var targetBlog = await _blogService.CreateAsync(blog);
+
+            // Act
+            var result = await _blogService.SoftDeleteAsync(targetBlog.Id);
+
+            // Assert
+            var softDeletedBlog = await _repository.GetSoftDeleted(targetBlog.Id);
+            softDeletedBlog.SoftDeletedAt.Should().BeCloseTo(DateTime.UtcNow, 100);
+            result.Should().BeEquivalentTo(new OkResult());
+        }
+
+        [Fact]
+        public async Task Blog_is_not_soft_deleted_if_not_requested_by_owner_or_admin()
+        {
+            // Arrange
+            var blog = Builders.GetBlogCreateDto();
+            var targetBlog = await _blogService.CreateAsync(blog, "random-owner-id");
+
+            // Act
+            var result = await _blogService.SoftDeleteAsync(targetBlog.Id);
+
+            // Assert
+            result.Should().BeEquivalentTo(new ForbidResult());
+        }
+
+        [Fact]
+        public async Task Blog_is_soft_deleted_if_requested_by_admin()
+        {
+            // Arrange
+            var blogService = new BlogService(_adminUserInfo, _repository); // Hard dependency :(
+            var blog = Builders.GetBlogCreateDto();
+            var targetBlog = await blogService.CreateAsync(blog, TestConstants.UserId);
+
+            // Act
+            var result = await blogService.SoftDeleteAsync(targetBlog.Id);
+
+            // Assert
+            var softDeletedBlog = await _repository.GetSoftDeleted(targetBlog.Id);
+            softDeletedBlog.SoftDeletedAt.Should().BeCloseTo(DateTime.UtcNow, 100);
+            result.Should().BeEquivalentTo(new OkResult());
+        }
+
+        [Fact]
+        public async Task Blog_is_not_soft_deleted_if_already_is_or_not_exists_returns_404()
+        {
+            // Arrange
+            var blog = Builders.GetBlogCreateDto();
+            var targetBlog = await _blogService.CreateAsync(blog);
+            await _blogService.SoftDeleteAsync(targetBlog.Id);
+
+            // Act
+            var result = await _blogService.SoftDeleteAsync(targetBlog.Id);
+
+            // Assert
+            result.Should().BeEquivalentTo(new NotFoundResult());
+        }
+
+        [Fact]
+        public async Task Blog_is_not_deleted_if_not_requested_by_owner_returns_403()
+        {
+            // Arrange
+            var blog = Builders.GetBlogCreateDto();
+            var targetBlog = await _blogService.CreateAsync(blog, "random-user-id");
+            var expected = await _repository.Query().CountDocumentsAsync(new BsonDocument());
+
+            // Act
+            var result = await _blogService.DeleteAsync(targetBlog.Id);
+            var actual = await _repository.Query().CountDocumentsAsync(new BsonDocument());
+
+            // Assert
+            expected.Should().Be(actual);
+            result.Should().BeEquivalentTo(new ForbidResult());
+        }
+
+        [Fact]
         public async Task Blog_is_deleted_if_exists_returns_204()
         {
             // Arrange
-            var blog = Builders.GetBlogDto();
+            var blog = Builders.GetBlogCreateDto();
             var targetBlog = await _blogService.CreateAsync(blog);
             var blogCountBeforeDelete = await _repository.Query().CountDocumentsAsync(new BsonDocument());
 
             // Act
             var result = await _blogService.DeleteAsync(targetBlog.Id);
-            var expected = blogCountBeforeDelete - 1;
-            var actual = await _repository.Query().CountDocumentsAsync(new BsonDocument());
+            var currentBlogCount = await _repository.Query().CountDocumentsAsync(new BsonDocument());
 
             // Assert
-            expected.Should().Be(actual);
+            currentBlogCount.Should().Be(blogCountBeforeDelete - 1);
             result.Should().BeEquivalentTo(new NoContentResult());
         }
 
@@ -329,7 +421,7 @@ namespace Blog.FunctionalTests.ServicesTests
         public async Task Blog_is_not_deleted_if_does_not_exist_returns_404()
         {
             // Arrange
-            var blog = Builders.GetBlogDto();
+            var blog = Builders.GetBlogCreateDto();
             await _blogService.CreateAsync(blog);
             var blogCountBeforeDelete = await _repository.Query().CountDocumentsAsync(new BsonDocument());
 

@@ -10,7 +10,7 @@ namespace Blog.API.Services.Interfaces
     {
         Task<BlogModel> CreateAsync(BlogCreateDto blog, string ownerId = null);
         Task<IActionResult> ChangeOwnerAsync(string blogId, string newOwnerId);
-        Task<IActionResult> DisableAsync(string blogId);
+        Task<IActionResult> ToggleEnabledState(string blogId, bool enable);
         Task<IActionResult> UpdateAsync(BlogUpdateDto blog);
         Task<List<BlogModel>> GetAsync();
         Task<ActionResult<List<BlogModel>>> GetAllAsync();

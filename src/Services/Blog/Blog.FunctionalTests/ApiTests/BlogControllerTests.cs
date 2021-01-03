@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text;
 using System.Threading.Tasks;
+using Blog.API.Dtos;
 using Blog.API.Infrastructure.Data;
 using Blog.API.Infrastructure.Data.Models;
 using Blog.API.Infrastructure.Extensions;
 using Blog.API.Services.Interfaces;
 using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -38,16 +42,20 @@ namespace Blog.FunctionalTests.ApiTests
             _repository = factory.Server.Services.GetRequiredService<IBlogRepository>();
         }
 
+        private BlogModel LastUpdatedBlog => GetLastBlogBy(nameof(_currentUsersBlog.UpdatedAt));
+        private BlogModel LastCreatedBlog => GetLastBlogBy(nameof(_currentUsersBlog.CreatedAt));
+
         private async Task InitializeBlogs()
         {
             InitializeDb();
 
-            await _blogService.CreateAsync(Builders.GetBlogDto(), TestConstants.UserId); // blog owned by requesting user
-            await _blogService.CreateAsync(Builders.GetBlogDto(), Guid.NewGuid().ToString()); // blog not owned by requesting user
-            var disabledBlog = await _blogService.CreateAsync(Builders.GetBlogDto(), TestConstants.UserId);
-            var softDeletedBlog = await _blogService.CreateAsync(Builders.GetBlogDto(), TestConstants.UserId);
-
-            await _blogService.DisableAsync(disabledBlog.Id);
+            await _blogService.CreateAsync(Builders.GetBlogCreateDto(), TestConstants.UserId); // blog owned by requesting user
+            await _blogService.CreateAsync(Builders.GetBlogCreateDto(),
+                Guid.NewGuid().ToString()); // blog not owned by requesting user
+            var disabledBlog = await _blogService.CreateAsync(Builders.GetBlogCreateDto(), TestConstants.UserId);
+            var softDeletedBlog = await _blogService.CreateAsync(Builders.GetBlogCreateDto(), TestConstants.UserId);
+            disabledBlog.DisabledAt = DateTime.UtcNow;
+            await _repository.UpdateAsync(disabledBlog);
             await _blogService.SoftDeleteAsync(softDeletedBlog.Id);
 
             await InitializeFields();
@@ -58,6 +66,18 @@ namespace Blog.FunctionalTests.ApiTests
             var currentBlogsCount = _repository.Query().CountDocuments(new BsonDocument());
 
             if (currentBlogsCount > 0) _repository.Query().Database.DropCollection("Blogs");
+        }
+
+
+        private BlogModel GetLastBlogBy(string property)
+        {
+            var sortByDescending = Builders<BlogModel>.Sort.Descending(property);
+            var lastBlog = _repository.Query()
+                .Find(new BsonDocument())
+                .Sort(sortByDescending)
+                .FirstOrDefault();
+
+            return lastBlog;
         }
 
         private async Task InitializeFields()
@@ -109,7 +129,7 @@ namespace Blog.FunctionalTests.ApiTests
         }
 
         [Fact]
-        public async Task GetAll_returns_all_non_soft_deleted_if_admin()
+        public async Task GetAll_returns_all_non_soft_deleted_if_admin_returns_200()
         {
             await InitializeBlogs();
             _runtimeMiddlewareService.SwitchToAdmin();
@@ -123,7 +143,7 @@ namespace Blog.FunctionalTests.ApiTests
         }
 
         [Fact]
-        public async Task Get_by_id_returns_specific_blog()
+        public async Task Get_by_id_returns_specific_blog_returns_200()
         {
             await InitializeBlogs();
             var response = await _client.GetAsync($"api/v1/blog/{_currentUsersBlog.Id}");
@@ -136,11 +156,123 @@ namespace Blog.FunctionalTests.ApiTests
         }
 
         [Fact]
-        public async Task Get_by_id_returns_not_found_if_soft_deleted()
+        public async Task Get_by_id_returns_not_found_if_soft_deleted_returns_404()
         {
             await InitializeBlogs();
             var response = await _client.GetAsync($"api/v1/blog/{_softDeletedBlog.Id}");
             response.StatusCode.Should().Be(404);
+        }
+
+        [Fact]
+        public async Task Create_is_successful_if_valid_request_returns_200()
+        {
+            var response = await _client.PostAsJsonAsync("api/v1/blog", Builders.GetBlogCreateDto());
+            response.EnsureSuccessStatusCode();
+            LastCreatedBlog.CreatedAt.Should().BeCloseTo(DateTime.UtcNow, 200);
+        }
+
+        [Theory]
+        [ClassData(typeof(BlogCreateTestDtos))]
+        public async Task Create_fails_when_invalid_request_returns_400(BlogCreateDto dto)
+        {
+            var response = await _client.PostAsJsonAsync("api/v1/blog", dto);
+            response.Should().BeEquivalentTo(new BadRequestResult());
+            LastCreatedBlog.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task Update_is_successful_if_valid_request_returns_200()
+        {
+            // Arrange
+            await InitializeBlogs();
+            var targetBlog = _currentUsersBlog;
+            var newName = "Random new name";
+
+            // Act
+            targetBlog.Name = newName;
+            var body = new StringContent(Builders.GetBlogUpdateDto(targetBlog).ToJson(), Encoding.UTF8, "application/json");
+            var response = await _client.PatchAsync("api/v1/blog", body);
+
+            // Assert
+            response.EnsureSuccessStatusCode();
+            LastUpdatedBlog.Name.Should().Be(newName);
+            LastUpdatedBlog.UpdatedAt.Should().BeCloseTo(DateTime.UtcNow, 100);
+        }
+
+        [Theory]
+        [ClassData(typeof(BlogUpdateDtos))]
+        public async Task Update_fails_when_invalid_request_returns_400(BlogUpdateDto dto)
+        {
+            // Arrange
+            await InitializeBlogs();
+            dto.Id = _currentUsersBlog.Id;
+            var newFooter = "Random new name";
+
+            // Act
+            dto.Footer = newFooter;
+            var body = new StringContent(dto.ToJson(), Encoding.UTF8, "application/json");
+            var response = await _client.PatchAsync("api/v1/blog", body);
+
+            // Assert
+            response.Should().BeEquivalentTo(new BadRequestResult());
+            LastUpdatedBlog.UpdatedAt.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task Blog_is_disabled_returns_200()
+        {
+            await InitializeBlogs();
+            var response = await _client.PatchAsync($"api/v1/blog/{_currentUsersBlog.Id}/disable", null);
+            var targetBlog = await _repository.GetByIdAsync(_currentUsersBlog.Id);
+            response.EnsureSuccessStatusCode();
+            targetBlog.DisabledAt.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async Task Blog_is_enabled_returns_200()
+        {
+            await InitializeBlogs();
+            var response = await _client.PatchAsync($"api/v1/blog/{_disabledBlog.Id}/enable", null);
+            var targetBlog = await _repository.GetByIdAsync(_disabledBlog.Id);
+            response.EnsureSuccessStatusCode();
+            targetBlog.DisabledAt.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task Blog_owner_is_changed_returns_200()
+        {
+            await InitializeBlogs();
+            var newOwnerId = "1234-1234";
+            var response = await _client.PatchAsync($"api/v1/blog/{_currentUsersBlog.Id}/change-owner/{newOwnerId}", null);
+            var targetBlog = await _repository.GetByIdAsync(_currentUsersBlog.Id);
+            response.EnsureSuccessStatusCode();
+            targetBlog.OwnerId.Should().Be(newOwnerId);
+        }
+
+        [Fact]
+        public async Task Blog_is_soft_deleted_returns_200()
+        {
+            await InitializeBlogs();
+            var response = await _client.PatchAsync($"api/v1/blog/{_currentUsersBlog.Id}/soft-delete", null);
+            var targetBlog = await _repository.GetSoftDeleted(_currentUsersBlog.Id);
+            response.EnsureSuccessStatusCode();
+            targetBlog.SoftDeletedAt.Should().BeCloseTo(DateTime.UtcNow, 200);
+        }
+
+        [Fact]
+        public async Task Blog_is_deleted_returns_204()
+        {
+            // Arrange
+            await InitializeBlogs();
+            var blogCountBeforeDelete = await _repository.Query().CountDocumentsAsync(new BsonDocument());
+
+            // Act
+            var response = await _client.DeleteAsync($"api/v1/blog/{_currentUsersBlog.Id}");
+            var actual = await _repository.Query().CountDocumentsAsync(new BsonDocument());
+
+            // Assert
+            actual.Should().Be(blogCountBeforeDelete - 1);
+            response.StatusCode.Should().Be(204);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Blog.API.Infrastructure.Data.Models;
 using MongoDB.Driver;
@@ -36,12 +37,23 @@ namespace Blog.API.Infrastructure.Data
 
         public async Task<ReplaceOneResult> UpdateAsync(BlogModel blog)
         {
+            blog.UpdatedAt = DateTime.UtcNow;
             return await _collection.ReplaceOneAsync(x => x.Id == blog.Id, blog);
         }
 
         public async Task<DeleteResult> DeleteAsync(string id)
         {
             return await _collection.DeleteOneAsync(x => x.Id == id);
+        }
+
+        public async Task<BlogModel> GetSoftDeleted(string id)
+        {
+            return await _collection.Find(x => x.Id == id && x.SoftDeletedAt.HasValue).FirstOrDefaultAsync();
+        }
+
+        public async Task<List<BlogModel>> GetUsersSoftDeleted(string userId)
+        {
+            return await _collection.Find(x => x.OwnerId == userId && x.SoftDeletedAt.HasValue).ToListAsync();
         }
     }
 }
