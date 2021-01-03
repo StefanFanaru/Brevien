@@ -54,8 +54,9 @@ namespace Blog.FunctionalTests.ApiTests
             var disabledBlog = await _blogService.CreateAsync(Builders.GetBlogCreateDto(), TestConstants.UserId);
             var softDeletedBlog = await _blogService.CreateAsync(Builders.GetBlogCreateDto(), TestConstants.UserId);
             disabledBlog.DisabledAt = DateTime.UtcNow;
+            softDeletedBlog.SoftDeletedAt = DateTime.UtcNow;
             await _repository.UpdateAsync(disabledBlog);
-            await _blogService.SoftDeleteAsync(softDeletedBlog.Id);
+            await _repository.UpdateAsync(softDeletedBlog);
 
             await InitializeFields();
         }
@@ -214,7 +215,6 @@ namespace Blog.FunctionalTests.ApiTests
 
             // Assert
             response.Should().BeEquivalentTo(new BadRequestResult());
-            LastUpdatedBlog.UpdatedAt.Should().BeNull();
         }
 
         [Fact]
@@ -263,6 +263,7 @@ namespace Blog.FunctionalTests.ApiTests
         {
             // Arrange
             await InitializeBlogs();
+            _runtimeMiddlewareService.SwitchToBasicUser();
             var blogCountBeforeDelete = await _repository.Query().CountDocumentsAsync(new BsonDocument());
 
             // Act
@@ -270,8 +271,8 @@ namespace Blog.FunctionalTests.ApiTests
             var actual = await _repository.Query().CountDocumentsAsync(new BsonDocument());
 
             // Assert
-            actual.Should().Be(blogCountBeforeDelete - 1);
             response.StatusCode.Should().Be(204);
+            actual.Should().Be(blogCountBeforeDelete - 1);
         }
     }
 }

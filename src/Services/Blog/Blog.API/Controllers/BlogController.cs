@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Blog.API.Asp.Validators;
 using Blog.API.Dtos;
 using Blog.API.Infrastructure.Data.Models;
-using Blog.API.Infrastructure.Validators;
 using Blog.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

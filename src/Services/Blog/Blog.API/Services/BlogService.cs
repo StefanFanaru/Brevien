@@ -7,6 +7,7 @@ using Blog.API.Dtos;
 using Blog.API.Infrastructure.Data;
 using Blog.API.Infrastructure.Data.Models;
 using Blog.API.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 
@@ -122,6 +123,11 @@ namespace Blog.API.Services
         {
             var entity = await _repository.GetByIdAsync(blog.Id);
 
+            if (entity == null)
+            {
+                return new NotFoundResult();
+            }
+
             entity.Name = blog.Name;
             entity.Title = blog.Title;
             entity.Heading = blog.Heading;
@@ -143,6 +149,11 @@ namespace Blog.API.Services
         {
             var entity = await _repository.GetByIdAsync(blogId);
 
+            if (entity == null)
+            {
+                return new NotFoundResult();
+            }
+
             if (entity.OwnerId != _userInfo.Id)
             {
                 return new ForbidResult();
@@ -155,7 +166,7 @@ namespace Blog.API.Services
                 return new NoContentResult();
             }
 
-            return new NotFoundResult();
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
         public async Task<IActionResult> SoftDeleteAsync(string blogId)

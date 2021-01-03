@@ -1,8 +1,8 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using Blog.API.Asp;
+using Blog.API.Asp.Validators;
 using Blog.API.Configuration;
-using Blog.API.Infrastructure.Validators;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;

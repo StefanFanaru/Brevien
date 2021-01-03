@@ -1,7 +1,7 @@
 ﻿using Blog.API.Dtos;
 using FluentValidation;
 
-namespace Blog.API.Infrastructure.Validators
+namespace Blog.API.Asp.Validators
 {
     public class BlogControllerValidators
     {

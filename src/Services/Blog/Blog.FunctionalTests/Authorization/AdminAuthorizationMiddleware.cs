@@ -20,7 +20,7 @@ namespace Blog.FunctionalTests.Authorization
             var identity = new ClaimsIdentity("Bearer");
             identity.AddClaims(new Claim[]
             {
-                new(Claims.UserId, TestConstants.UserId),
+                new(Claims.UserId, TestConstants.AdminId),
                 new(Claims.Email, "test.admin@gmail.com"),
                 new(Claims.Role, Roles.Administrator),
                 new(Claims.FirstName, "Test"),
