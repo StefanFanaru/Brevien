@@ -55,22 +55,6 @@ namespace Posting.API
             }
         }
 
-
-        /// <summary>
-        /// Configure the dependency injection services
-        /// </summary>
-        private static IServiceProvider CreateServices()
-        {
-            return new ServiceCollection()
-                // Add common FluentMigrator services
-
-                // Build the service provider
-                .BuildServiceProvider(false);
-        }
-
-        /// <summary>
-        /// Update the database
-        /// </summary>
         private static void UpdateDatabase(IServiceProvider serviceProvider)
         {
             // Instantiate the runner
