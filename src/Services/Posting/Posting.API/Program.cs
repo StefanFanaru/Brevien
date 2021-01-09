@@ -1,4 +1,5 @@
 using System;
+using System.Data.SqlClient;
 using System.IO;
 using System.Threading.Tasks;
 using FluentMigrator.Runner;
@@ -6,7 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Posting.Infrastructure.Data;
+using Posting.Infrastructure.Data.Configuration;
 using Serilog;
 
 namespace Posting.API
@@ -35,8 +36,8 @@ namespace Posting.API
                 Log.Information("Starting host...");
 
                 var host = CreateHostBuilder(args).Build();
-
-                await DatabaseCreator.EnsureDatabaseExists(dbServer, databaseName);
+                var connection = new SqlConnection(dbServer);
+                await connection.EnsureDatabaseExists(databaseName);
 
                 using (var scope = host.Services.CreateScope())
                 {

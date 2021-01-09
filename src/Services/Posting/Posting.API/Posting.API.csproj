@@ -6,6 +6,7 @@
 
     <ItemGroup>
         <PackageReference Include="FluentMigrator.Runner" Version="3.2.10"/>
+        <PackageReference Include="FluentMigrator.Tools" Version="3.2.11"/>
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.1" NoWarn="NU1605"/>
         <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.1" NoWarn="NU1605"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3"/>
