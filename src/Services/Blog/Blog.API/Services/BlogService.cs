@@ -103,9 +103,9 @@ namespace Blog.API.Services
             return new NotFoundResult();
         }
 
-        public async Task<List<BlogModel>> GetAsync()
+        public async Task<List<BlogModel>> GetByUserId(string id)
         {
-            return await _repository.GetByUserAsync(_userInfo.Id);
+            return await _repository.GetByUserAsync(id);
         }
 
         public async Task<ActionResult<List<BlogModel>>> GetAllAsync()

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Blog.API.Asp;
 using Blog.API.Asp.Validators;
 using Blog.API.Dtos;
 using Blog.API.Infrastructure.Data.Models;
@@ -15,16 +16,18 @@ namespace Blog.API.Controllers
     public class BlogController : ControllerBase
     {
         private readonly IBlogService _blogService;
+        private readonly IUserInfo _userInfo;
 
-        public BlogController(IBlogService blogService)
+        public BlogController(IBlogService blogService, IUserInfo userInfo)
         {
             _blogService = blogService;
+            _userInfo = userInfo;
         }
 
-        [HttpGet]
+        [HttpGet("current-user")]
         public async Task<List<BlogModel>> Get()
         {
-            return await _blogService.GetAsync();
+            return await _blogService.GetByUserId(_userInfo.Id);
         }
 
         [HttpGet]

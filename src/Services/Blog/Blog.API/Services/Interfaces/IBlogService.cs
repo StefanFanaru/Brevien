@@ -12,7 +12,7 @@ namespace Blog.API.Services.Interfaces
         Task<IActionResult> ChangeOwnerAsync(string blogId, string newOwnerId);
         Task<IActionResult> ToggleEnabledState(string blogId, bool enable);
         Task<IActionResult> UpdateAsync(BlogUpdateDto blog);
-        Task<List<BlogModel>> GetAsync();
+        Task<List<BlogModel>> GetByUserId(string id);
         Task<ActionResult<List<BlogModel>>> GetAllAsync();
         Task<IActionResult> GetAsync(string id);
         Task<IActionResult> DeleteAsync(string blogId);

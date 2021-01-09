@@ -109,7 +109,7 @@ namespace Blog.FunctionalTests.ApiTests
         public async Task Get_returns_all_of_users_non_soft_deleted_blogs()
         {
             await InitializeBlogs();
-            var response = await _client.GetAsync("api/v1/blog");
+            var response = await _client.GetAsync("api/v1/blog/current-user");
             response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsStringAsync();

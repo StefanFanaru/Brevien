@@ -234,7 +234,7 @@ namespace Blog.FunctionalTests.ServicesTests
             var blogs = new List<API.Infrastructure.Data.Models.BlogModel> {targetBlog};
 
             // Act
-            var result = await _blogService.GetAsync();
+            var result = await _blogService.GetByUserId(TestConstants.UserId);
 
             // Assert
             result.Should().BeEquivalentTo(blogs, options =>
