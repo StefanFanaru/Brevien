@@ -9,8 +9,8 @@ namespace Posting.Core.Entities
     {
         public Reaction(string userId, string postId, ReactionType type) : base(Guid.NewGuid().ToString())
         {
-            Guard.Against.NullOrEmpty(userId, nameof(userId));
-            Guard.Against.NullOrEmpty(postId, nameof(postId));
+            Guard.Against.NullOrWhiteSpace(userId, nameof(userId));
+            Guard.Against.NullOrWhiteSpace(postId, nameof(postId));
 
             UserId = userId;
             PostId = postId;

@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using Microsoft.Data.Sqlite;
+using Posting.Core.Interfaces;
 
 namespace Posting.Infrastructure.Data.Configuration
 {

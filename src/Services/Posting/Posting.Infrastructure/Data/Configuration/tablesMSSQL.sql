@@ -16,10 +16,10 @@ CREATE TABLE Comments
 (
     Id        NVARCHAR(36)   NOT NULL,
     UserId    NVARCHAR(36)   NOT NULL,
-    Text      NVARCHAR(2500) NOT NULL,
+    Content   NVARCHAR(2500) NOT NULL,
     CreatedAt DATETIME2      NOT NULL,
-    UpdatedAt DATETIME2      NOT NULL,
     PostId    NVARCHAR(36)   NOT NULL,
+    UpdatedAt DATETIME2,
     CONSTRAINT PK_Comments
         PRIMARY KEY (Id),
     CONSTRAINT FK_Comments_Posts_PostId

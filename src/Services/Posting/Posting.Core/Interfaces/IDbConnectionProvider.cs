@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace Posting.Infrastructure.Data.Configuration
+namespace Posting.Core.Interfaces
 {
     public interface IDbConnectionProvider
     {

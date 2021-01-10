@@ -8,9 +8,9 @@ namespace Posting.Core.Entities
     {
         public Comment(string userId, string postId, string content) : base(Guid.NewGuid().ToString())
         {
-            Guard.Against.NullOrEmpty(userId, nameof(userId));
-            Guard.Against.NullOrEmpty(postId, nameof(postId));
-            Guard.Against.NullOrEmpty(content, nameof(content));
+            Guard.Against.NullOrWhiteSpace(userId, nameof(userId));
+            Guard.Against.NullOrWhiteSpace(postId, nameof(postId));
+            Guard.Against.NullOrWhiteSpace(content, nameof(content));
 
             UserId = userId;
             PostId = postId;
@@ -18,20 +18,21 @@ namespace Posting.Core.Entities
             CreatedAt = DateTime.UtcNow;
         }
 
-        public string UserId { get; set; }
-        public string PostId { get; set; }
-        public string Content { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
-
-        public void Edit(string content)
+        public Comment()
         {
-            if (Content != content)
-            {
-                Guard.Against.NullOrEmpty(content, nameof(content));
-                Content = content;
-                UpdatedAt = DateTime.UtcNow;
-            }
+        }
+
+        public string UserId { get; private set; }
+        public string PostId { get; private set; }
+        public string Content { get; private set; }
+        public DateTime CreatedAt { get; private set; }
+        public DateTime? UpdatedAt { get; private set; }
+
+        public void EditContent(string content)
+        {
+            Guard.Against.NullOrWhiteSpace(content, nameof(content));
+            Content = content;
+            UpdatedAt = DateTime.UtcNow;
         }
     }
 }

@@ -4,20 +4,20 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 using Dapper;
-using Posting.Infrastructure.Data.Configuration;
+using Posting.Core.Interfaces;
 
-namespace Posting.Infrastructure.Data
+namespace Posting.Infrastructure.Data.Repositories
 {
     public class DapperRepository<T> : IRepository<T> where T : class
 
     {
         private readonly IDbConnectionProvider _connectionProvider;
-        private readonly string _tableName;
+        protected readonly string TableName;
 
         public DapperRepository(IDbConnectionProvider connectionProvider)
         {
             _connectionProvider = connectionProvider;
-            _tableName = $"{typeof(T).Name}s";
+            TableName = $"{typeof(T).Name}s";
         }
 
         private List<string> EntityProperties => typeof(T).GetProperties().Select(x => x.Name).ToList();
@@ -25,19 +25,19 @@ namespace Posting.Infrastructure.Data
         public async Task<IEnumerable<T>> GetAllAsync()
         {
             using var connection = _connectionProvider.GetConnection();
-            return await connection.QueryAsync<T>($"SELECT * FROM {_tableName}");
+            return await connection.QueryAsync<T>($"SELECT * FROM {TableName}");
         }
 
         public async Task DeleteAsync(string id)
         {
             using var connection = _connectionProvider.GetConnection();
-            await connection.ExecuteAsync($"DELETE FROM {_tableName} WHERE Id=@Id", new {Id = id});
+            await connection.ExecuteAsync($"DELETE FROM {TableName} WHERE Id=@Id", new {Id = id});
         }
 
         public async Task<T> GetAsync(string id)
         {
             using var connection = _connectionProvider.GetConnection();
-            return await connection.QuerySingleOrDefaultAsync<T>($"SELECT * FROM {_tableName} WHERE Id=@Id",
+            return await connection.QuerySingleOrDefaultAsync<T>($"SELECT * FROM {TableName} WHERE Id=@Id",
                 new {Id = id});
         }
 
@@ -78,9 +78,15 @@ namespace Posting.Infrastructure.Data
             return inserted;
         }
 
+        public async Task<IEnumerable<T>> GetByKeyAsync(string keyName, string keyValue)
+        {
+            using var connection = _connectionProvider.GetConnection();
+            return await connection.QueryAsync<T>($"SELECT * FROM {TableName} WHERE {keyName}='{keyValue}'");
+        }
+
         private string GenerateInsertQuery()
         {
-            var insertQuery = new StringBuilder($"INSERT INTO {_tableName} ");
+            var insertQuery = new StringBuilder($"INSERT INTO {TableName} ");
 
             insertQuery.Append("(");
 
@@ -101,7 +107,7 @@ namespace Posting.Infrastructure.Data
 
         private string GenerateUpdateQuery()
         {
-            var updateQuery = new StringBuilder($"UPDATE {_tableName} SET ");
+            var updateQuery = new StringBuilder($"UPDATE {TableName} SET ");
 
             EntityProperties.ForEach(property =>
             {

@@ -8,7 +8,7 @@ namespace Posting.Infrastructure.Data.Configuration
 {
     public static class DatabaseCreator
     {
-        public static async Task EnsureDatabaseExists(this IDbConnection connection, string databaseName)
+        public static async Task EnsureDatabaseExistsAsync(this IDbConnection connection, string databaseName)
         {
             var query = $"IF NOT EXISTS(SELECT * FROM sys.databases WHERE name = '{databaseName}')" +
                         $"BEGIN " +

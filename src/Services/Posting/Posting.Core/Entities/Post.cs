@@ -12,11 +12,11 @@ namespace Posting.Core.Entities
 
         public Post(string title, string content, string url, string userId, string blogId) : base(Guid.NewGuid().ToString())
         {
-            Guard.Against.NullOrEmpty(title, nameof(title));
-            Guard.Against.NullOrEmpty(content, nameof(content));
-            Guard.Against.NullOrEmpty(url, nameof(url));
-            Guard.Against.NullOrEmpty(userId, nameof(userId));
-            Guard.Against.NullOrEmpty(blogId, nameof(blogId));
+            Guard.Against.NullOrWhiteSpace(title, nameof(title));
+            Guard.Against.NullOrWhiteSpace(content, nameof(content));
+            Guard.Against.NullOrWhiteSpace(url, nameof(url));
+            Guard.Against.NullOrWhiteSpace(userId, nameof(userId));
+            Guard.Against.NullOrWhiteSpace(blogId, nameof(blogId));
 
             Title = title;
             Content = content;
@@ -36,21 +36,21 @@ namespace Posting.Core.Entities
 
         public void EditContent(string content)
         {
-            Guard.Against.NullOrEmpty(content, nameof(content));
+            Guard.Against.NullOrWhiteSpace(content, nameof(content));
             Content = content;
             UpdatedAt = DateTime.UtcNow;
         }
 
         public void ChangeUrl(string url)
         {
-            Guard.Against.NullOrEmpty(url, nameof(url));
+            Guard.Against.NullOrWhiteSpace(url, nameof(url));
             Url = url;
             UpdatedAt = DateTime.UtcNow;
         }
 
         public void EditTitle(string title)
         {
-            Guard.Against.NullOrEmpty(title, nameof(title));
+            Guard.Against.NullOrWhiteSpace(title, nameof(title));
             Title = title;
             UpdatedAt = DateTime.UtcNow;
         }

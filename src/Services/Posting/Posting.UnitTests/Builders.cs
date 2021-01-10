@@ -1,4 +1,5 @@
 ﻿using Posting.Core.Entities;
+using Posting.Core.Enums;
 
 namespace Posting.UnitTests
 {
@@ -9,8 +10,25 @@ namespace Posting.UnitTests
             return new Post(
                 "Test post",
                 "This is a simple test post, written for tests",
-                "https://test.post/test-post", "591a4046-ee26-42e4-a836-970b23fbb47e",
+                "https://test.post/test-post",
+                TestConstants.UserId,
                 "0db4fd74-ca72-4f69-9bb8-5756e08d65ff");
+        }
+
+        public static Comment GetCommentEntity(string postId = "5dd82d10-3245-4bb9-9b33-0a9228dc4be6")
+        {
+            return new Comment(
+                TestConstants.UserId,
+                postId,
+                "This is a simple test comment, written for tests");
+        }
+
+        public static Reaction GetReactionEntity(string postId = "09f21c41-1f26-49e2-83c4-1568d008ed19")
+        {
+            return new Reaction(
+                TestConstants.UserId,
+                postId,
+                ReactionType.Like);
         }
     }
 }

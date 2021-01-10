@@ -1,29 +1,27 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Posting.Core.Entities;
-using Posting.Infrastructure.Data;
 using Posting.Infrastructure.Data.Configuration;
+using Posting.Infrastructure.Data.Repositories;
 using Xunit;
 
-namespace Posting.UnitTests
+namespace Posting.UnitTests.PersistenceTests
 {
+    [Collection("Sequential")]
     public class DapperRepositoryTests
     {
-        private IDbConnection _connection;
-        private SqliteConnectionProvider _connectionProvider;
-        private DapperRepository<Post> _repository;
+        private readonly DapperRepository<Post> _repository;
 
         public DapperRepositoryTests()
         {
-            _connectionProvider = SqliteConnectionProvider.Instance;
-            _connectionProvider.Reset();
-            _connection = _connectionProvider.GetConnection();
-            _connection.CreateTables(true);
-            _repository = new DapperRepository<Post>(_connectionProvider);
+            var connectionProvider = SqliteConnectionProvider.Instance;
+            connectionProvider.Reset();
+            var connection = connectionProvider.GetConnection();
+            connection.CreateTables(true);
+            _repository = new DapperRepository<Post>(connectionProvider);
         }
 
         [Fact]
