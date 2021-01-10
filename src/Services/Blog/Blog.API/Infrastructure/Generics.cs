@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Madara.Api.Composition
+namespace Blog.API.Infrastructure
 {
     public static class Generics
     {

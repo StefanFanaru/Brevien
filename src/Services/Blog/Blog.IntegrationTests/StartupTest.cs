@@ -1,9 +1,9 @@
 ﻿using Blog.API;
-using Blog.FunctionalTests.Authorization;
+using Blog.IntegrationTests.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 
-namespace Blog.FunctionalTests
+namespace Blog.IntegrationTests
 {
     public class StartupTest : Startup
     {

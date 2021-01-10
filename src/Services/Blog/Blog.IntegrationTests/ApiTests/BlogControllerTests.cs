@@ -16,7 +16,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using Xunit;
 
-namespace Blog.FunctionalTests.ApiTests
+namespace Blog.IntegrationTests.ApiTests
 {
     [UseCleanMongoDb("brevien-blog-api-tests")]
     public class BlogControllerTests : IClassFixture<ApiTestFixture>

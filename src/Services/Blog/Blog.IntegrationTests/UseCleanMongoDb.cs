@@ -3,7 +3,7 @@ using System.Reflection;
 using MongoDB.Driver;
 using Xunit.Sdk;
 
-namespace Blog.FunctionalTests
+namespace Blog.IntegrationTests
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public class UseCleanMongoDb : BeforeAfterTestAttribute

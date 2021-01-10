@@ -1,10 +1,9 @@
 ﻿using System.Security.Claims;
 using System.Threading.Tasks;
 using Blog.API.Asp;
-using Blog.API.Common;
 using Microsoft.AspNetCore.Http;
 
-namespace Blog.FunctionalTests.Authorization
+namespace Blog.IntegrationTests.Authorization
 {
     internal class BasicUserAuthorizationMiddleware
     {

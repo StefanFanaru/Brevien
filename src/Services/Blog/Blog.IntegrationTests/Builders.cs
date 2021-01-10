@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Blog.API.Dtos;
 
-namespace Blog.FunctionalTests
+namespace Blog.IntegrationTests
 {
     public static class Builders
     {

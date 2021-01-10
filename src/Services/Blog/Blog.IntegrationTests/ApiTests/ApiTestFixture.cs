@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Blog.FunctionalTests.ApiTests
+namespace Blog.IntegrationTests.ApiTests
 {
     public class ApiTestFixture : WebApplicationFactory<Startup>
     {

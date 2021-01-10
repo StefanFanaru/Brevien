@@ -1,4 +1,4 @@
-﻿namespace Blog.API.Common
+﻿namespace Blog.API.Asp
 {
     public static class Roles
     {

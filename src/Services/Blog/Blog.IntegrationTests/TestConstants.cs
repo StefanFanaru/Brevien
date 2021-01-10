@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Blog.FunctionalTests
+namespace Blog.IntegrationTests
 {
     public class TestConstants
     {

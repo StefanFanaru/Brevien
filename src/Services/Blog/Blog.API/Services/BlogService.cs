@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Blog.API.Asp;
-using Blog.API.Common;
 using Blog.API.Dtos;
 using Blog.API.Infrastructure.Data;
 using Blog.API.Infrastructure.Data.Models;

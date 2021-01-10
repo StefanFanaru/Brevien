@@ -1,10 +1,10 @@
 ﻿using System;
-using Blog.FunctionalTests.Authorization;
+using Blog.IntegrationTests.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Blog.FunctionalTests
+namespace Blog.IntegrationTests
 {
     public class RuntimeMiddlewareService
     {

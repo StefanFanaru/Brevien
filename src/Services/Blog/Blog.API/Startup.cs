@@ -1,16 +1,13 @@
-using System;
-using System.IdentityModel.Tokens.Jwt;
 using Blog.API.Asp;
 using Blog.API.Asp.Validators;
 using Blog.API.Configuration;
+using Blog.API.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using JsonExtensions = Blog.API.Infrastructure.Extensions.JsonExtensions;
 
 namespace Blog.API
 {
@@ -19,14 +16,16 @@ namespace Blog.API
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            StaticConfiguration = configuration;
         }
 
         public IConfiguration Configuration { get; }
+        public static IConfiguration StaticConfiguration { get; private set; }
 
         public virtual void ConfigureServices(IServiceCollection services)
         {
             services
-                .AddApiServices(Configuration)
+                .AddApiServices()
                 .AddFluentValidators(typeof(BlogControllerValidators.CreateValidator).Assembly);
 
             services.AddControllers().AddApplicationPart(typeof(Startup).Assembly).AddNewtonsoftJson(options =>
@@ -38,43 +37,7 @@ namespace Blog.API
 
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Blog.API", Version = "v1"}); });
 
-            ConfigureAuthService(services);
-        }
-
-        private void ConfigureAuthService(IServiceCollection services)
-        {
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-
-            var authority = Configuration.GetSection("ApplicationUrls:IdentityAPI").Value;
-            services.AddAuthentication("Bearer")
-                .AddJwtBearer("Bearer", options =>
-                {
-                    options.Authority = authority;
-                    options.Audience = "blog_api";
-                    options.RequireHttpsMetadata = false;
-
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ClockSkew = TimeSpan.Zero,
-                        IssuerValidator = (issuer, token, parameters) => authority // to support Docker internal network
-                    };
-                });
-
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("ApiScope", policy =>
-                {
-                    policy.RequireAuthenticatedUser();
-                    policy.RequireClaim("scope", "blog_api_full");
-                });
-
-                options.AddPolicy("AdminOnly",
-                    policyBuilder => policyBuilder
-                        .RequireAuthenticatedUser()
-                        .RequireClaim("role", "Administrator"));
-            });
+            services.AddAuth();
         }
 
         protected virtual void ConfigureAuth(IApplicationBuilder app)
@@ -86,7 +49,10 @@ namespace Blog.API
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             var pathBase = Configuration["PATH_BASE"];
-            if (!string.IsNullOrEmpty(pathBase)) app.UsePathBase(pathBase);
+            if (!string.IsNullOrEmpty(pathBase))
+            {
+                app.UsePathBase(pathBase);
+            }
 
             if (env.IsDevelopment())
             {
@@ -94,8 +60,8 @@ namespace Blog.API
                 app.UseRequestResponseLogging();
             }
 
-            app.UseSwagger()
-                .UseSwaggerUI(c => { c.SwaggerEndpoint($"{pathBase}/swagger/v1/swagger.json", "Blog.API V1"); });
+            app.UseSwagger();
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint($"{pathBase}/swagger/v1/swagger.json", "Blog.API V1"); });
 
             app.UseHttpsRedirection();
 

@@ -6,7 +6,7 @@ using Blog.API.Asp;
 using Blog.API.Infrastructure.Data;
 using Blog.API.Services;
 using Blog.API.Services.Interfaces;
-using Blog.FunctionalTests.Authorization;
+using Blog.IntegrationTests.Authorization;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +14,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using Xunit;
 
-namespace Blog.FunctionalTests.ServicesTests
+namespace Blog.IntegrationTests.ServicesTests
 {
     [UseCleanMongoDb("brevien-blog-services-tests")]
     public class BlogServiceTests : IClassFixture<ServiceTestsFixture>

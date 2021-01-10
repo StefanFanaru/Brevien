@@ -2,7 +2,7 @@
 using Blog.API;
 using Blog.API.Asp;
 using Blog.API.Infrastructure.Data;
-using Blog.FunctionalTests.Authorization;
+using Blog.IntegrationTests.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.Routing;
@@ -10,7 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Blog.FunctionalTests.ServicesTests
+namespace Blog.IntegrationTests.ServicesTests
 {
     public class ServiceTestsFixture : WebApplicationFactory<Startup>
     {
