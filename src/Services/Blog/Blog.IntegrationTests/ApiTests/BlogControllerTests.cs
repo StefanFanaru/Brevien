@@ -18,8 +18,9 @@ using Xunit;
 
 namespace Blog.IntegrationTests.ApiTests
 {
-    [UseCleanMongoDb("brevien-blog-api-tests")]
-    public class BlogControllerTests : IClassFixture<ApiTestFixture>
+    [UseCleanMongoDb]
+    [Collection("Sequential")]
+    public class BlogControllerTests : IClassFixture<ApiTestsFixture>
     {
         private readonly IBlogService _blogService;
         private readonly HttpClient _client;
@@ -33,7 +34,7 @@ namespace Blog.IntegrationTests.ApiTests
         private List<API.Infrastructure.Data.Models.BlogModel> _nonDeletedBlogs;
         private API.Infrastructure.Data.Models.BlogModel _softDeletedBlog;
 
-        public BlogControllerTests(ApiTestFixture factory)
+        public BlogControllerTests(ApiTestsFixture factory)
         {
             _client = factory.Server.CreateClient();
             _runtimeMiddlewareService = factory.Server.Services.GetRequiredService<RuntimeMiddlewareService>();
@@ -65,7 +66,10 @@ namespace Blog.IntegrationTests.ApiTests
         {
             var currentBlogsCount = _repository.Query().CountDocuments(new BsonDocument());
 
-            if (currentBlogsCount > 0) _repository.Query().Database.DropCollection("Blogs");
+            if (currentBlogsCount > 0)
+            {
+                _repository.Query().Database.DropCollection("Blogs");
+            }
         }
 
 
@@ -106,9 +110,11 @@ namespace Blog.IntegrationTests.ApiTests
         }
 
         [Fact]
+        [UseCleanMongoDb]
         public async Task Get_returns_all_of_users_non_soft_deleted_blogs()
         {
             await InitializeBlogs();
+            _runtimeMiddlewareService.SwitchToBasicUser();
             var response = await _client.GetAsync("api/v1/blog/current-user");
             response.EnsureSuccessStatusCode();
 
@@ -124,6 +130,7 @@ namespace Blog.IntegrationTests.ApiTests
         public async Task GetAll_returns_403_if_not_admin()
         {
             await InitializeBlogs();
+            _runtimeMiddlewareService.SwitchToBasicUser();
             var response = await _client.GetAsync("api/v1/blog/all");
             response.StatusCode.Should().Be(403);
         }

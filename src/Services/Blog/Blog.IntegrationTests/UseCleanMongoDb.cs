@@ -10,10 +10,10 @@ namespace Blog.IntegrationTests
     {
         private readonly IMongoDatabase _database;
 
-        public UseCleanMongoDb(string databaseName)
+        public UseCleanMongoDb()
         {
             var client = new MongoClient("mongodb://localhost:27017");
-            _database = client.GetDatabase(databaseName);
+            _database = client.GetDatabase("brevien-blog-tests");
         }
 
         public override void Before(MethodInfo methodUnderTest)

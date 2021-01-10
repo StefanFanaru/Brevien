@@ -16,7 +16,8 @@ using Xunit;
 
 namespace Blog.IntegrationTests.ServicesTests
 {
-    [UseCleanMongoDb("brevien-blog-services-tests")]
+    [UseCleanMongoDb]
+    [Collection("Sequential")]
     public class BlogServiceTests : IClassFixture<ServiceTestsFixture>
     {
         private readonly IUserInfo _adminUserInfo;
