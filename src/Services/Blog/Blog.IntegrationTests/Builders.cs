@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Blog.API.Dtos;
+using Blog.API.Infrastructure.Data.Models;
 
 namespace Blog.IntegrationTests
 {
@@ -23,7 +24,7 @@ namespace Blog.IntegrationTests
             };
         }
 
-        public static BlogUpdateDto GetBlogUpdateDto(API.Infrastructure.Data.Models.BlogModel blogCreateDto)
+        public static BlogUpdateDto GetBlogUpdateDto(BlogModel blogCreateDto)
         {
             return new()
             {
@@ -52,7 +53,7 @@ namespace Blog.IntegrationTests
         {
             yield return new object[]
             {
-                new BlogCreateDto()
+                new BlogCreateDto
                 {
                     Title = "Title test",
                     Footer = "Footer test",
@@ -64,7 +65,7 @@ namespace Blog.IntegrationTests
             };
             yield return new object[]
             {
-                new BlogCreateDto()
+                new BlogCreateDto
                 {
                     Title = "Title test",
                     Footer = "Footer test",
@@ -76,7 +77,7 @@ namespace Blog.IntegrationTests
             };
             yield return new object[]
             {
-                new BlogCreateDto()
+                new BlogCreateDto
                 {
                     Title = null,
                     Footer = "Footer test",
@@ -88,19 +89,22 @@ namespace Blog.IntegrationTests
             };
             yield return new object[]
             {
-                new BlogCreateDto()
+                new BlogCreateDto
                 {
                     Title = "Title test",
                     Footer = "Footer test",
                     Heading = "Heading test",
                     Name = "Name test",
                     Path = "/test-blog",
-                    Uri = null,
+                    Uri = null
                 }
             };
         }
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 
     public class BlogUpdateDtos : IEnumerable<object[]>
@@ -109,7 +113,7 @@ namespace Blog.IntegrationTests
         {
             yield return new object[]
             {
-                new BlogUpdateDto()
+                new BlogUpdateDto
                 {
                     Title = "Title test",
                     Footer = "Footer test",
@@ -121,7 +125,7 @@ namespace Blog.IntegrationTests
             };
             yield return new object[]
             {
-                new BlogUpdateDto()
+                new BlogUpdateDto
                 {
                     Title = "Title test",
                     Footer = "Footer test",
@@ -133,7 +137,7 @@ namespace Blog.IntegrationTests
             };
             yield return new object[]
             {
-                new BlogUpdateDto()
+                new BlogUpdateDto
                 {
                     Title = null,
                     Footer = "Footer test",
@@ -145,18 +149,21 @@ namespace Blog.IntegrationTests
             };
             yield return new object[]
             {
-                new BlogUpdateDto()
+                new BlogUpdateDto
                 {
                     Title = "Title test",
                     Footer = "Footer test",
                     Heading = "Heading test",
                     Name = "Name test",
                     Path = "/test-blog",
-                    Uri = null,
+                    Uri = null
                 }
             };
         }
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }

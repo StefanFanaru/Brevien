@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Blog.API.Dtos;
 using Blog.API.Infrastructure.Data;
+using Blog.API.Infrastructure.Data.Models;
 using Blog.API.Infrastructure.Extensions;
 using Blog.API.Services.Interfaces;
 using FluentAssertions;
@@ -26,13 +27,13 @@ namespace Blog.IntegrationTests.ApiTests
         private readonly HttpClient _client;
         private readonly IBlogRepository _repository;
         private readonly RuntimeMiddlewareService _runtimeMiddlewareService;
-        private List<API.Infrastructure.Data.Models.BlogModel> _allBlogs;
-        private API.Infrastructure.Data.Models.BlogModel _anotherUsersBlog;
-        private List<API.Infrastructure.Data.Models.BlogModel> _currentUserAllBlogs;
-        private API.Infrastructure.Data.Models.BlogModel _currentUsersBlog;
-        private API.Infrastructure.Data.Models.BlogModel _disabledBlog;
-        private List<API.Infrastructure.Data.Models.BlogModel> _nonDeletedBlogs;
-        private API.Infrastructure.Data.Models.BlogModel _softDeletedBlog;
+        private List<BlogModel> _allBlogs;
+        private BlogModel _anotherUsersBlog;
+        private List<BlogModel> _currentUserAllBlogs;
+        private BlogModel _currentUsersBlog;
+        private BlogModel _disabledBlog;
+        private List<BlogModel> _nonDeletedBlogs;
+        private BlogModel _softDeletedBlog;
 
         public BlogControllerTests(ApiTestsFixture factory)
         {
@@ -42,8 +43,8 @@ namespace Blog.IntegrationTests.ApiTests
             _repository = factory.Server.Services.GetRequiredService<IBlogRepository>();
         }
 
-        private API.Infrastructure.Data.Models.BlogModel LastUpdatedBlog => GetLastBlogBy(nameof(_currentUsersBlog.UpdatedAt));
-        private API.Infrastructure.Data.Models.BlogModel LastCreatedBlog => GetLastBlogBy(nameof(_currentUsersBlog.CreatedAt));
+        private BlogModel LastUpdatedBlog => GetLastBlogBy(nameof(_currentUsersBlog.UpdatedAt));
+        private BlogModel LastCreatedBlog => GetLastBlogBy(nameof(_currentUsersBlog.CreatedAt));
 
         private async Task InitializeBlogs()
         {
@@ -73,9 +74,9 @@ namespace Blog.IntegrationTests.ApiTests
         }
 
 
-        private API.Infrastructure.Data.Models.BlogModel GetLastBlogBy(string property)
+        private BlogModel GetLastBlogBy(string property)
         {
-            var sortByDescending = Builders<API.Infrastructure.Data.Models.BlogModel>.Sort.Descending(property);
+            var sortByDescending = Builders<BlogModel>.Sort.Descending(property);
             var lastBlog = _repository.Query()
                 .Find(new BsonDocument())
                 .Sort(sortByDescending)
@@ -119,7 +120,7 @@ namespace Blog.IntegrationTests.ApiTests
             response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsStringAsync();
-            var returnedBlogs = content.FromJson<List<API.Infrastructure.Data.Models.BlogModel>>();
+            var returnedBlogs = content.FromJson<List<BlogModel>>();
             var expected = _nonDeletedBlogs
                 .Where(x => x.OwnerId == TestConstants.UserId).ToList();
 
@@ -144,7 +145,7 @@ namespace Blog.IntegrationTests.ApiTests
             response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsStringAsync();
-            var returnedBlogs = content.FromJson<List<API.Infrastructure.Data.Models.BlogModel>>();
+            var returnedBlogs = content.FromJson<List<BlogModel>>();
 
             returnedBlogs.Should().BeEquivalentTo(_nonDeletedBlogs);
         }
@@ -157,7 +158,7 @@ namespace Blog.IntegrationTests.ApiTests
             response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsStringAsync();
-            var returnedBlog = content.FromJson<API.Infrastructure.Data.Models.BlogModel>();
+            var returnedBlog = content.FromJson<BlogModel>();
 
             returnedBlog.Should().BeEquivalentTo(_currentUsersBlog);
         }

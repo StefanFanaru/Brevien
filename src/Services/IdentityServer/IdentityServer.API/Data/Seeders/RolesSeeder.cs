@@ -24,7 +24,7 @@ namespace IdentityServer.API.Data.Seeders
             string[] rolesToSeed =
             {
                 Roles.Administrator,
-                Roles.BasicUser,
+                Roles.BasicUser
             };
 
             if (!_roleManager.Roles.Any())

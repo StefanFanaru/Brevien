@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Blog.API.Asp;
 using Blog.API.Infrastructure.Data;
+using Blog.API.Infrastructure.Data.Models;
 using Blog.API.Services;
 using Blog.API.Services.Interfaces;
 using Blog.IntegrationTests.Authorization;
@@ -32,9 +33,9 @@ namespace Blog.IntegrationTests.ServicesTests
             _adminUserInfo = serviceProvider.GetServices<IUserInfo>().First(x => x.GetType() == typeof(TestAdminInfo));
         }
 
-        private API.Infrastructure.Data.Models.BlogModel LastCreatedBlog()
+        private BlogModel LastCreatedBlog()
         {
-            var sortByCreatedAtDescending = Builders<API.Infrastructure.Data.Models.BlogModel>.Sort.Descending("CreatedAt");
+            var sortByCreatedAtDescending = Builders<BlogModel>.Sort.Descending("CreatedAt");
             var lastCreatedBlog = _repository.Query()
                 .Find(new BsonDocument())
                 .Sort(sortByCreatedAtDescending)
@@ -53,7 +54,7 @@ namespace Blog.IntegrationTests.ServicesTests
 
             // Assert
             LastCreatedBlog().Should().BeEquivalentTo(result, options => options.Excluding(x => x.CreatedAt));
-            result.Should().BeOfType(typeof(API.Infrastructure.Data.Models.BlogModel));
+            result.Should().BeOfType(typeof(BlogModel));
         }
 
         [Fact]
@@ -232,7 +233,7 @@ namespace Blog.IntegrationTests.ServicesTests
             var nonSoftDeletedBlog = Builders.GetBlogCreateDto();
             var targetBlog = await _blogService.CreateAsync(nonSoftDeletedBlog);
 
-            var blogs = new List<API.Infrastructure.Data.Models.BlogModel> {targetBlog};
+            var blogs = new List<BlogModel> {targetBlog};
 
             // Act
             var result = await _blogService.GetByUserId(TestConstants.UserId);
@@ -257,12 +258,12 @@ namespace Blog.IntegrationTests.ServicesTests
             var targetSoftDeletedBlog = await _blogService.CreateAsync(softDeletedBlog);
             await _blogService.SoftDeleteAsync(targetSoftDeletedBlog.Id);
 
-            var blogs = new List<API.Infrastructure.Data.Models.BlogModel> {userOneBlog, userTwoBlog};
+            var blogs = new List<BlogModel> {userOneBlog, userTwoBlog};
 
             // Act
             var result = await blogService.GetAllAsync();
             var objectResult = (OkObjectResult) result.Result;
-            var returnedBlogs = (List<API.Infrastructure.Data.Models.BlogModel>) objectResult.Value;
+            var returnedBlogs = (List<BlogModel>) objectResult.Value;
 
             // Assert
             objectResult.Should().NotBeNull();
