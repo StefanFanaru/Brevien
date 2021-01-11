@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Posting.Core.Common
+namespace Posting.Core.Entities
 {
     public class Entity<T>
     {

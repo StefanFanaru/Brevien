@@ -1,15 +1,16 @@
 ﻿using System.Data;
 using Microsoft.Data.Sqlite;
-using Posting.Core.Interfaces;
+using Posting.Core.Interfaces.Data;
 
 namespace Posting.Infrastructure.Data.Configuration
 {
     /// <summary>
-    /// This class facilitates the usage of an in memory SQLite DB. Normally, when the initial connection is closed, the db is deleted
-    /// This implementation allows for multiple connections to be opened and closed as needed, while keeping the db in memory
-    /// until all the connections are closed.
-    /// The "keepAliveConnection" field gives control over the moment when the db is erased, by assuring that a connection stays
-    ///  open until Reset() is called.
+    ///     This class facilitates the usage of an in memory SQLite DB. Normally, when the initial connection is closed, the db is
+    ///     deleted
+    ///     This implementation allows for multiple connections to be opened and closed as needed, while keeping the db in memory
+    ///     until all the connections are closed.
+    ///     The "keepAliveConnection" field gives control over the moment when the db is erased, by assuring that a connection stays
+    ///     open until Reset() is called.
     /// </summary>
     public sealed class SqliteConnectionProvider : IDbConnectionProvider
     {
@@ -36,7 +37,7 @@ namespace Posting.Infrastructure.Data.Configuration
         }
 
         /// <summary>
-        /// Grants an opened connection to the in memory SQLite database
+        ///     Grants an opened connection to the in memory SQLite database
         /// </summary>
         /// <returns></returns>
         public IDbConnection GetConnection()
@@ -47,7 +48,7 @@ namespace Posting.Infrastructure.Data.Configuration
         }
 
         /// <summary>
-        /// After execution, when all the opened connections are closed, the in memory db will be erased.
+        ///     After execution, when all the opened connections are closed, the in memory db will be erased.
         /// </summary>
         public void Reset()
         {

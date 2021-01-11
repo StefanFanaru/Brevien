@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 using Dapper;
-using Posting.Core.Interfaces;
+using Posting.Core.Interfaces.Data;
 
 namespace Posting.Infrastructure.Data.Repositories
 {

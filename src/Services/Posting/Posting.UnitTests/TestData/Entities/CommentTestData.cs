@@ -20,7 +20,10 @@ namespace Posting.UnitTests.TestData.Entities
                 yield return new object[] {" ", "test", "test"};
             }
 
-            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
         }
     }
 }

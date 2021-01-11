@@ -1,6 +1,5 @@
 ﻿using System;
 using Ardalis.GuardClauses;
-using Posting.Core.Common;
 using Posting.Core.Enums;
 
 namespace Posting.Core.Entities

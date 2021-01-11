@@ -18,7 +18,10 @@ namespace Posting.UnitTests.TestData.Entities
                 yield return new object[] {" ", "test", ReactionType.Like};
             }
 
-            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
         }
     }
 }

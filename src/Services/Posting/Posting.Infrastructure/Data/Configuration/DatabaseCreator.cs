@@ -1,26 +1,30 @@
 ﻿using System;
 using System.Data;
+using System.Data.SqlClient;
 using System.IO;
-using System.Threading.Tasks;
 using Dapper;
 
 namespace Posting.Infrastructure.Data.Configuration
 {
     public static class DatabaseCreator
     {
-        public static async Task EnsureDatabaseExistsAsync(this IDbConnection connection, string databaseName)
+        public static void EnsureDatabaseExists(string databaseServer, string databaseName)
         {
-            var query = $"IF NOT EXISTS(SELECT * FROM sys.databases WHERE name = '{databaseName}')" +
-                        $"BEGIN " +
-                        $"CREATE DATABASE \"{databaseName}\" " +
-                        $"END";
+            var dbExistsQuery =
+                $"SELECT CAST(CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END AS BIT) FROM sys.databases WHERE name = '{databaseName}'";
 
-            using (connection)
+            using (var connection = new SqlConnection(databaseServer))
             {
-                await connection.ExecuteAsync(query);
-            }
+                connection.Open();
+                var databaseExists = connection.QuerySingle<bool>(dbExistsQuery);
 
-            connection.CreateTables();
+                if (!databaseExists)
+                {
+                    connection.Execute($"CREATE DATABASE \"{databaseName}\"");
+                    connection.ChangeDatabase(databaseName);
+                    connection.CreateTables();
+                }
+            }
         }
 
         public static void CreateTables(this IDbConnection connection, bool forSqlLite = false)

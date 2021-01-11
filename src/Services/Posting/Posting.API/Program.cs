@@ -1,7 +1,5 @@
 using System;
-using System.Data.SqlClient;
 using System.IO;
-using System.Threading.Tasks;
 using FluentMigrator.Runner;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -14,13 +12,14 @@ namespace Posting.API
 {
     public class Program
     {
-        public static async Task Main(string[] args)
+        public static void Main(string[] args)
         {
             Console.Title = "IdentityControl API";
 
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", true)
+                .AddJsonFile("appsettings.json", false, true)
+                .AddJsonFile("appsettings.Development.json", true)
                 .AddCommandLine(args)
                 .Build();
 
@@ -36,8 +35,8 @@ namespace Posting.API
                 Log.Information("Starting host...");
 
                 var host = CreateHostBuilder(args).Build();
-                var connection = new SqlConnection(dbServer);
-                await connection.EnsureDatabaseExists(databaseName);
+
+                DatabaseCreator.EnsureDatabaseExists(dbServer, databaseName);
 
                 using (var scope = host.Services.CreateScope())
                 {
@@ -61,8 +60,8 @@ namespace Posting.API
             // Instantiate the runner
             var runner = serviceProvider.GetRequiredService<IMigrationRunner>();
 
-            // Execute the migrations
-            runner.MigrateUp();
+            // Execute the migrations - no migrations for now and this complains about it
+            // runner.MigrateUp();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args)

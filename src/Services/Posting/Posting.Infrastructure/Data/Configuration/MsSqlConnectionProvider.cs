@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using System.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-using Posting.Core.Interfaces;
+using Posting.Core.Interfaces.Data;
 
 namespace Posting.Infrastructure.Data.Configuration
 {

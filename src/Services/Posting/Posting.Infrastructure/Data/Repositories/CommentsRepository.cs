@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Posting.Core.Entities;
-using Posting.Core.Interfaces;
+using Posting.Core.Interfaces.Data;
 
 namespace Posting.Infrastructure.Data.Repositories
 {

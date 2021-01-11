@@ -28,7 +28,7 @@ namespace Posting.UnitTests.PersistenceTests
         public async Task Can_retrieve_all_comments_of_a_post()
         {
             var post = Builders.GetPostEntity();
-            var expected = new List<Comment>()
+            var expected = new List<Comment>
             {
                 Builders.GetCommentEntity(post.Id),
                 Builders.GetCommentEntity(post.Id),
@@ -46,7 +46,7 @@ namespace Posting.UnitTests.PersistenceTests
         public async Task Can_retrieve_all_comments_of_a_user()
         {
             var post = Builders.GetPostEntity();
-            var expected = new List<Comment>()
+            var expected = new List<Comment>
             {
                 Builders.GetCommentEntity(post.Id),
                 Builders.GetCommentEntity(post.Id),

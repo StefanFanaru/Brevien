@@ -40,7 +40,7 @@ namespace Posting.UnitTests.PersistenceTests
         {
             // Arrange
             var records = new List<Post>();
-            for (int i = 0; i < 5; i++)
+            for (var i = 0; i < 5; i++)
             {
                 var record = Builders.GetPostEntity();
                 records.Add(record);
@@ -97,7 +97,7 @@ namespace Posting.UnitTests.PersistenceTests
         [Fact]
         public async Task Multiple_records_can_be_inserted_simultaneously()
         {
-            var expected = new List<Post>() {Builders.GetPostEntity(), Builders.GetPostEntity(), Builders.GetPostEntity()};
+            var expected = new List<Post> {Builders.GetPostEntity(), Builders.GetPostEntity(), Builders.GetPostEntity()};
             await _repository.InsertBatchAsync(expected);
             var actual = await _repository.GetAllAsync();
             actual.Should().BeEquivalentTo(expected);

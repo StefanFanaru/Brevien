@@ -1,6 +1,6 @@
 ﻿using System;
 using FluentAssertions;
-using Posting.Core.Common;
+using Posting.Core.Entities;
 using Xunit;
 
 namespace Posting.UnitTests.EntitiesTests

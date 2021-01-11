@@ -7,7 +7,7 @@ namespace Posting.UnitTests
     {
         public static Post GetPostEntity()
         {
-            return new Post(
+            return new(
                 "Test post",
                 "This is a simple test post, written for tests",
                 "https://test.post/test-post",
@@ -17,7 +17,7 @@ namespace Posting.UnitTests
 
         public static Comment GetCommentEntity(string postId = "5dd82d10-3245-4bb9-9b33-0a9228dc4be6")
         {
-            return new Comment(
+            return new(
                 TestConstants.UserId,
                 postId,
                 "This is a simple test comment, written for tests");
@@ -25,7 +25,7 @@ namespace Posting.UnitTests
 
         public static Reaction GetReactionEntity(string postId = "09f21c41-1f26-49e2-83c4-1568d008ed19")
         {
-            return new Reaction(
+            return new(
                 TestConstants.UserId,
                 postId,
                 ReactionType.Like);

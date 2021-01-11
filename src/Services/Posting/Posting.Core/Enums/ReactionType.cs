@@ -6,6 +6,6 @@
         Smile,
         Applause,
         Angry,
-        Sad,
+        Sad
     }
 }
