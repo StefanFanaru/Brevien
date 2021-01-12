@@ -6,7 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Posting.API.Asp;
+using Posting.Core.Interfaces.Asp;
+using Posting.Core.Interfaces.Data;
 using Posting.Infrastructure.Data.Configuration;
+using Posting.Infrastructure.Data.Repositories;
 
 namespace Posting.API.Configuration
 {
@@ -18,6 +21,9 @@ namespace Posting.API.Configuration
         {
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IUserInfo, AspUserInfo>();
+            services.AddScoped(typeof(IRepository<>), typeof(DapperRepository<>));
+            services.AddScoped<ICommentsRepository, CommentsRepository>();
+            services.AddScoped<IDbConnectionProvider, MsSqlConnectionProvider>();
 
             return services;
         }

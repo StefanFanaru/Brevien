@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using Posting.Core.Interfaces.Asp;
 
 namespace Posting.API.Asp
 {

@@ -36,4 +36,8 @@
         <Compile Remove="Data\Repositories\PostsRepository.cs"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <Folder Include="Queries"/>
+    </ItemGroup>
+
 </Project>

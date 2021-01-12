@@ -22,7 +22,12 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Posting.API\Posting.API.csproj"/>
         <ProjectReference Include="..\Posting.Infrastructure\Posting.Infrastructure.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Queries"/>
     </ItemGroup>
 
 </Project>

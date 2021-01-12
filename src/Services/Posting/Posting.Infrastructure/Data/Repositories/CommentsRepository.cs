@@ -5,7 +5,7 @@ using Posting.Core.Interfaces.Data;
 
 namespace Posting.Infrastructure.Data.Repositories
 {
-    public class CommentsRepository : DapperRepository<Comment>
+    public class CommentsRepository : DapperRepository<Comment>, ICommentsRepository
     {
         private readonly IDbConnectionProvider _connectionProvider;
 

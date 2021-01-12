@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Posting.Core.Entities;
-using Posting.Infrastructure.Data.Configuration;
 using Posting.Infrastructure.Data.Repositories;
 using Xunit;
 
@@ -17,10 +16,7 @@ namespace Posting.UnitTests.PersistenceTests
 
         public DapperRepositoryTests()
         {
-            var connectionProvider = SqliteConnectionProvider.Instance;
-            connectionProvider.Reset();
-            var connection = connectionProvider.GetConnection();
-            connection.CreateTables(true);
+            var connectionProvider = TestHelpers.InitializeInMemoryDb();
             _repository = new DapperRepository<Post>(connectionProvider);
         }
 

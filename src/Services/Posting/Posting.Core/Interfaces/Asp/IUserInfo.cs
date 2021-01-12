@@ -1,4 +1,4 @@
-﻿namespace Posting.API.Asp
+﻿namespace Posting.Core.Interfaces.Asp
 {
     public interface IUserInfo
     {
