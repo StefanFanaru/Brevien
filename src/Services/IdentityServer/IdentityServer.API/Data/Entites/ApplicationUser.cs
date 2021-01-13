@@ -21,6 +21,7 @@ namespace IdentityServer.API.Data.Entites
         public DateTime? LastModified { get; private set; }
         public DateTime? LastLogin { get; set; }
         public string PictureUrl { get; private set; }
+        public string BlogId { get; set; }
 
         public static ApplicationUser Create(string email, string lastName, string firstName, bool acceptsEmails)
         {

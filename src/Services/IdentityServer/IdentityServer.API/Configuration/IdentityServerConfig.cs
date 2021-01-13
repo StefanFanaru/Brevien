@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using IdentityServer.API.Common.Constants;
 using IdentityServer4;
 using IdentityServer4.Models;
 using Microsoft.Extensions.Configuration;
@@ -12,20 +13,6 @@ namespace IdentityServer.API.Configuration
         private static readonly string IdentityControlUrl = Configuration["ApplicationUrls:IdentityControl"];
         private static readonly string SwaggerIdentityControlUrl = Configuration["ApplicationUrls:Swagger:IdentityControl"];
         private static readonly string IdentityControlKey = Configuration["SecretKeys:IdentityControl"];
-        private static readonly string IdentityControlSwaggerKey = Configuration["SecretKeys:IdentityControlSwagger"];
-
-        public static IEnumerable<IdentityResource> IdentityResources =>
-            new IdentityResource[]
-            {
-                new IdentityResources.OpenId
-                {
-                    DisplayName = "OpenId"
-                },
-                new IdentityResources.Profile
-                {
-                    DisplayName = "Profile"
-                }
-            };
 
         public static IEnumerable<ApiScope> ApiScopes =>
             new[]
@@ -68,12 +55,9 @@ namespace IdentityServer.API.Configuration
                 {
                     ClientName = "IdentityControl Swagger",
                     Description = "Swagger UI",
+                    AllowAccessTokensViaBrowser = true,
                     ClientId = "swagger_ui_identity_control",
-                    ClientSecrets = {new Secret(IdentityControlSwaggerKey.Sha256())},
-
-                    AllowedGrantTypes = GrantTypes.Code,
-                    RequirePkce = true,
-                    RequireClientSecret = true,
+                    AllowedGrantTypes = GrantTypes.Implicit,
                     AccessTokenLifetime = 60 * 60 * 24,
                     RedirectUris = {SwaggerIdentityControlUrl},
                     AllowedCorsOrigins = {IdentityControlUrl},
@@ -87,14 +71,37 @@ namespace IdentityServer.API.Configuration
                 new ApiResource("identity_control", "Identity Control API")
                 {
                     ApiSecrets = {new Secret(IdentityControlKey.Sha256())},
-                    Scopes = {"identity_control_full"}
+                    Scopes = {"identity_control_full"},
+                    // UserClaims = {Claims.BlogId}
                 },
 
                 new ApiResource("swagger_identity_control", "Swagger Identity Control")
                 {
                     ApiSecrets = {new Secret(IdentityControlKey.Sha256())},
-                    Scopes = {"identity_control_full"}
+                    Scopes = {"identity_control_full"},
+                    // UserClaims = {Claims.BlogId}
                 }
             };
+
+        public static IEnumerable<IdentityResource> IdentityResources()
+        {
+            var customProfile = new IdentityResource(
+                name: "extra.claims",
+                displayName: "Extra claims",
+                userClaims: new[] {Claims.BlogId});
+
+            return new IdentityResource[]
+            {
+                new IdentityResources.OpenId
+                {
+                    DisplayName = "OpenId"
+                },
+                new IdentityResources.Profile
+                {
+                    DisplayName = "Profile"
+                },
+                customProfile
+            };
+        }
     }
 }

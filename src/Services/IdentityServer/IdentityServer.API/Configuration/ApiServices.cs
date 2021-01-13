@@ -152,7 +152,7 @@ namespace IdentityServer.API.Configuration
 
                 if (!context.IdentityResources.Any())
                 {
-                    foreach (var resource in IdentityServerConfig.IdentityResources)
+                    foreach (var resource in IdentityServerConfig.IdentityResources())
                         context.IdentityResources.Add(resource.ToEntity());
 
                     context.SaveChanges();

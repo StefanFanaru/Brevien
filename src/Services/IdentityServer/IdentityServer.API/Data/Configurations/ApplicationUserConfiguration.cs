@@ -12,6 +12,10 @@ namespace IdentityServer.API.Data.Configurations
                 .IsRequired()
                 .HasMaxLength(36);
 
+            builder.Property(x => x.BlogId)
+                .IsRequired(false)
+                .HasMaxLength(36);
+
             builder.Property(x => x.FirstName)
                 .IsRequired()
                 .HasMaxLength(50);
@@ -52,6 +56,8 @@ namespace IdentityServer.API.Data.Configurations
                     .HasMaxLength(100)
                     .IsRequired();
             });
+
+            builder.HasIndex(x => x.BlogId).IsUnique();
         }
     }
 }

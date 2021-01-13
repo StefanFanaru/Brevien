@@ -17,7 +17,7 @@ namespace IdentityServer.API.Data.Seeders
 {
     public class UsersSeeder : ISeeder
     {
-        private const string Path = "Seeders/JSON/applicationUsers.json";
+        private const string Path = "Data/Seeders/JSON/applicationUsers.json";
         private static (string email, string password) _adminAccount;
         private readonly IConfiguration _configuration;
         private readonly UserManager<ApplicationUser> _userManager;
