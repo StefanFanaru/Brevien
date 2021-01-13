@@ -434,5 +434,28 @@ namespace Blog.IntegrationTests.ServicesTests
             blogCountBeforeDelete.Should().Be(blogCountAfterDelete);
             result.Should().BeEquivalentTo(new NotFoundResult());
         }
+
+        [Theory]
+        [InlineData(TestConstants.UserId, true)]
+        [InlineData("wrong-user-id", false)]
+        public async Task Ownership_is_checked(string userId, bool expectedToBeOwner)
+        {
+            // Arrange
+            var blog = Builders.GetBlogCreateDto();
+            var targetBlog = await _blogService.CreateAsync(blog);
+
+            // Act
+            var result = await _blogService.CheckOwnership(targetBlog.Id, userId);
+
+            // Assert
+            if (expectedToBeOwner)
+            {
+                result.Should().BeEquivalentTo(new OkResult());
+            }
+            else
+            {
+                result.Should().BeEquivalentTo(new ForbidResult());
+            }
+        }
     }
 }

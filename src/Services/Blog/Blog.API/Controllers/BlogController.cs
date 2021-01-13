@@ -109,5 +109,12 @@ namespace Blog.API.Controllers
         {
             return await _blogService.DeleteAsync(id);
         }
+
+        [HttpGet]
+        [Route("{id}/owner/{userId}")]
+        public async Task<IActionResult> CheckOwnership(string id, string userId)
+        {
+            return await _blogService.CheckOwnership(id, userId);
+        }
     }
 }

@@ -17,5 +17,6 @@ namespace Blog.API.Services.Interfaces
         Task<IActionResult> GetAsync(string id);
         Task<IActionResult> DeleteAsync(string blogId);
         Task<IActionResult> SoftDeleteAsync(string blogId);
+        Task<IActionResult> CheckOwnership(string blogId, string userId);
     }
 }

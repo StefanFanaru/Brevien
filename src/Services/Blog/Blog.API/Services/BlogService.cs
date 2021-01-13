@@ -192,5 +192,22 @@ namespace Blog.API.Services
 
             return new NotFoundResult();
         }
+
+        public async Task<IActionResult> CheckOwnership(string blogId, string userId)
+        {
+            var entity = await _repository.GetByIdAsync(blogId);
+
+            if (entity == null)
+            {
+                return new NotFoundResult();
+            }
+
+            if (entity.OwnerId != userId)
+            {
+                return new ForbidResult();
+            }
+
+            return new OkResult();
+        }
     }
 }

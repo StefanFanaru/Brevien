@@ -21,6 +21,6 @@ namespace Blog.API.Asp
         public string LastName { get; }
         public string Email { get; }
         public string Role { get; }
-        public string Name => $"{(FirstName ?? "?")[0]}.{LastName}";
+        public string Name => $"{FirstName} {LastName}";
     }
 }

@@ -38,9 +38,10 @@ namespace Blog.IntegrationTests.ApiTests
         public BlogControllerTests(ApiTestsFixture factory)
         {
             _client = factory.Server.CreateClient();
-            _runtimeMiddlewareService = factory.Server.Services.GetRequiredService<RuntimeMiddlewareService>();
-            _blogService = factory.Server.Services.GetRequiredService<IBlogService>();
-            _repository = factory.Server.Services.GetRequiredService<IBlogRepository>();
+            var serviceProvider = factory.Server.Services;
+            _runtimeMiddlewareService = serviceProvider.GetRequiredService<RuntimeMiddlewareService>();
+            _blogService = serviceProvider.GetRequiredService<IBlogService>();
+            _repository = serviceProvider.GetRequiredService<IBlogRepository>();
         }
 
         private BlogModel LastUpdatedBlog => GetLastBlogBy(nameof(_currentUsersBlog.UpdatedAt));
@@ -281,6 +282,29 @@ namespace Blog.IntegrationTests.ApiTests
             // Assert
             response.StatusCode.Should().Be(204);
             actual.Should().Be(blogCountBeforeDelete - 1);
+        }
+
+        [Theory]
+        [InlineData(TestConstants.UserId, true)]
+        [InlineData("wrong-user-id", false)]
+        public async Task Ownership_is_checked(string userId, bool expectedToBeOwner)
+        {
+            // Arrange
+            await InitializeBlogs();
+            _runtimeMiddlewareService.SwitchToBasicUser();
+
+            // Act
+            var response = await _client.GetAsync($"api/v1/blog/{_currentUsersBlog.Id}/owner/{userId}");
+
+            // Assert
+            if (expectedToBeOwner)
+            {
+                response.StatusCode.Should().Be(200);
+            }
+            else
+            {
+                response.StatusCode.Should().Be(403);
+            }
         }
     }
 }
