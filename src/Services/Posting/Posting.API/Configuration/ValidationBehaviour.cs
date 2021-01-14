@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using MediatR;
@@ -27,13 +28,13 @@ namespace Posting.API.Configuration
             }
 
             var resultBuilder = ResultBuilder
-                .Error<TOperationResult>(ErrorCodes.BadArgument, "One or more validation errors have occured")
+                .Error<TOperationResult>(HttpStatusCode.BadRequest, "One or more validation errors have occured")
                 .ForTarget(nameof(request));
 
             foreach (var validationResultError in validationResult.Errors)
             {
                 resultBuilder.WithDetailsError(() =>
-                    new ErrorBuilder(validationResultError.PropertyName, validationResultError.ErrorMessage).ForTarget(
+                    new ErrorBuilder(HttpStatusCode.BadRequest, validationResultError.ErrorMessage).ForTarget(
                         validationResultError.PropertyName));
             }
 

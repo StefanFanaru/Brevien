@@ -12,20 +12,15 @@ namespace Posting.API.Helpers
             _value = value;
         }
 
-        public int MapSuccessStatusCode(IOperationResult<T> result)
-        {
-            return 200;
-        }
-
         public override void OnFormatting(ActionContext context)
         {
             if (_value.IsSuccess)
             {
-                context.HttpContext.Response.StatusCode = 200;
+                context.HttpContext.Response.StatusCode = (int) _value.StatusCode;
             }
             else
             {
-                context.HttpContext.Response.StatusCode = StatusCodeMapping.ResolveStatusCode(_value.Error.Code);
+                context.HttpContext.Response.StatusCode = (int) _value.Error.StatusCode;
             }
         }
     }

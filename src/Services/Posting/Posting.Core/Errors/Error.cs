@@ -1,16 +1,17 @@
 ﻿using System.Collections.Generic;
+using System.Net;
 
 namespace Posting.Core.Errors
 {
     public class Error
     {
-        public Error(string code, string message)
+        public Error(HttpStatusCode statusCode, string message)
         {
-            Code = code;
+            StatusCode = statusCode;
             Message = message;
         }
 
-        public string Code { get; }
+        public HttpStatusCode StatusCode { get; }
         public string Message { get; }
         public string Target { get; set; }
         public List<Error> Details { get; set; }

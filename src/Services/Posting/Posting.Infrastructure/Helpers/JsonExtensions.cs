@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Posting.API.Helpers
+namespace Posting.Infrastructure.Helpers
 {
     public static class JsonExtensions
     {

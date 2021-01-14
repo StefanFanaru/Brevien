@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Posting.API.Asp;
+using Posting.API.Asp.Authorization;
 using Posting.Core.Interfaces.Asp;
 using Posting.Core.Interfaces.Data;
 using Posting.Infrastructure.Data.Configuration;
@@ -75,6 +76,8 @@ namespace Posting.API.Configuration
                     policyBuilder => policyBuilder
                         .RequireAuthenticatedUser()
                         .RequireClaim("role", "Administrator"));
+
+                options.AddPolicy("BlogOwner", builder => builder.AddRequirements(new BlogOwnerRequirement()));
             });
         }
     }

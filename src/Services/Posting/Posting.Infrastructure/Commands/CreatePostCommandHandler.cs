@@ -8,7 +8,7 @@ using Posting.Infrastructure.Operations;
 
 namespace Posting.Infrastructure.Commands
 {
-    public class CreatePostCommandHandler : IRequestHandler<CreatePostCommand, IOperationResult<Unit>>
+    public class CreatePostCommandHandler : IRequestHandler<CreatePostCommand, IOperationResult<string>>
     {
         private readonly IRepository<Post> _repository;
         private readonly IUserInfo _userInfo;
@@ -19,10 +19,11 @@ namespace Posting.Infrastructure.Commands
             _userInfo = userInfo;
         }
 
-        public async Task<IOperationResult<Unit>> Handle(CreatePostCommand request, CancellationToken cancellationToken)
+        public async Task<IOperationResult<string>> Handle(CreatePostCommand request, CancellationToken cancellationToken)
         {
-            await _repository.InsertAsync(new Post(request.Title, request.Content, request.Url, _userInfo.Id, request.BlogId));
-            return ResultBuilder.Ok();
+            var entity = new Post(request.Title, request.Content, request.Url, _userInfo.Id, request.BlogId);
+            await _repository.InsertAsync(entity);
+            return ResultBuilder.Created<string>(entity.Id);
         }
     }
 }

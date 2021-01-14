@@ -1,4 +1,3 @@
-using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -7,7 +6,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Posting.API.Asp;
 using Posting.API.Configuration;
-using Posting.API.Helpers;
+using Posting.Infrastructure.Commands;
+using Posting.Infrastructure.Helpers;
 using Posting.Infrastructure.Operations;
 
 namespace Posting.API
@@ -43,7 +43,7 @@ namespace Posting.API
             });
 
             // services.AddAuth();
-            services.AddHandlers(Assembly.GetExecutingAssembly()).WithPipelineValidation();
+            services.AddHandlers(typeof(CreatePostCommand).Assembly).WithPipelineValidation();
         }
 
         protected virtual void ConfigureAuth(IApplicationBuilder app)

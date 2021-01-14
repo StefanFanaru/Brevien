@@ -1,27 +1,29 @@
-﻿using Posting.Core.Errors;
+﻿using System.Net;
+using Posting.Core.Errors;
 using Posting.Core.Interfaces.Asp;
 
 namespace Posting.Infrastructure.Operations
 {
     public class OperationResult<TResult> : IOperationResult<TResult>
     {
-        public OperationResult(bool isSuccess, bool hasResult, Error error, TResult result)
+        public OperationResult(bool isSuccess, bool hasResult, Error error, TResult result, HttpStatusCode statusCode)
         {
             Result = result;
             IsSuccess = isSuccess;
             Error = error;
             HasResult = hasResult;
+            StatusCode = statusCode;
         }
 
-        public OperationResult() : this(true, false, null, default)
+        public OperationResult(HttpStatusCode statusCode) : this(true, false, null, default, statusCode)
         {
         }
 
-        public OperationResult(TResult result) : this(true, true, null, result)
+        public OperationResult(TResult result, HttpStatusCode statusCode) : this(true, true, null, result, statusCode)
         {
         }
 
-        public OperationResult(Error error) : this(false, false, error, default)
+        public OperationResult(Error error) : this(false, false, error, default, HttpStatusCode.InternalServerError)
         {
         }
 
@@ -29,5 +31,6 @@ namespace Posting.Infrastructure.Operations
         public TResult Result { get; }
         public bool IsSuccess { get; }
         public Error Error { get; }
+        public HttpStatusCode StatusCode { get; set; }
     }
 }

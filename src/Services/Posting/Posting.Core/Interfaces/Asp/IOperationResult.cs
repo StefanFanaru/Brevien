@@ -1,4 +1,5 @@
-﻿using Posting.Core.Errors;
+﻿using System.Net;
+using Posting.Core.Errors;
 
 namespace Posting.Core.Interfaces.Asp
 {
@@ -8,5 +9,6 @@ namespace Posting.Core.Interfaces.Asp
         bool IsSuccess { get; }
         Error Error { get; }
         public bool HasResult { get; }
+        public HttpStatusCode StatusCode { get; set; }
     }
 }

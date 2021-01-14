@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 
 namespace Posting.Core.Errors
 {
     public class ErrorBuilder
     {
         private readonly List<Func<ErrorBuilder>> _detailsBuilders = new List<Func<ErrorBuilder>>();
-        private readonly string _errorCode;
+        private readonly HttpStatusCode _errorCode;
         private readonly string _errorMessage;
         private string _target;
 
-        public ErrorBuilder(string errorCode, string errorMessage)
+        public ErrorBuilder(HttpStatusCode errorCode, string errorMessage)
         {
             _errorCode = errorCode;
             _errorMessage = errorMessage;

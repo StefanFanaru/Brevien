@@ -5,7 +5,7 @@ namespace Posting.API.Helpers
 {
     public static class ControllerExtensions
     {
-        public static IActionResult Result<T>(this Controller controller, IOperationResult<T> result)
+        public static IActionResult Result<T>(this ControllerBase controller, IOperationResult<T> result)
         {
             return new OperationActionResult<T>(result);
         }

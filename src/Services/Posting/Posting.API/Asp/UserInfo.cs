@@ -14,6 +14,7 @@ namespace Posting.API.Asp
                 LastName = user.FindFirstValue(Claims.LastName);
                 Email = user.FindFirstValue(Claims.Email);
                 Role = user.FindFirstValue(Claims.Role);
+                BlogId = user.FindFirstValue(Claims.BlogId);
             }
         }
 
@@ -22,6 +23,7 @@ namespace Posting.API.Asp
         public string LastName { get; }
         public string Email { get; }
         public string Role { get; }
-        public string Name => $"{(FirstName ?? "?")[0]}.{LastName}";
+        public string Name => $"{FirstName} {LastName}";
+        public string BlogId { get; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Posting.Core.Errors;
@@ -18,7 +19,7 @@ namespace Posting.API.Configuration
 
             if (!modelState.IsValid)
             {
-                var builder = ResultBuilder.Error<object>(ErrorCodes.BadArgument, "Invalid parameters provided in request")
+                var builder = ResultBuilder.Error<object>(HttpStatusCode.BadRequest, "Invalid parameters provided in request")
                     .ForTarget("request");
 
                 foreach (var error in modelState.Keys.SelectMany(key =>
@@ -29,7 +30,7 @@ namespace Posting.API.Configuration
                     })))
                 {
                     builder.WithDetailsError(() =>
-                        new ErrorBuilder(ErrorCodes.BadArgument, error.ErrorMessage).ForTarget(error.Key));
+                        new ErrorBuilder(HttpStatusCode.BadRequest, error.ErrorMessage).ForTarget(error.Key));
                 }
 
                 context.Result = new ObjectResult(builder.Build());

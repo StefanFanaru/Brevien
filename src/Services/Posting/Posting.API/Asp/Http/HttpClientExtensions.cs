@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Posting.API.Helpers;
+using Posting.Infrastructure.Helpers;
 
 namespace Posting.API.Asp.Http
 {
