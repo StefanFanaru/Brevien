@@ -7,7 +7,7 @@ namespace IdentityServer.API.Helpers
 {
     public static class JsonExtensions
     {
-        private static readonly JsonSerializerSettings _jsonOptions = new()
+        private static readonly JsonSerializerSettings _jsonOptions = new JsonSerializerSettings()
         {
             DateTimeZoneHandling = DateTimeZoneHandling.Utc,
             Converters = new List<JsonConverter>

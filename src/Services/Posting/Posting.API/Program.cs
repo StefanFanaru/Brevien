@@ -1,11 +1,10 @@
 using System;
 using System.IO;
-using FluentMigrator.Runner;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Posting.Infrastructure.Data.Configuration;
+using Posting.API.Configuration;
 using Serilog;
 
 namespace Posting.API
@@ -36,11 +35,9 @@ namespace Posting.API
 
                 var host = CreateHostBuilder(args).Build();
 
-                DatabaseCreator.EnsureDatabaseExists(dbServer, databaseName);
-
                 using (var scope = host.Services.CreateScope())
                 {
-                    UpdateDatabase(scope.ServiceProvider);
+                    ApiServices.InitializeDatabase(scope.ServiceProvider);
                 }
 
                 host.Run();
@@ -55,14 +52,6 @@ namespace Posting.API
             }
         }
 
-        private static void UpdateDatabase(IServiceProvider serviceProvider)
-        {
-            // Instantiate the runner
-            var runner = serviceProvider.GetRequiredService<IMigrationRunner>();
-
-            // Execute the migrations - no migrations for now and this complains about it
-            // runner.MigrateUp();
-        }
 
         public static IHostBuilder CreateHostBuilder(string[] args)
         {

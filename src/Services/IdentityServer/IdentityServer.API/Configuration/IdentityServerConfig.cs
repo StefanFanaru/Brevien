@@ -10,21 +10,29 @@ namespace IdentityServer.API.Configuration
     {
         private static readonly IConfiguration Configuration = Startup.StaticConfiguration;
         private static readonly string AngularClientUrl = Configuration["ApplicationUrls:AngularClient"];
-        private static readonly string IdentityControlUrl = Configuration["ApplicationUrls:IdentityControl"];
-        private static readonly string SwaggerIdentityControlUrl = Configuration["ApplicationUrls:Swagger:IdentityControl"];
-        private static readonly string IdentityControlKey = Configuration["SecretKeys:IdentityControl"];
 
-        public static IEnumerable<ApiScope> ApiScopes =>
-            new[]
+        public static IEnumerable<ApiScope> GetApiScopes()
+        {
+            return new[]
             {
                 new ApiScope("identity_control_full")
                 {
-                    DisplayName = "Identity Control Full"
+                    DisplayName = "IdentityControl Full"
+                },
+                new ApiScope("posting_full")
+                {
+                    DisplayName = "Posting Full"
+                },
+                new ApiScope("blog_full")
+                {
+                    DisplayName = "Blog Full"
                 }
             };
+        }
 
-        public static IEnumerable<Client> Clients =>
-            new[]
+        public static IEnumerable<Client> GetClients()
+        {
+            var clients = new List<Client>
             {
                 new Client
                 {
@@ -46,51 +54,73 @@ namespace IdentityServer.API.Configuration
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "identity_control_full"
+                        "identity_control_full",
+                        // Only for development
+                        "blog_full",
+                        "posting_full"
                     },
                     AllowedCorsOrigins = {AngularClientUrl}
-                },
-
-                new Client
-                {
-                    ClientName = "IdentityControl Swagger",
-                    Description = "Swagger UI",
-                    AllowAccessTokensViaBrowser = true,
-                    ClientId = "swagger_ui_identity_control",
-                    AllowedGrantTypes = GrantTypes.Implicit,
-                    AccessTokenLifetime = 60 * 60 * 24,
-                    RedirectUris = {SwaggerIdentityControlUrl},
-                    AllowedCorsOrigins = {IdentityControlUrl},
-                    AllowedScopes = {"identity_control_full"}
                 }
             };
 
-        public static IEnumerable<ApiResource> ApiResources =>
-            new[]
+            (string name, string id, string[] scopes)[] swaggerClients =
+            {
+                ("IdentityControl", "swagger_ui_identity_control", new[] {"identity_control_full"}),
+                ("Blog", "swagger_ui_blog", new[] {"blog_full"}),
+                ("Posting", "swagger_ui_posting", new[] {"posting_full"}),
+            };
+
+            foreach (var client in swaggerClients)
+            {
+                var origin = Configuration[$"ApplicationUrls:{client.name}:Origin"];
+                var path = Configuration[$"ApplicationUrls:{client.name}:Path"];
+                clients.Add(new Client
+                {
+                    ClientName = $"{client.name} Swagger",
+                    Description = $"Swagger UI - {client.name}",
+                    AllowAccessTokensViaBrowser = true,
+                    ClientId = client.id,
+                    AllowedGrantTypes = GrantTypes.Implicit,
+                    AccessTokenLifetime = 60 * 60,
+                    RedirectUris = {$"{origin}{path}/swagger/oauth2-redirect.html"},
+                    AllowedCorsOrigins = {origin},
+                    AllowedScopes = client.scopes,
+                });
+            }
+
+            return clients;
+        }
+
+        public static IEnumerable<ApiResource> GetApiResources()
+        {
+            return new[]
             {
                 new ApiResource("identity_control", "Identity Control API")
                 {
-                    ApiSecrets = {new Secret(IdentityControlKey.Sha256())},
                     Scopes = {"identity_control_full"},
-                    // UserClaims = {Claims.BlogId}
+                    UserClaims = {Claims.BlogId}
                 },
-
-                new ApiResource("swagger_identity_control", "Swagger Identity Control")
+                new ApiResource("posting", "PostingAPI")
                 {
-                    ApiSecrets = {new Secret(IdentityControlKey.Sha256())},
-                    Scopes = {"identity_control_full"},
-                    // UserClaims = {Claims.BlogId}
+                    Scopes = {"posting_full"},
+                    UserClaims = {Claims.BlogId}
+                },
+                new ApiResource("blog", "BlogAPI")
+                {
+                    Scopes = {"blog_full"},
+                    UserClaims = {Claims.BlogId}
                 }
             };
+        }
 
-        public static IEnumerable<IdentityResource> IdentityResources()
+        public static IEnumerable<IdentityResource> GetIdentityResources()
         {
             var customProfile = new IdentityResource(
-                name: "extra.claims",
-                displayName: "Extra claims",
+                name: "extra_claims",
+                displayName: "Extra Claims",
                 userClaims: new[] {Claims.BlogId});
 
-            return new IdentityResource[]
+            return new[]
             {
                 new IdentityResources.OpenId
                 {

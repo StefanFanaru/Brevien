@@ -3,6 +3,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using Dapper;
+using Serilog;
 
 namespace Posting.Infrastructure.Data.Configuration
 {
@@ -20,6 +21,7 @@ namespace Posting.Infrastructure.Data.Configuration
 
                 if (!databaseExists)
                 {
+                    Log.Information($"Creating database {databaseName}");
                     connection.Execute($"CREATE DATABASE \"{databaseName}\"");
                     connection.ChangeDatabase(databaseName);
                     connection.CreateTables();
@@ -30,7 +32,7 @@ namespace Posting.Infrastructure.Data.Configuration
         public static void CreateTables(this IDbConnection connection, bool forSqlLite = false)
         {
             var fileName = forSqlLite ? "tablesSQLite.sql" : "tablesMSSQL.sql";
-            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"Data\\Configuration\\{fileName}");
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"Data/Configuration/{fileName}");
             var query = File.ReadAllText(path);
 
             using (connection)

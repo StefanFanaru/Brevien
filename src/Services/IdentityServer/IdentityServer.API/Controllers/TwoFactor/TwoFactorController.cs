@@ -51,6 +51,7 @@ namespace IdentityServer.API.Controllers.TwoFactor
 
             if (hasEmittedCodes)
             {
+                // TODO: check why this is ordered like this
                 var lastTwoFactorCodeDate = await _context.TwoFactorStatuses
                     .Where(e => e.UserId == user.Id)
                     .Select(e => e.DateSent)

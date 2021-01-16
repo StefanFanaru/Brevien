@@ -9,10 +9,12 @@ using Blog.API.Infrastructure.Data.Migrations;
 using Blog.API.Services;
 using Blog.API.Services.Interfaces;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 
 namespace Blog.API.Configuration
 {
@@ -49,12 +51,14 @@ namespace Blog.API.Configuration
         {
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
-            var authority = Configuration.GetSection("ApplicationUrls:IdentityAPI").Value;
+            var authority = Configuration["ApplicationUrls:Authority"];
+
+            Log.Information($"Authority: {authority}");
             services.AddAuthentication("Bearer")
                 .AddJwtBearer("Bearer", options =>
                 {
                     options.Authority = authority;
-                    options.Audience = "blog_api";
+                    options.Audience = "blog";
                     options.RequireHttpsMetadata = false;
 
                     options.TokenValidationParameters = new TokenValidationParameters
@@ -62,17 +66,17 @@ namespace Blog.API.Configuration
                         ValidateAudience = true,
                         ValidateLifetime = true,
                         ClockSkew = TimeSpan.Zero,
-                        IssuerValidator = (issuer, token, parameters) => authority // to support Docker internal network
+                        IssuerValidator =
+                            (issuer, token, parameters) => authority // to support Docker internal network
                     };
                 });
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("ApiScope", policy =>
-                {
-                    policy.RequireAuthenticatedUser();
-                    policy.RequireClaim("scope", "blog_api_full");
-                });
+                options.DefaultPolicy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .RequireClaim("scope", "blog_full")
+                    .Build();
 
                 options.AddPolicy("AdminOnly",
                     policyBuilder => policyBuilder

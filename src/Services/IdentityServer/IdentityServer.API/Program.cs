@@ -32,7 +32,7 @@ namespace IdentityServer.API
                 using (var scope = host.Services.CreateScope())
                 {
                     var services = scope.ServiceProvider;
-                    await services.InitializeAppAsync();
+                    await services.InitializeDatabase();
                 }
 
                 Log.Information("Starting host...");

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
 using FluentMigrator.Runner;
+using FluentMigrator.Runner.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +13,7 @@ using Posting.Core.Interfaces.Asp;
 using Posting.Core.Interfaces.Data;
 using Posting.Infrastructure.Data.Configuration;
 using Posting.Infrastructure.Data.Repositories;
+using Serilog;
 
 namespace Posting.API.Configuration
 {
@@ -47,12 +50,12 @@ namespace Posting.API.Configuration
         {
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
-            var authority = Configuration.GetSection("ApplicationUrls:IdentityAPI").Value;
+            var authority = Configuration.GetSection("ApplicationUrls:IdentityServer").Value;
             services.AddAuthentication("Bearer")
                 .AddJwtBearer("Bearer", options =>
                 {
                     options.Authority = authority;
-                    options.Audience = "posting_api";
+                    options.Audience = "posting";
                     options.RequireHttpsMetadata = false;
 
                     options.TokenValidationParameters = new TokenValidationParameters
@@ -66,11 +69,10 @@ namespace Posting.API.Configuration
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("ApiScope", policy =>
-                {
-                    policy.RequireAuthenticatedUser();
-                    policy.RequireClaim("scope", "posting_api_full");
-                });
+                options.DefaultPolicy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .RequireClaim("scope", "posting_full")
+                    .Build();
 
                 options.AddPolicy("AdminOnly",
                     policyBuilder => policyBuilder
@@ -79,6 +81,24 @@ namespace Posting.API.Configuration
 
                 options.AddPolicy("BlogOwner", builder => builder.AddRequirements(new BlogOwnerRequirement()));
             });
+        }
+
+        public static void InitializeDatabase(IServiceProvider serviceProvider)
+        {
+            // Instantiate the runner
+            var dbServer = Configuration["Persistence:Server"];
+            var databaseName = Configuration["Persistence:DatabaseName"];
+
+            DatabaseCreator.EnsureDatabaseExists(dbServer, databaseName);
+            var runner = serviceProvider.GetRequiredService<IMigrationRunner>();
+            try
+            {
+                runner.MigrateUp();
+            }
+            catch (MissingMigrationsException e)
+            {
+                Log.Information(e.Message);
+            }
         }
     }
 }

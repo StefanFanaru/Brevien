@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
 
 namespace Blog.API
 {
@@ -26,6 +25,7 @@ namespace Blog.API
         {
             services
                 .AddApiServices()
+                .AddSwaggerConfiguration()
                 .AddFluentValidators(typeof(BlogControllerValidators.CreateValidator).Assembly);
 
             services.AddControllers().AddApplicationPart(typeof(Startup).Assembly).AddNewtonsoftJson(options =>
@@ -34,8 +34,6 @@ namespace Blog.API
                 options.SerializerSettings.Converters.Add(new JsonExtensions.UtcDateTimeConverter());
                 options.SerializerSettings.Converters.Add(new JsonExtensions.TrimmingStringConverter());
             });
-
-            services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Blog.API", Version = "v1"}); });
 
             services.AddAuth();
         }
@@ -60,16 +58,10 @@ namespace Blog.API
                 app.UseRequestResponseLogging();
             }
 
-            app.UseSwagger();
-            app.UseSwaggerUI(c => { c.SwaggerEndpoint($"{pathBase}/swagger/v1/swagger.json", "Blog.API V1"); });
-
-            app.UseHttpsRedirection();
-
             app.UseRouting();
-
             ConfigureAuth(app);
-
-            app.UseEndpoints(endpoints => { endpoints.MapControllers().RequireAuthorization("ApiScope"); });
+            app.AddSwagger(pathBase);
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
 }

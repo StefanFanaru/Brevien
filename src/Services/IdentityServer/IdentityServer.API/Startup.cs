@@ -45,7 +45,6 @@ namespace IdentityServer.API
                 app.UseDatabaseErrorPage();
             }
 
-            app.InitializeConfigurationDatabase();
             app.UseCookiePolicy(new CookiePolicyOptions {MinimumSameSitePolicy = SameSiteMode.Lax});
             app.UseStaticFiles();
             app.UseRouting();

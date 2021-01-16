@@ -8,7 +8,7 @@ using IdentityServer4.Models;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Identity;
 
-namespace IdentityServer.API.Common
+namespace IdentityServer.API.Services
 {
     public class IdentityProfileService : IProfileService
     {
@@ -32,7 +32,7 @@ namespace IdentityServer.API.Common
                 context.Subject.FindFirst(Claims.LastName),
             };
 
-            if (!string.IsNullOrWhiteSpace(user.BlogId))
+            if (user != null && !string.IsNullOrWhiteSpace(user.BlogId))
             {
                 claims.Add(new Claim(Claims.BlogId, user.BlogId));
             }

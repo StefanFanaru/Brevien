@@ -36,3 +36,11 @@ services:
       dockerfile: Services/Blog/Blog.API/Dockerfile
     depends_on:
       - nosqldata
+
+  posting-api:
+    image: brevien/posting.api
+    build:
+      context: .
+      dockerfile: Services/Posting/Posting.API/Dockerfile
+    depends_on:
+      - sqldata

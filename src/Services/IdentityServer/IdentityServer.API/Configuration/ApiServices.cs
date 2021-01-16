@@ -13,12 +13,12 @@ using IdentityServer.API.Services.Verification;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.Services;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 
 namespace IdentityServer.API.Configuration
 {
@@ -113,58 +113,70 @@ namespace IdentityServer.API.Configuration
             builder.AddSecretValidator<PlainSecretValidator>();
         }
 
-        public static async Task InitializeAppAsync(this IServiceProvider serviceProvider)
+        public static async Task InitializeDatabase(this IServiceProvider serviceProvider, int retryForAvailability = 0)
         {
-            await serviceProvider.GetRequiredService<IdentityContext>().Database.MigrateAsync();
-            await serviceProvider.GetRequiredService<PersistedGrantDbContext>().Database.MigrateAsync();
-            await serviceProvider.GetRequiredService<ConfigurationDbContext>().Database.MigrateAsync();
-            serviceProvider.GetService<IDataMigrator>().MigrateData();
+            try
+            {
+                await serviceProvider.GetRequiredService<IdentityContext>().Database.MigrateAsync();
+                await serviceProvider.GetRequiredService<PersistedGrantDbContext>().Database.MigrateAsync();
+                await serviceProvider.GetRequiredService<ConfigurationDbContext>().Database.MigrateAsync();
+                serviceProvider.GetRequiredService<ConfigurationDbContext>().SeedConfigurations();
+            }
+            catch (Exception e)
+            {
+                if (retryForAvailability > 5)
+                {
+                    throw;
+                }
+
+                retryForAvailability++;
+                await Task.Delay(2000 * retryForAvailability);
+                Log.Error(e.Message);
+                Log.Information($"Retrying database initialization. Retry number {retryForAvailability}");
+                await InitializeDatabase(serviceProvider, retryForAvailability);
+            }
+
+            serviceProvider.GetService<IDataMigrator>()?.MigrateData();
             await serviceProvider.GetRequiredService<RolesSeeder>().SeedAsync();
             await serviceProvider.GetRequiredService<UsersSeeder>().SeedAsync();
         }
 
-        public static void InitializeConfigurationDatabase(this IApplicationBuilder app)
+        private static void SeedConfigurations(this ConfigurationDbContext context)
         {
-            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            if (!context.ApiScopes.Any())
             {
-                serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
-
-                var context = serviceScope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
-                context.Database.Migrate();
-
-                if (!context.Clients.Any())
+                foreach (var resource in IdentityServerConfig.GetApiScopes())
                 {
-                    foreach (var client in IdentityServerConfig.Clients)
-                    {
-                        var clientEntity = client.ToEntity();
-                        context.Clients.Add(clientEntity);
-                    }
-
-                    context.SaveChanges();
-                }
-
-                if (!context.ApiScopes.Any())
-                {
-                    foreach (var resource in IdentityServerConfig.ApiScopes) context.ApiScopes.Add(resource.ToEntity());
-
-                    context.SaveChanges();
-                }
-
-                if (!context.IdentityResources.Any())
-                {
-                    foreach (var resource in IdentityServerConfig.IdentityResources())
-                        context.IdentityResources.Add(resource.ToEntity());
-
-                    context.SaveChanges();
-                }
-
-                if (!context.ApiResources.Any())
-                {
-                    foreach (var resource in IdentityServerConfig.ApiResources) context.ApiResources.Add(resource.ToEntity());
-
-                    context.SaveChanges();
+                    context.ApiScopes.Add(resource.ToEntity());
                 }
             }
+
+            if (!context.IdentityResources.Any())
+            {
+                foreach (var resource in IdentityServerConfig.GetIdentityResources())
+                {
+                    context.IdentityResources.Add(resource.ToEntity());
+                }
+            }
+
+            if (!context.ApiResources.Any())
+            {
+                foreach (var resource in IdentityServerConfig.GetApiResources())
+                {
+                    context.ApiResources.Add(resource.ToEntity());
+                }
+            }
+
+            if (!context.Clients.Any())
+            {
+                foreach (var client in IdentityServerConfig.GetClients())
+                {
+                    var clientEntity = client.ToEntity();
+                    context.Clients.Add(clientEntity);
+                }
+            }
+
+            context.SaveChanges();
         }
     }
 }

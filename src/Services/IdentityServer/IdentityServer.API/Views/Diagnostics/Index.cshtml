@@ -10,7 +10,7 @@
             <div>
                 <h2>Claims</h2>
                 <table class="diagnostics-table">
-                    @foreach (var claim in Model.AuthenticateResult.Principal.Claims)
+                    @foreach (var claim in Model.AuthenticateResult.Principal.Claims.Distinct())
                     {
                         <tr>
                             <td>

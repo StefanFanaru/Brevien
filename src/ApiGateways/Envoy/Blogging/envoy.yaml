@@ -36,6 +36,12 @@ static_resources:
                             auto_host_rewrite: true
                             prefix_rewrite: "/"
                             cluster: blog-api
+                        - match:
+                            prefix: "/p/"
+                          route:
+                            auto_host_rewrite: true
+                            prefix_rewrite: "/"
+                            cluster: posting-api
           transport_socket:
             name: envoy.transport_sockets.tls
             typed_config:
@@ -61,4 +67,16 @@ static_resources:
                   address:
                     socket_address:
                       address: blog-api
+                      port_value: 80
+    - name: posting-api
+      connect_timeout: 10s
+      type: LOGICAL_DNS
+      load_assignment:
+        cluster_name: posting-api
+        endpoints:
+          - lb_endpoints:
+              - endpoint:
+                  address:
+                    socket_address:
+                      address: posting-api
                       port_value: 80

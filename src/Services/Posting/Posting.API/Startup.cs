@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
 using Posting.API.Asp;
+using Posting.API.Asp.Http;
 using Posting.API.Configuration;
 using Posting.Infrastructure.Commands;
 using Posting.Infrastructure.Helpers;
@@ -29,11 +29,11 @@ namespace Posting.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
-            services.AddApiServices();
-            services.AddFluentMigrations();
-            services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Posting.API", Version = "v1"}); });
-
+            services.AddApiServices()
+                .AddSwaggerConfiguration()
+                .AddFluentMigrations()
+                .AddHttpClients(Configuration, "Blog");
+            // services.InitializeDatabase();
             services.AddControllers().AddApplicationPart(typeof(Startup).Assembly).AddNewtonsoftJson(options =>
             {
                 options.AllowInputFormatterExceptionMessages = true;
@@ -42,14 +42,14 @@ namespace Posting.API
                 options.SerializerSettings.Converters.Add(new OperationResultConverter());
             });
 
-            // services.AddAuth();
+            services.AddAuth();
             services.AddHandlers(typeof(CreatePostCommand).Assembly).WithPipelineValidation();
         }
 
         protected virtual void ConfigureAuth(IApplicationBuilder app)
         {
-            // app.UseAuthentication();
-            // app.UseAuthorization();
+            app.UseAuthentication();
+            app.UseAuthorization();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -67,16 +67,9 @@ namespace Posting.API
                 app.UseRequestResponseLogging();
             }
 
-            app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Posting.API v1"));
-
-            app.UseHttpsRedirection();
-
             app.UseRouting();
-
             ConfigureAuth(app);
-
-            // app.UseEndpoints(endpoints => { endpoints.MapControllers().RequireAuthorization("ApiScope"); });
+            app.AddSwagger(pathBase);
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
