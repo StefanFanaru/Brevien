@@ -96,7 +96,19 @@ namespace Posting.API.Configuration
         {
             var apiUri = Configuration.GetValue<string>("ApplicationUrls:Posting");
 
-            app.UseSwagger();
+            app.UseSwagger(options =>
+            {
+                if (!string.IsNullOrEmpty(pathBase))
+                {
+                    options.RouteTemplate = "swagger/{documentName}/swagger.json";
+                    options.PreSerializeFilters.Add((swaggerDoc, httpReq) =>
+                    {
+                        swaggerDoc.Servers = new List<OpenApiServer>
+                            {new OpenApiServer {Url = $"{apiUri}{pathBase}"}};
+                    });
+                }
+            });
+
             app.UseSwaggerUI(options =>
             {
                 options.SwaggerEndpoint($"{pathBase}/swagger/Internal/swagger.json", "Internal APIs");

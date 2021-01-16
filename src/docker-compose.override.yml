@@ -39,7 +39,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
-      - ApplicationUrls__IdentityControl__Origin=https://localhost:8010
+      - ApplicationUrls__IdentityControl__Origin=https://localhost:8000
       - ApplicationUrls__IdentityControl__Path=/ic
       - ApplicationUrls__Blog__Origin=https://localhost:8010
       - ApplicationUrls__Blog__Path=/b
@@ -57,7 +57,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - ApplicationUrls__IdentityControl=http://identity-control-api
+      - ApplicationUrls__IdentityControl=https://localhost:8000
       - ApplicationUrls__Authority=http://identity-server-api
       - PATH_BASE=/ic
       - ConnectionString=Server=sqldata;Database=brevien-identity-local;User Id=SA;Password=SqlS3rv3r#34
