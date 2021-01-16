@@ -41,8 +41,8 @@ services:
       - ASPNETCORE_URLS=https://+:443;http://+:80
       - ApplicationUrls__IdentityControl__Origin=https://localhost:8000
       - ApplicationUrls__IdentityControl__Path=/ic
-      - ApplicationUrls__Blog__Origin=https://localhost:8010
-      - ApplicationUrls__Blog__Path=/b
+      - ApplicationUrls__Blogging__Origin=https://localhost:8010
+      - ApplicationUrls__Blogging__Path=/b
       - ApplicationUrls__Posting__Origin=https://localhost:8010
       - ApplicationUrls__Posting__Path=/p
       - ConnectionString=Server=sqldata;Database=brevien-identity-local;User Id=SA;Password=SqlS3rv3r#34
@@ -64,7 +64,7 @@ services:
     volumes:
       - ${USERPROFILE}/.aspnet/https:/https:ro
 
-  blog-api:
+  blogging-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
@@ -86,8 +86,8 @@ services:
       - Persistence__Server=Server=sqldata;User Id=SA;Password=SqlS3rv3r#34
       - Persistence__DatabaseName=brevien-posting-local
       - Persistence__ConnectionString=Server=sqldata;Database=brevien-posting-local;User Id=SA;Password=SqlS3rv3r#34
-      - Http__Blog__BaseUri=http://blog-api
-      - Http__Blog__Headers__SecretKey__Value=blog-secret
+      - Http__Blogging__BaseUri=http://blogging-api
+      - Http__Blogging__Headers__SecretKey__Value=blog-secret
     volumes:
       - ${USERPROFILE}/.aspnet/https:/https:ro
 

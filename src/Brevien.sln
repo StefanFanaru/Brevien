@@ -18,7 +18,7 @@ ProjectSection(SolutionItems) = preProject
 	ApiGateways\Envoy\Infrastructure\envoy.yaml = ApiGateways\Envoy\Infrastructure\envoy.yaml
 EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Blog", "Blog", "{069339AC-8874-4B47-9D92-F867D5DBE4FD}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Blogging", "Blogging", "{069339AC-8874-4B47-9D92-F867D5DBE4FD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Blogging", "Blogging", "{64932591-2203-4CB0-BB79-998F4FD66893}"
 ProjectSection(SolutionItems) = preProject
@@ -35,9 +35,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IdentityServer", "IdentityS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityServer.API", "Services\IdentityServer\IdentityServer.API\IdentityServer.API.csproj", "{B836ADC5-B09F-48D5-985A-B76D9A0225B3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blog.API", "Services\Blog\Blog.API\Blog.API.csproj", "{35F58087-CAC1-4EC3-B88B-C51ECE8FBB0C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blogging.API", "Services\Blogging\Blogging.API\Blogging.API.csproj", "{35F58087-CAC1-4EC3-B88B-C51ECE8FBB0C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blog.IntegrationTests", "Services\Blog\Blog.IntegrationTests\Blog.IntegrationTests.csproj", "{EEE2626D-DB11-4FB5-A638-A567BD1F05C6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blogging.IntegrationTests", "Services\Blogging\Blogging.IntegrationTests\Blogging.IntegrationTests.csproj", "{EEE2626D-DB11-4FB5-A638-A567BD1F05C6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Posting", "Posting", "{26F3FF92-3A4A-4120-85C2-A425D4B3FC9B}"
 EndProject

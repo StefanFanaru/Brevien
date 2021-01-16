@@ -25,7 +25,7 @@ COPY "docker-compose.dcproj" "docker-compose.dcproj"
 RUN dotnet restore "Brevien.sln"
 
 COPY . .
-WORKDIR "/src/Services/Posting/Posting.API"
+WORKDIR "/src/Services/Blogging/Blogging.API"
 RUN dotnet publish --no-restore -c Release -o /app
 
 FROM build AS publish
@@ -33,4 +33,4 @@ FROM build AS publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
-ENTRYPOINT ["dotnet", "Posting.API.dll"]
+ENTRYPOINT ["dotnet", "Blogging.API.dll"]

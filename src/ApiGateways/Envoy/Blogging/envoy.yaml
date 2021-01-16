@@ -35,7 +35,7 @@ static_resources:
                           route:
                             auto_host_rewrite: true
                             prefix_rewrite: "/"
-                            cluster: blog-api
+                            cluster: blogging-api
                         - match:
                             prefix: "/p/"
                           route:
@@ -56,17 +56,17 @@ static_resources:
                   trusted_ca:
                     filename: /etc/ssl/certs/ca-certificates.crt
   clusters:
-    - name: blog-api
+    - name: blogging-api
       connect_timeout: 10s
       type: LOGICAL_DNS
       load_assignment:
-        cluster_name: blog-api
+        cluster_name: blogging-api
         endpoints:
           - lb_endpoints:
               - endpoint:
                   address:
                     socket_address:
-                      address: blog-api
+                      address: blogging-api
                       port_value: 80
     - name: posting-api
       connect_timeout: 10s
