@@ -5,7 +5,7 @@ using System.Linq;
 using Blogging.API.Dtos;
 using Blogging.API.Infrastructure.Data.Entities;
 
-namespace Blogging.IntegrationTests
+namespace Blogging.UnitTests
 {
     public static class Builders
     {
@@ -20,39 +20,38 @@ namespace Blogging.IntegrationTests
                 Heading = "Heading test",
                 Name = "Name test",
                 Path = "/test-blog",
-                Uri = Guid.NewGuid().ToString()
+                Uri = "www.test.blog"
             };
         }
 
-        public static Blog GetBlogEntity(string id = null, bool isSoftDeleted = false, bool isDisabled = false)
+        public static Blog GetBlogEntity(bool isSoftDeleted = false, string userId = null)
         {
             return new()
             {
-                Id = string.IsNullOrEmpty(id) ? TestConstants.BlogId : id,
+                Id = TestConstants.BlogId,
                 Title = "Title test",
                 Footer = "Footer test",
                 Heading = "Heading test",
                 Name = "Name test",
                 Path = "/test-blog",
                 Uri = "www.test.blog",
-                OwnerId = TestConstants.UserId,
+                OwnerId = string.IsNullOrEmpty(userId) ? TestConstants.UserId : userId,
                 CreatedAt = DateTime.UtcNow,
                 SoftDeletedAt = isSoftDeleted ? DateTime.UtcNow.Subtract(TimeSpan.FromHours(1)) : null,
-                DisabledAt = isDisabled ? DateTime.UtcNow.Subtract(TimeSpan.FromHours(2)) : null,
             };
         }
 
-        public static BlogUpdateDto GetBlogUpdateDto(Blog blogCreateDto)
+        public static BlogUpdateDto GetBlogUpdateDto()
         {
             return new()
             {
-                Id = blogCreateDto.Id,
-                Title = blogCreateDto.Title,
-                Footer = blogCreateDto.Footer,
-                Heading = blogCreateDto.Heading,
-                Name = blogCreateDto.Name,
-                Path = blogCreateDto.Path,
-                Uri = blogCreateDto.Uri
+                Id = TestConstants.BlogId,
+                Title = "Title test",
+                Footer = "Footer test",
+                Heading = "Heading test",
+                Name = "Name test",
+                Path = "/test-blog",
+                Uri = "www.test.blog",
             };
         }
 

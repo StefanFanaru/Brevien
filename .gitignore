@@ -5,6 +5,7 @@
 
 # External repositories
 src/Services/IdentityControl
+src/MercuryBus
 
 # Personal files
 notes.txt

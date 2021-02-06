@@ -39,6 +39,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blogging.API", "Services\Bl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blogging.IntegrationTests", "Services\Blogging\Blogging.IntegrationTests\Blogging.IntegrationTests.csproj", "{EEE2626D-DB11-4FB5-A638-A567BD1F05C6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blogging.UnitTests", "Services\Blogging\Blogging.UnitTests\Blogging.UnitTests.csproj", "{E9E5E837-5B8C-44C3-82A0-D4BAD6A84C35}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Posting", "Posting", "{26F3FF92-3A4A-4120-85C2-A425D4B3FC9B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Posting.API", "Services\Posting\Posting.API\Posting.API.csproj", "{39C04650-247E-4B90-9F5E-00A9257B2F35}"

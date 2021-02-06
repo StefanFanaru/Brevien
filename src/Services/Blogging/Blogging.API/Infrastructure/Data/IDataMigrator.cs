@@ -1,9 +1,7 @@
-﻿using System.Threading.Tasks;
-
-namespace Blogging.API.Infrastructure.Data
+﻿namespace Blogging.API.Infrastructure.Data
 {
-  public interface IDataMigrator
-  {
-    Task MigrateDataAsync();
-  }
+    public interface IDataMigrator
+    {
+        void MigrateData();
+    }
 }

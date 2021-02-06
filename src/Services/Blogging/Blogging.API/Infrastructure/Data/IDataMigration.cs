@@ -2,8 +2,8 @@
 
 namespace Blogging.API.Infrastructure.Data
 {
-  public interface IDataMigration
-  {
-    Task MigrateAsync();
-  }
+    public interface IDataMigration
+    {
+        Task Migrate();
+    }
 }

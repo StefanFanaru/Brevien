@@ -1,36 +1,37 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using Blogging.API.Infrastructure.Data.Entities;
-using MongoDB.Bson;
-using MongoDB.Driver;
 
 namespace Blogging.API.Infrastructure.Data
 {
-  public class DataMigrator : IDataMigrator
-  {
-    private readonly IEnumerable<IDataMigration> _dataMigrations;
-    private readonly IMongoCollection<DataMigration> _migrationsCollection;
-
-    public DataMigrator(MongoDbClient client, IEnumerable<IDataMigration> dataMigrations)
+    public class DataMigrator : IDataMigrator
     {
-      _dataMigrations = dataMigrations;
-      _migrationsCollection = client.Database.GetCollection<DataMigration>("DataMigrations");
-    }
+        private readonly IEnumerable<IDataMigration> _dataMigrations;
+        private readonly BloggingContext _identityServerContext;
 
-    public async Task MigrateDataAsync()
-    {
-      var doneMigrations = await _migrationsCollection.Find(new BsonDocument()).Project(x => x.Name).ToListAsync();
-      foreach (var migration in _dataMigrations)
-      {
-        await migration.MigrateAsync();
-        await InsertDatabaseMigrationAsync(migration.GetType().Name);
-      }
-    }
+        public DataMigrator(BloggingContext identityServerContext, IEnumerable<IDataMigration> dataMigrations)
+        {
+            _identityServerContext = identityServerContext;
+            _dataMigrations = dataMigrations;
+        }
 
-    private async Task InsertDatabaseMigrationAsync(string name)
-    {
-      var dataMigration = new DataMigration(name);
-      await _migrationsCollection.InsertOneAsync(dataMigration);
+        public void MigrateData()
+        {
+            // Disabled for now
+            // var appMigrations = _appContext.DataMigrations.Select(m => m.Name).ToList();
+
+            // foreach(var migration in _dataMigrations.Where(m => !appMigrations.Contains(m.GetType().Name)))
+            foreach (var migration in _dataMigrations)
+            {
+                migration.Migrate();
+                // InsertDatabaseMigration(migration.GetType().Name, nameof(AppDbContext));
+                _identityServerContext.SaveChanges();
+            }
+        }
+
+        private void InsertDatabaseMigration(string name, string type)
+        {
+            var dataMigration = new DataMigration(name, type);
+            _identityServerContext.DataMigrations.Add(dataMigration);
+        }
     }
-  }
 }

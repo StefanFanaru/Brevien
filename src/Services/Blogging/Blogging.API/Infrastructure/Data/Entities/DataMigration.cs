@@ -1,22 +1,19 @@
 ﻿using System;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
 
 namespace Blogging.API.Infrastructure.Data.Entities
 {
-  public class DataMigration
-  {
-    public DataMigration(string name)
+    public class DataMigration
     {
-      Name = name;
-      InsertTime = DateTime.UtcNow;
+        public DataMigration(string name, string type)
+        {
+            Name = name;
+            Type = type;
+            InsertTime = DateTime.UtcNow;
+        }
+
+        public string Id { get; set; }
+        public string Type { get; set; }
+        public string Name { get; }
+        public DateTime InsertTime { get; }
     }
-
-    [BsonId]
-    [BsonRepresentation(BsonType.ObjectId)]
-    public string Id { get; set; }
-
-    public string Name { get; }
-    public DateTime InsertTime { get; }
-  }
 }
