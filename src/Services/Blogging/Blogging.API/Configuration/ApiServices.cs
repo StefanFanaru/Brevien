@@ -2,6 +2,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Blogging.API.Asp;
 using Blogging.API.Infrastructure;
 using Blogging.API.Infrastructure.Data;
@@ -97,6 +98,29 @@ namespace Blogging.API.Configuration
                         .RequireAuthenticatedUser()
                         .RequireClaim("role", "Administrator"));
             });
+        }
+
+        public static async Task InitializeDatabase(this IServiceProvider serviceProvider, int retryForAvailability = 0)
+        {
+            try
+            {
+                await serviceProvider.GetRequiredService<BloggingContext>().Database.MigrateAsync();
+            }
+            catch (Exception e)
+            {
+                if (retryForAvailability > 5)
+                {
+                    throw;
+                }
+
+                retryForAvailability++;
+                await Task.Delay(2000 * retryForAvailability);
+                Log.Error(e.Message);
+                Log.Information($"Retrying database initialization. Retry number {retryForAvailability}");
+                await InitializeDatabase(serviceProvider, retryForAvailability);
+            }
+
+            serviceProvider.GetService<IDataMigrator>()?.MigrateData();
         }
     }
 }

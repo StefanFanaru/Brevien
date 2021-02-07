@@ -1,51 +1,91 @@
 version: '3.8'
 
 services:
+  zookeeper:
+    ports:
+      - 2181:2181
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      KAFKA_HEAP_OPTS: -Xmx64m
+
+  kafka:
+    ports:
+      - 9092:9092
+      - 29092:29092
+
+    environment:
+      KAFKA_LISTENERS: LC://kafka:29092,LX://kafka:9092
+      KAFKA_ADVERTISED_LISTENERS: LC://kafka:29092,LX://${EXTERNAL_IP}:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LC:PLAINTEXT,LX:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: LC
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_HEAP_OPTS: -Xmx192m
+
+  eventuate-cdc:
+    ports:
+      - "8099:8080"
+    environment:
+      EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      EVENTUATELOCAL_ZOOKEEPER_CONNECTION_STRING: zookeeper:2181
+      SPRING_PROFILES_ACTIVE: EventuatePolling
+
+      EVENTUATE_CDC_READER_MSSQLREADER_TYPE: polling
+      EVENTUATE_CDC_READER_MSSQLREADER_DATASOURCEURL: jdbc:sqlserver:///${EXTERNAL_IP}:1444;databaseName=brevien-sqldb
+      EVENTUATE_CDC_READER_MSSQLREADER_DATASOURCEUSERNAME: sa
+      EVENTUATE_CDC_READER_MSSQLREADER_DATASOURCEPASSWORD: SqlS3rv3r#34
+      EVENTUATE_CDC_READER_MSSQLREADER_DATASOURCEDRIVERCLASSNAME: com.microsoft.sqlserver.jdbc.SQLServerDriver
+      EVENTUATE_CDC_READER_MSSQLREADER_LEADERSHIPLOCKPATH: /eventuate/cdc/leader/common
+
+      EVENTUATE_CDC_PIPELINE_PIPELINE1_TYPE: eventuate-tram
+      EVENTUATE_CDC_PIPELINE_PIPELINE1_READER: MSSQLREADER
+      EVENTUATE_CDC_PIPELINE_PIPELINE1_EVENTUATEDATABASESCHEMA: mercury
+      EVENTUATE_CDC_PIPELINE_PIPELINE1_SOURCETABLENAME: Messages
+
   infrastructure-apigw:
+    ports:
+      - "9901:9901"
+      - "8000:8000"
     volumes:
       - ./ApiGateways/Envoy/https.crt:/etc/ssl/certs/https.crt
       - ./ApiGateways/Envoy/key.pem:/etc/ssl/certs/key.pem
       - ./ApiGateways/Envoy/Infrastructure:/etc/envoy
-    ports:
-      - "9901:9901"
-      - "8000:8000"
 
   blogging-apigw:
+    ports:
+      - "9911:9901"
+      - "8010:8010"
     volumes:
       - ./ApiGateways/Envoy/https.crt:/etc/ssl/certs/https.crt
       - ./ApiGateways/Envoy/key.pem:/etc/ssl/certs/key.pem
       - ./ApiGateways/Envoy/Blogging:/etc/envoy
-    ports:
-      - "9911:9901"
-      - "8010:8010"
 
-  sqldata:
+  mssql-db:
+    ports:
+      - "1444:1433"
+    container_name: mssql-db
+    command: /bin/bash ./entrypoint.sh
     environment:
       - SA_PASSWORD=SqlS3rv3r#34
       - ACCEPT_EULA=Y
       - MSSQL_PID=Express
-    ports:
-      - "1433:1433"
     volumes:
-      - brevien-sqldata:/var/opt/mssql
-
-  nosqldata:
-    ports:
-      - "27018:27017"
-    volumes:
-      - brevien-nosqldata:/data/db
+      - brevien-sqldb:/var/opt/mssql
+      - ./db-init/docker-entrypoint.sh:/entrypoint.sh
+      - ./db-init/docker-db-init.sh:/db-init.sh
+      - ./db-init/init-mssql-db.sql:/db-init.sql
 
   identity-server-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
-      - ApplicationUrls__IdentityControl__Origin=https://localhost:8000
+      - ApplicationUrls__IdentityControl__Origin=${IDENTITY_CONTROL_URL}
       - ApplicationUrls__IdentityControl__Path=/ic
-      - ApplicationUrls__Blogging__Origin=https://localhost:8010
+      - ApplicationUrls__Blogging__Origin=${BLOGGING_URL}
       - ApplicationUrls__Blogging__Path=/b
-      - ApplicationUrls__Posting__Origin=https://localhost:8010
+      - ApplicationUrls__Posting__Origin=${POSTING_URL}
       - ApplicationUrls__Posting__Path=/p
-      - ConnectionString=Server=sqldata;Database=brevien-identity-local;User Id=SA;Password=SqlS3rv3r#34
+      - ConnectionString=${MSSQL_CONNECTION_STRING}
       - ASPNETCORE_Kestrel__Certificates__Default__Password=Pa55w0rd!
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
     ports:
@@ -57,10 +97,12 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - ApplicationUrls__IdentityControl=https://localhost:8000
-      - ApplicationUrls__Authority=http://identity-server-api
+      - ApplicationUrls__IdentityControl=${IDENTITY_CONTROL_URL}
+      - ApplicationUrls__Authority=${IDENTITY_URL}
       - PATH_BASE=/ic
-      - ConnectionString=Server=sqldata;Database=brevien-identity-local;User Id=SA;Password=SqlS3rv3r#34
+      - ConnectionString=${MSSQL_CONNECTION_STRING}
+      - Settings__Environment=${ENVIRONMENT}
+      - Settings__KafkaBoostrapServers=${KAFKA_BOOTSTRAP_SERVERS}
     volumes:
       - ${USERPROFILE}/.aspnet/https:/https:ro
 
@@ -68,11 +110,12 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - ApplicationUrls__Blog=https://localhost:8010
-      - ApplicationUrls__Authority=http://identity-server-api
+      - ApplicationUrls__Blogging=${BLOGGING_URL}
+      - ApplicationUrls__Authority=${IDENTITY_URL}
       - PATH_BASE=/b
-      - MongoDb__ConnectionString=mongodb://nosqldata
-      - MongoDb__Database=brevien-blog-local
+      - ConnectionString=${MSSQL_CONNECTION_STRING}
+      - Settings__Environment=${ENVIRONMENT}
+      - Settings__KafkaBoostrapServers=${KAFKA_BOOTSTRAP_SERVERS}
     volumes:
       - ${USERPROFILE}/.aspnet/https:/https:ro
 
@@ -80,17 +123,16 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - ApplicationUrls__Posting=https://localhost:8010
-      - ApplicationUrls__Authority=http://identity-server-api
+      - ApplicationUrls__Posting=${POSTING_URL}
+      - ApplicationUrls__Authority=${IDENTITY_URL}
       - PATH_BASE=/p
-      - Persistence__Server=Server=sqldata;User Id=SA;Password=SqlS3rv3r#34
-      - Persistence__DatabaseName=brevien-posting-local
-      - Persistence__ConnectionString=Server=sqldata;Database=brevien-posting-local;User Id=SA;Password=SqlS3rv3r#34
-      - Http__Blogging__BaseUri=http://blogging-api
+      - ConnectionString=${MSSQL_CONNECTION_STRING}
+      - Http__Blogging__BaseUri=${BLOGGING_URL}
       - Http__Blogging__Headers__SecretKey__Value=blog-secret
+      - Settings__Environment=${ENVIRONMENT}
+      - Settings__KafkaBoostrapServers=${KAFKA_BOOTSTRAP_SERVERS}
     volumes:
       - ${USERPROFILE}/.aspnet/https:/https:ro
 
 volumes:
-  brevien-sqldata:
-  brevien-nosqldata:
+  brevien-sqldb:

@@ -19,7 +19,7 @@ namespace Posting.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreatePost(CreatePostCommand command)
+        public async Task<IActionResult> CreatePost([FromBody] CreatePostCommand command)
         {
             return this.Result(await _mediator.Send(command, HttpContext.RequestAborted));
         }

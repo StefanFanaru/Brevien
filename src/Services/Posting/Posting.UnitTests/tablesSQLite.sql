@@ -39,6 +39,15 @@ CREATE TABLE Reactions
         FOREIGN KEY (PostId) REFERENCES Posts
 );
 
+CREATE TABLE BlogUser
+(
+    Id     TEXT NOT NULL,
+    BlogId TEXT NOT NULL,
+    UserId TEXT NOT NULL,
+    CONSTRAINT PK_BlogUser
+        PRIMARY KEY (Id)
+);
+
 CREATE INDEX IX_Posts_UserId
     on Posts (UserId);
 
@@ -57,3 +66,8 @@ CREATE INDEX IX_Reactions_UserId
 CREATE INDEX IX_Reactions_PostId
     on Reactions (PostId);
 
+CREATE INDEX IX_BlogUser_BlogId
+    on BlogUser (BlogId);
+
+CREATE INDEX IX_BlogUser_UserId
+    on BlogUser (UserId)

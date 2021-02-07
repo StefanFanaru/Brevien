@@ -40,6 +40,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\..\MercuryBus\MercuryBus\MercuryBus.csproj"/>
         <ProjectReference Include="..\Posting.Core\Posting.Core.csproj"/>
         <ProjectReference Include="..\Posting.Infrastructure\Posting.Infrastructure.csproj"/>
     </ItemGroup>

@@ -1,6 +1,7 @@
 using System;
 using System.IO;
-using Blogging.API.Infrastructure.Data;
+using System.Threading.Tasks;
+using Blogging.API.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +15,7 @@ namespace Blogging.API
         public static readonly string Namespace = typeof(Program).Namespace;
         public static readonly string AppName = Namespace.Substring(0, Namespace.LastIndexOf('.'));
 
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             Console.Title = "IdentityControl API";
 
@@ -35,8 +36,7 @@ namespace Blogging.API
                 using (var scope = host.Services.CreateScope())
                 {
                     var services = scope.ServiceProvider;
-                    var dataMigrator = services.GetRequiredService<IDataMigrator>();
-                    dataMigrator.MigrateData();
+                    await services.InitializeDatabase();
                 }
 
                 Log.Information("Starting host...");
@@ -44,7 +44,7 @@ namespace Blogging.API
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, "Host terminated unexpectedly.");
+                Log.Fatal(ex, "Host terminated unexpectedly");
             }
             finally
             {

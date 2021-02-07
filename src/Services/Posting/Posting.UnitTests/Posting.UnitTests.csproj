@@ -30,4 +30,10 @@
         <Folder Include="Queries"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <Content Include="tablesSQLite.sql">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
 </Project>

@@ -31,6 +31,7 @@ namespace Blogging.API
 
             services
                 .AddApiServices()
+                .AddMercuryBus()
                 .AddAppDatabase(connectionString, migrationsAssembly)
                 .AddSwaggerConfiguration()
                 .AddFluentValidators(typeof(BlogControllerValidators.CreateValidator).Assembly);

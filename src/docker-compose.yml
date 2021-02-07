@@ -1,17 +1,29 @@
 version: '3.8'
 
 services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:5.2.4
+
+  kafka:
+    image: confluentinc/cp-kafka:5.2.4
+    depends_on:
+      - zookeeper
+
+  eventuate-cdc:
+    depends_on:
+      - mssql-db
+      - kafka
+      - zookeeper
+    image: eventuateio/eventuate-cdc-service:latest
+
   infrastructure-apigw:
     image: envoyproxy/envoy-alpine:v1.16-latest
 
   blogging-apigw:
     image: envoyproxy/envoy-alpine:v1.16-latest
 
-  sqldata:
+  mssql-db:
     image: mcr.microsoft.com/mssql/server:2017-latest
-
-  nosqldata:
-    image: mongo
 
   identity-server-api:
     image: brevien/identity-server.api
@@ -19,7 +31,9 @@ services:
       context: .
       dockerfile: Services/IdentityServer/IdentityServer.API/Dockerfile
     depends_on:
-      - sqldata
+      - mssql-db
+      - kafka
+      - zookeeper
 
   identity-control-api:
     image: brevien/identity-control.api
@@ -27,7 +41,9 @@ services:
       context: .
       dockerfile: Services/IdentityControl/IdentityControl.API/Dockerfile
     depends_on:
-      - sqldata
+      - mssql-db
+      - kafka
+      - zookeeper
 
   blogging-api:
     image: brevien/blogging.api
@@ -35,7 +51,9 @@ services:
       context: .
       dockerfile: Services/Blogging/Blogging.API/Dockerfile
     depends_on:
-      - nosqldata
+      - mssql-db
+      - kafka
+      - zookeeper
 
   posting-api:
     image: brevien/posting.api
@@ -43,4 +61,6 @@ services:
       context: .
       dockerfile: Services/Posting/Posting.API/Dockerfile
     depends_on:
-      - sqldata
+      - mssql-db
+      - kafka
+      - zookeeper

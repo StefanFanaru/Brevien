@@ -81,13 +81,15 @@ namespace IdentityServer.API.Configuration
                 .AddAspNetIdentity<ApplicationUser>()
                 .AddConfigurationStore(options =>
                 {
-                    options.ConfigureDbContext = b =>
-                        b.UseSqlServer(connectionString,
+                    options.ConfigureDbContext =
+                        b => b.UseSqlServer(connectionString,
                             sql =>
                             {
                                 sql.MigrationsAssembly(migrationsAssembly);
                                 sql.EnableRetryOnFailure(15, TimeSpan.FromSeconds(30), null);
                             });
+
+                    options.DefaultSchema = "identity";
                 })
                 .AddOperationalStore(options =>
                 {
@@ -98,8 +100,7 @@ namespace IdentityServer.API.Configuration
                                 sql.MigrationsAssembly(migrationsAssembly);
                                 sql.EnableRetryOnFailure(15, TimeSpan.FromSeconds(30), null);
                             });
-
-                    options.EnableTokenCleanup = true;
+                    options.DefaultSchema = "identity";
                 });
 
             if (!File.Exists("idsrv4dev.pfx"))

@@ -27,6 +27,7 @@ namespace Posting.API.Configuration
             services.AddScoped<IUserInfo, AspUserInfo>();
             services.AddScoped(typeof(IRepository<>), typeof(DapperRepository<>));
             services.AddScoped<ICommentsRepository, CommentsRepository>();
+            services.AddScoped<IBlogUserRepository, BlogUserRepository>();
             services.AddScoped<IDbConnectionProvider, MsSqlConnectionProvider>();
 
             return services;
@@ -40,13 +41,13 @@ namespace Posting.API.Configuration
                 .ConfigureRunner(rb => rb
                     .AddSqlServer()
                     .WithGlobalConnectionString(connectionString)
-                    .ScanIn(typeof(DatabaseCreator).Assembly).For.Migrations())
+                    .ScanIn(typeof(MsSqlConnectionProvider).Assembly).For.Migrations())
                 .AddLogging(lb => lb.AddFluentMigratorConsole());
 
             return services;
         }
 
-        public static void AddAuth(this IServiceCollection services)
+        public static IServiceCollection AddAuth(this IServiceCollection services)
         {
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
@@ -81,15 +82,16 @@ namespace Posting.API.Configuration
 
                 options.AddPolicy("BlogOwner", builder => builder.AddRequirements(new BlogOwnerRequirement()));
             });
+
+            services.AddScoped<IAuthorizationHandler, BlogOwnerAuthorizationHandler>();
+
+            return services;
         }
 
         public static void InitializeDatabase(IServiceProvider serviceProvider)
         {
             // Instantiate the runner
-            var dbServer = Configuration["Persistence:Server"];
-            var databaseName = Configuration["Persistence:DatabaseName"];
-
-            DatabaseCreator.EnsureDatabaseExists(dbServer, databaseName);
+            string jj = "sdf";
             var runner = serviceProvider.GetRequiredService<IMigrationRunner>();
             try
             {

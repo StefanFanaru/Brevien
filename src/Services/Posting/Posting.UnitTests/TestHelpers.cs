@@ -1,4 +1,7 @@
-﻿using Posting.Core.Interfaces.Data;
+﻿using System;
+using System.IO;
+using Dapper;
+using Posting.Core.Interfaces.Data;
 using Posting.Infrastructure.Data.Configuration;
 
 namespace Posting.UnitTests
@@ -10,7 +13,15 @@ namespace Posting.UnitTests
             var connectionProvider = SqliteConnectionProvider.Instance;
             connectionProvider.Reset();
             var connection = connectionProvider.GetConnection();
-            connection.CreateTables(true);
+
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"tablesSQLite.sql");
+            var query = File.ReadAllText(path);
+
+            using (connection)
+            {
+                connection.Execute(query);
+            }
+
             return connectionProvider;
         }
     }

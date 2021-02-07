@@ -11,7 +11,7 @@ namespace Posting.Infrastructure.Data.Configuration
 
         public MsSqlConnectionProvider(IConfiguration configuration)
         {
-            _connectionString = configuration["Persistence:ConnectionString"];
+            _connectionString = configuration["ConnectionString"];
         }
 
         public IDbConnection GetConnection()
