@@ -131,7 +131,7 @@ namespace IdentityServer.API.Configuration
                 }
 
                 retryForAvailability++;
-                await Task.Delay(2000 * retryForAvailability);
+                await Task.Delay(5000 * retryForAvailability);
                 Log.Error(e.Message);
                 Log.Information($"Retrying database initialization. Retry number {retryForAvailability}");
                 await InitializeDatabase(serviceProvider, retryForAvailability);

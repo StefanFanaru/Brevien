@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Blogging.API.Asp;
 using Blogging.API.Dtos;
+using Blogging.API.Events;
 using Blogging.API.Infrastructure.Data;
 using Blogging.API.Infrastructure.Data.Entities;
 using Blogging.API.Services.Interfaces;
+using MercuryBus.Events.Common;
+using MercuryBus.Events.Publisher;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,13 +17,16 @@ namespace Blogging.API.Services
 {
     public class BlogService : IBlogService
     {
+        private readonly IDomainEventPublisher _eventPublisher;
         private readonly IBlogRepository _repository;
         private readonly IUserInfo _userInfo;
 
-        public BlogService(IUserInfo userInfo, IBlogRepository repository)
+
+        public BlogService(IUserInfo userInfo, IBlogRepository repository, IDomainEventPublisher eventPublisher)
         {
             _userInfo = userInfo;
             _repository = repository;
+            _eventPublisher = eventPublisher;
         }
 
         public async Task<IActionResult> CreateAsync(BlogCreateDto blog, string ownerId = null)
@@ -41,8 +48,20 @@ namespace Blogging.API.Services
                 CreatedAt = DateTime.UtcNow,
                 OwnerId = string.IsNullOrEmpty(ownerId) ? _userInfo.Id : ownerId
             };
-            await _repository.InsertAsync(entity);
-            await _repository.SaveAsync();
+
+            var blogCreatedEvent = new BlogCreatedEvent
+            {
+                BlogId = entity.Id,
+                UserId = entity.OwnerId
+            };
+
+            await _repository.ExecuteTransactional(async () =>
+            {
+                await _repository.InsertAsync(entity);
+                await _repository.SaveAsync();
+                await _eventPublisher.PublishAsync(nameof(Blog), entity.Id,
+                    new List<IDomainEvent> {blogCreatedEvent});
+            });
 
             return new OkObjectResult(new BlogDto
             {

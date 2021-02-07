@@ -67,7 +67,7 @@ namespace Blogging.API.Controllers
             }
 
             var createdBlog = await _blogService.CreateAsync(blog);
-            return new OkObjectResult(createdBlog);
+            return createdBlog;
         }
 
         [HttpPatch]

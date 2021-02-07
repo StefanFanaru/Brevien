@@ -44,7 +44,7 @@ namespace Blogging.API.Configuration
                     sql =>
                     {
                         sql.MigrationsAssembly(migrationsAssembly);
-                        sql.EnableRetryOnFailure(15, TimeSpan.FromSeconds(100), null);
+                        sql.EnableRetryOnFailure(15, TimeSpan.FromSeconds(30), null);
                     }));
 
             return services;
@@ -62,7 +62,7 @@ namespace Blogging.API.Configuration
             return services;
         }
 
-        public static void AddAuth(this IServiceCollection services)
+        public static IServiceCollection AddAuth(this IServiceCollection services)
         {
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
@@ -98,6 +98,8 @@ namespace Blogging.API.Configuration
                         .RequireAuthenticatedUser()
                         .RequireClaim("role", "Administrator"));
             });
+
+            return services;
         }
 
         public static async Task InitializeDatabase(this IServiceProvider serviceProvider, int retryForAvailability = 0)

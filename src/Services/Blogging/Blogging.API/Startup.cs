@@ -34,6 +34,7 @@ namespace Blogging.API
                 .AddMercuryBus()
                 .AddAppDatabase(connectionString, migrationsAssembly)
                 .AddSwaggerConfiguration()
+                .AddAuth()
                 .AddFluentValidators(typeof(BlogControllerValidators.CreateValidator).Assembly);
 
             services.AddControllers().AddApplicationPart(typeof(Startup).Assembly).AddNewtonsoftJson(options =>
@@ -42,8 +43,6 @@ namespace Blogging.API
                 options.SerializerSettings.Converters.Add(new JsonExtensions.UtcDateTimeConverter());
                 options.SerializerSettings.Converters.Add(new JsonExtensions.TrimmingStringConverter());
             });
-
-            services.AddAuth();
         }
 
         public void ConfigureTestingServices(IServiceCollection services)

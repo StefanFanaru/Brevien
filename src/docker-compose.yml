@@ -32,8 +32,7 @@ services:
       dockerfile: Services/IdentityServer/IdentityServer.API/Dockerfile
     depends_on:
       - mssql-db
-      - kafka
-      - zookeeper
+      - eventuate-cdc
 
   identity-control-api:
     image: brevien/identity-control.api
@@ -42,8 +41,7 @@ services:
       dockerfile: Services/IdentityControl/IdentityControl.API/Dockerfile
     depends_on:
       - mssql-db
-      - kafka
-      - zookeeper
+      - eventuate-cdc
 
   blogging-api:
     image: brevien/blogging.api
@@ -52,8 +50,7 @@ services:
       dockerfile: Services/Blogging/Blogging.API/Dockerfile
     depends_on:
       - mssql-db
-      - kafka
-      - zookeeper
+      - eventuate-cdc
 
   posting-api:
     image: brevien/posting.api
@@ -62,5 +59,4 @@ services:
       dockerfile: Services/Posting/Posting.API/Dockerfile
     depends_on:
       - mssql-db
-      - kafka
-      - zookeeper
+      - eventuate-cdc

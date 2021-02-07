@@ -12,7 +12,6 @@ services:
     ports:
       - 9092:9092
       - 29092:29092
-
     environment:
       KAFKA_LISTENERS: LC://kafka:29092,LX://kafka:9092
       KAFKA_ADVERTISED_LISTENERS: LC://kafka:29092,LX://${EXTERNAL_IP}:9092
@@ -31,7 +30,7 @@ services:
       SPRING_PROFILES_ACTIVE: EventuatePolling
 
       EVENTUATE_CDC_READER_MSSQLREADER_TYPE: polling
-      EVENTUATE_CDC_READER_MSSQLREADER_DATASOURCEURL: jdbc:sqlserver:///${EXTERNAL_IP}:1444;databaseName=brevien-sqldb
+      EVENTUATE_CDC_READER_MSSQLREADER_DATASOURCEURL: jdbc:sqlserver://${EXTERNAL_IP}:1444;databaseName=brevien-sqldb
       EVENTUATE_CDC_READER_MSSQLREADER_DATASOURCEUSERNAME: sa
       EVENTUATE_CDC_READER_MSSQLREADER_DATASOURCEPASSWORD: SqlS3rv3r#34
       EVENTUATE_CDC_READER_MSSQLREADER_DATASOURCEDRIVERCLASSNAME: com.microsoft.sqlserver.jdbc.SQLServerDriver
@@ -102,7 +101,7 @@ services:
       - PATH_BASE=/ic
       - ConnectionString=${MSSQL_CONNECTION_STRING}
       - Settings__Environment=${ENVIRONMENT}
-      - Settings__KafkaBoostrapServers=${KAFKA_BOOTSTRAP_SERVERS}
+      - Settings__KafkaBoostrapServers=${KAFKA_BOOTSTRAP_SERVERS_LOCAL}
     volumes:
       - ${USERPROFILE}/.aspnet/https:/https:ro
 
@@ -115,7 +114,7 @@ services:
       - PATH_BASE=/b
       - ConnectionString=${MSSQL_CONNECTION_STRING}
       - Settings__Environment=${ENVIRONMENT}
-      - Settings__KafkaBoostrapServers=${KAFKA_BOOTSTRAP_SERVERS}
+      - Settings__KafkaBoostrapServers=${KAFKA_BOOTSTRAP_SERVERS_LOCAL}
     volumes:
       - ${USERPROFILE}/.aspnet/https:/https:ro
 
@@ -130,7 +129,7 @@ services:
       - Http__Blogging__BaseUri=${BLOGGING_URL}
       - Http__Blogging__Headers__SecretKey__Value=blog-secret
       - Settings__Environment=${ENVIRONMENT}
-      - Settings__KafkaBoostrapServers=${KAFKA_BOOTSTRAP_SERVERS}
+      - Settings__KafkaBoostrapServers=${KAFKA_BOOTSTRAP_SERVERS_LOCAL}
     volumes:
       - ${USERPROFILE}/.aspnet/https:/https:ro
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using System.Transactions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Blogging.API.Infrastructure.Data
@@ -84,6 +85,19 @@ namespace Blogging.API.Infrastructure.Data
         public async Task<int> SaveAsync()
         {
             return await _context.SaveChangesAsync();
+        }
+
+        public async Task ExecuteTransactional(Func<Task> operation)
+        {
+            var strategy = _context.Database.CreateExecutionStrategy();
+            await strategy.Execute(async () =>
+            {
+                using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    await operation.Invoke();
+                    scope.Complete();
+                }
+            });
         }
     }
 }

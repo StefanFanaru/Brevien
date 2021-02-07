@@ -1,6 +1,6 @@
 ﻿{
   "profiles": {
-    "Blog.API": {
+    "Blogging.API": {
       "commandName": "Project",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

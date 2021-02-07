@@ -1,0 +1,46 @@
+version: '3.8'
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:5.2.4
+    ports:
+      - 2181:2181
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      KAFKA_HEAP_OPTS: -Xmx64m
+  kafka:
+    image: confluentinc/cp-kafka:5.2.4
+    ports:
+      - 9092:9092
+      - 29092:29092
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_LISTENERS: LC://kafka:29092,LX://kafka:9092
+      KAFKA_ADVERTISED_LISTENERS: LC://kafka:29092,LX://${EXTERNAL_IP}:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LC:PLAINTEXT,LX:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: LC
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_HEAP_OPTS: -Xmx192m
+  eventuate-cdc:
+    image: eventuateio/eventuate-cdc-service:latest
+    ports:
+      - "8099:8080"
+    depends_on:
+      - kafka
+      - zookeeper
+    environment:
+      EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      EVENTUATELOCAL_ZOOKEEPER_CONNECTION_STRING: zookeeper:2181
+      SPRING_PROFILES_ACTIVE: EventuatePolling
+      EVENTUATE_CDC_READER_MSSQLREADER_TYPE: polling
+      EVENTUATE_CDC_READER_MSSQLREADER_DATASOURCEURL: jdbc:sqlserver://${EXTERNAL_IP}:1433;databaseName=brevien-sqldb
+      EVENTUATE_CDC_READER_MSSQLREADER_DATASOURCEUSERNAME: SqlLoginUser
+      EVENTUATE_CDC_READER_MSSQLREADER_DATASOURCEPASSWORD: SqlServer123!
+      EVENTUATE_CDC_READER_MSSQLREADER_DATASOURCEDRIVERCLASSNAME: com.microsoft.sqlserver.jdbc.SQLServerDriver
+      EVENTUATE_CDC_READER_MSSQLREADER_LEADERSHIPLOCKPATH: /eventuate/cdc/leader/common
+
+      EVENTUATE_CDC_PIPELINE_PIPELINE1_TYPE: eventuate-tram
+      EVENTUATE_CDC_PIPELINE_PIPELINE1_READER: MSSQLREADER
+      EVENTUATE_CDC_PIPELINE_PIPELINE1_EVENTUATEDATABASESCHEMA: mercury
+      EVENTUATE_CDC_PIPELINE_PIPELINE1_SOURCETABLENAME: Messages

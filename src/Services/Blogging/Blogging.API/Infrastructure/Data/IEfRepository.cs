@@ -19,5 +19,6 @@ namespace Blogging.API.Infrastructure.Data
         Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> predicate);
         public void Save();
         public Task<int> SaveAsync();
+        Task ExecuteTransactional(Func<Task> operation);
     }
 }

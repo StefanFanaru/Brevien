@@ -9,6 +9,7 @@ using Blogging.API.Infrastructure.Data;
 using Blogging.API.Infrastructure.Data.Entities;
 using Blogging.API.Services;
 using FluentAssertions;
+using MercuryBus.Events.Publisher;
 using Microsoft.AspNetCore.Mvc;
 using MockQueryable.Moq;
 using Moq;
@@ -34,7 +35,9 @@ namespace Blogging.UnitTests.Services
             userInfoMock.Setup(x => x.Id).Returns(userId);
             userInfoMock.Setup(x => x.Role).Returns(isAdmin ? Roles.Administrator : Roles.BasicUser);
 
-            return new BlogService(userInfoMock.Object, _repositoryMock.Object);
+            var eventPublisherMock = new Mock<IDomainEventPublisher>();
+
+            return new BlogService(userInfoMock.Object, _repositoryMock.Object, eventPublisherMock.Object);
         }
 
         [Fact]

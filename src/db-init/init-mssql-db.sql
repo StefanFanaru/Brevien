@@ -1,11 +1,15 @@
+USE master
+GO
 IF NOT EXISTS(SELECT *
               FROM sys.databases
               WHERE name = 'brevien-sqldb')
     BEGIN
         CREATE DATABASE [brevien-sqldb]
     END
+GO
 
 USE [brevien-sqldb]
+GO
 
 -- CREATE MercuryBus schema, tables and indexes
 IF NOT EXISTS(SELECT *
@@ -43,7 +47,7 @@ IF NOT EXISTS(SELECT *
 
         CREATE INDEX Message_Published_IDX ON mercury.Messages (Published, Id);
     END
-
+GO
 
 -- CREATE Posting service schema, tables and indexes
 IF NOT EXISTS(SELECT *
@@ -128,3 +132,4 @@ IF NOT EXISTS(SELECT *
             on posting.BlogUser (UserId)
 
     END
+GO
