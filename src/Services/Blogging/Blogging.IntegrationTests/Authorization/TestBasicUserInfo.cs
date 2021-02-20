@@ -10,10 +10,6 @@ namespace Blogging.IntegrationTests.Authorization
         public string Email => "jhonny.test@gmail.com";
         public string Name => $"{FirstName} {LastName}";
         public string Role => Roles.BasicUser;
-
-        public string[] OwnedBlogs
-        {
-            get { return new[] {TestConstants.BlogId}; }
-        }
+        public string[] OwnedBlogs => new[] {TestConstants.BlogId};
     }
 }
