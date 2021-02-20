@@ -5,7 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentityServer.API.Common.Constants;
-using IdentityServer.API.Data.Entites;
+using IdentityServer.API.Data.Entities;
 using IdentityServer.API.Data.Seeders.Models;
 using IdentityServer.API.Data.ValueObjects;
 using Microsoft.AspNetCore.Identity;

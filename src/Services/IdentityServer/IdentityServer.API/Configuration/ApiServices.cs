@@ -5,7 +5,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using IdentityServer.API.Common;
 using IdentityServer.API.Data;
-using IdentityServer.API.Data.Entites;
+using IdentityServer.API.Data.Entities;
 using IdentityServer.API.Data.Seeders;
 using IdentityServer.API.Services;
 using IdentityServer.API.Services.Interfaces;

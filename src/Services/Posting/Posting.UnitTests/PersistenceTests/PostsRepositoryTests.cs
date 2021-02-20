@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Posting.Core.Entities;
@@ -10,14 +11,12 @@ namespace Posting.UnitTests.PersistenceTests
     [Collection("Sequential")]
     public class PostsRepositoryTests
     {
-        private readonly CommentsRepository _commentsRepository;
-        private readonly DapperRepository<Post> _postRepository;
+        private readonly DapperRepository _repository;
 
         public PostsRepositoryTests()
         {
             var connectionProvider = TestHelpers.InitializeInMemoryDb();
-            _postRepository = new DapperRepository<Post>(connectionProvider);
-            _commentsRepository = new CommentsRepository(connectionProvider);
+            _repository = new DapperRepository(connectionProvider);
         }
 
         [Fact]
@@ -31,11 +30,11 @@ namespace Posting.UnitTests.PersistenceTests
                 Builders.GetCommentEntity(post.Id)
             };
 
-            await _postRepository.InsertAsync(post);
-            await _commentsRepository.InsertBatchAsync(expected);
+            await _repository.InsertAsync(post);
+            await _repository.InsertBatchAsync(expected);
 
-            var actual = await _commentsRepository.GetByPostId(post.Id);
-            expected.Should().BeEquivalentTo(actual);
+            var actual = await _repository.GetByKeyAsync<Comment>("PostId", post.Id);
+            actual.Count().Should().Be(expected.Count);
         }
 
         [Fact]
@@ -49,11 +48,11 @@ namespace Posting.UnitTests.PersistenceTests
                 Builders.GetCommentEntity(post.Id)
             };
 
-            await _postRepository.InsertAsync(post);
-            await _commentsRepository.InsertBatchAsync(expected);
+            await _repository.InsertAsync(post);
+            await _repository.InsertBatchAsync(expected);
 
-            var actual = await _commentsRepository.GetByUserId(TestConstants.UserId);
-            expected.Should().BeEquivalentTo(actual);
+            var actual = await _repository.GetByKeyAsync<Comment>(nameof(post.UserId), TestConstants.UserId);
+            actual.Count().Should().Be(expected.Count);
         }
     }
 }

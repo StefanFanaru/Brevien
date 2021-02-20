@@ -28,4 +28,10 @@
         <Compile Remove="Data\Repositories\PostsRepository.cs"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <Content Include="..\..\..\db-init\init-mssql-db.sql">
+            <Link>Data\Migrations\init-mssql-db.sql</Link>
+        </Content>
+    </ItemGroup>
+
 </Project>

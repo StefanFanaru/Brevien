@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Blogging.API.Asp;
@@ -8,7 +7,6 @@ using Blogging.API.Events;
 using Blogging.API.Infrastructure.Data;
 using Blogging.API.Infrastructure.Data.Entities;
 using Blogging.API.Services.Interfaces;
-using MercuryBus.Events.Common;
 using MercuryBus.Events.Publisher;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -52,15 +50,16 @@ namespace Blogging.API.Services
             var blogCreatedEvent = new BlogCreatedEvent
             {
                 BlogId = entity.Id,
-                UserId = entity.OwnerId
+                UserId = entity.OwnerId,
+                BlogName = entity.Name,
+                BlogUri = entity.Uri
             };
 
-            await _repository.ExecuteTransactional(async () =>
+            await _repository.ExecuteTransactionalAsync(async () =>
             {
                 await _repository.InsertAsync(entity);
                 await _repository.SaveAsync();
-                await _eventPublisher.PublishAsync(nameof(Blog), entity.Id,
-                    new List<IDomainEvent> {blogCreatedEvent});
+                await _eventPublisher.PublishAsync(nameof(Blog), entity.Id, blogCreatedEvent);
             });
 
             return new OkObjectResult(new BlogDto

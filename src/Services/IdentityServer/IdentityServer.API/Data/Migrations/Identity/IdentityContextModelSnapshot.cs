@@ -19,7 +19,7 @@ namespace IdentityServer.API.Data.Migrations.Identity
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("IdentityServer.API.Data.Entites.ApplicationUser", b =>
+            modelBuilder.Entity("IdentityServer.API.Data.Entities.ApplicationUser", b =>
             {
                 b.Property<string>("Id")
                     .HasColumnType("nvarchar(36)")
@@ -30,10 +30,6 @@ namespace IdentityServer.API.Data.Migrations.Identity
 
                 b.Property<int>("AccessFailedCount")
                     .HasColumnType("int");
-
-                b.Property<string>("BlogId")
-                    .HasColumnType("nvarchar(36)")
-                    .HasMaxLength(36);
 
                 b.Property<string>("ConcurrencyStamp")
                     .IsConcurrencyToken()
@@ -112,10 +108,6 @@ namespace IdentityServer.API.Data.Migrations.Identity
 
                 b.HasKey("Id");
 
-                b.HasIndex("BlogId")
-                    .IsUnique()
-                    .HasFilter("[BlogId] IS NOT NULL");
-
                 b.HasIndex("NormalizedEmail")
                     .HasName("EmailIndex");
 
@@ -127,7 +119,38 @@ namespace IdentityServer.API.Data.Migrations.Identity
                 b.ToTable("AspNetUsers");
             });
 
-            modelBuilder.Entity("IdentityServer.API.Data.Entites.DataMigration", b =>
+            modelBuilder.Entity("IdentityServer.API.Data.Entities.Blog", b =>
+            {
+                b.Property<string>("Id")
+                    .HasColumnType("nvarchar(450)");
+
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(max)");
+
+                b.Property<string>("Uri")
+                    .HasColumnType("nvarchar(max)");
+
+                b.HasKey("Id");
+
+                b.ToTable("Blogs");
+            });
+
+            modelBuilder.Entity("IdentityServer.API.Data.Entities.BlogOwner", b =>
+            {
+                b.Property<string>("UserId")
+                    .HasColumnType("nvarchar(36)");
+
+                b.Property<string>("BlogId")
+                    .HasColumnType("nvarchar(450)");
+
+                b.HasKey("UserId", "BlogId");
+
+                b.HasIndex("BlogId");
+
+                b.ToTable("BlogOwners");
+            });
+
+            modelBuilder.Entity("IdentityServer.API.Data.Entities.DataMigration", b =>
             {
                 b.Property<string>("Id")
                     .HasColumnType("nvarchar(36)")
@@ -151,7 +174,7 @@ namespace IdentityServer.API.Data.Migrations.Identity
                 b.ToTable("DataMigrations");
             });
 
-            modelBuilder.Entity("IdentityServer.API.Data.Entites.TwoFactorStatus", b =>
+            modelBuilder.Entity("IdentityServer.API.Data.Entities.TwoFactorStatus", b =>
             {
                 b.Property<string>("Id")
                     .HasColumnType("nvarchar(36)")
@@ -301,7 +324,7 @@ namespace IdentityServer.API.Data.Migrations.Identity
                 b.ToTable("AspNetUserTokens");
             });
 
-            modelBuilder.Entity("IdentityServer.API.Data.Entites.ApplicationUser", b =>
+            modelBuilder.Entity("IdentityServer.API.Data.Entities.ApplicationUser", b =>
             {
                 b.OwnsOne("IdentityServer.API.Data.ValueObjects.Address", "Address", b1 =>
                 {
@@ -340,6 +363,21 @@ namespace IdentityServer.API.Data.Migrations.Identity
                 });
             });
 
+            modelBuilder.Entity("IdentityServer.API.Data.Entities.BlogOwner", b =>
+            {
+                b.HasOne("IdentityServer.API.Data.Entities.Blog", "Blog")
+                    .WithMany("Owners")
+                    .HasForeignKey("BlogId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                b.HasOne("IdentityServer.API.Data.Entities.ApplicationUser", "User")
+                    .WithMany("OwnedBlogs")
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
             {
                 b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -351,7 +389,7 @@ namespace IdentityServer.API.Data.Migrations.Identity
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
             {
-                b.HasOne("IdentityServer.API.Data.Entites.ApplicationUser", null)
+                b.HasOne("IdentityServer.API.Data.Entities.ApplicationUser", null)
                     .WithMany()
                     .HasForeignKey("UserId")
                     .OnDelete(DeleteBehavior.Cascade)
@@ -360,7 +398,7 @@ namespace IdentityServer.API.Data.Migrations.Identity
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
             {
-                b.HasOne("IdentityServer.API.Data.Entites.ApplicationUser", null)
+                b.HasOne("IdentityServer.API.Data.Entities.ApplicationUser", null)
                     .WithMany()
                     .HasForeignKey("UserId")
                     .OnDelete(DeleteBehavior.Cascade)
@@ -375,7 +413,7 @@ namespace IdentityServer.API.Data.Migrations.Identity
                     .OnDelete(DeleteBehavior.Cascade)
                     .IsRequired();
 
-                b.HasOne("IdentityServer.API.Data.Entites.ApplicationUser", null)
+                b.HasOne("IdentityServer.API.Data.Entities.ApplicationUser", null)
                     .WithMany()
                     .HasForeignKey("UserId")
                     .OnDelete(DeleteBehavior.Cascade)
@@ -384,7 +422,7 @@ namespace IdentityServer.API.Data.Migrations.Identity
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
             {
-                b.HasOne("IdentityServer.API.Data.Entites.ApplicationUser", null)
+                b.HasOne("IdentityServer.API.Data.Entities.ApplicationUser", null)
                     .WithMany()
                     .HasForeignKey("UserId")
                     .OnDelete(DeleteBehavior.Cascade)

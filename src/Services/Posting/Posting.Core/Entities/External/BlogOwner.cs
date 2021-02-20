@@ -1,6 +1,6 @@
-﻿namespace Posting.Core.Entities
+﻿namespace Posting.Core.Entities.External
 {
-    public class BlogUser : Entity<string>
+    public class BlogOwner
     {
         public string BlogId { get; set; }
         public string UserId { get; set; }

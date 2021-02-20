@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Posting.Core.Interfaces.Asp;
+using Posting.Infrastructure.Helpers;
 
 namespace Posting.API.Asp
 {
@@ -14,7 +15,7 @@ namespace Posting.API.Asp
                 LastName = user.FindFirstValue(Claims.LastName);
                 Email = user.FindFirstValue(Claims.Email);
                 Role = user.FindFirstValue(Claims.Role);
-                BlogId = user.FindFirstValue(Claims.BlogId);
+                OwnedBlogs = user.FindFirstValue(Claims.OwnedBlogs).FromJson<string[]>();
             }
         }
 
@@ -24,6 +25,6 @@ namespace Posting.API.Asp
         public string Email { get; }
         public string Role { get; }
         public string Name => $"{FirstName} {LastName}";
-        public string BlogId { get; }
+        public string[] OwnedBlogs { get; }
     }
 }

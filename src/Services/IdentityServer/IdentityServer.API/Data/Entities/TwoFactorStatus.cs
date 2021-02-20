@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace IdentityServer.API.Data.Entites
+namespace IdentityServer.API.Data.Entities
 {
     public class TwoFactorStatus
     {

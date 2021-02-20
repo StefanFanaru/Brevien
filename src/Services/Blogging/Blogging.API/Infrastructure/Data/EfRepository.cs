@@ -87,7 +87,7 @@ namespace Blogging.API.Infrastructure.Data
             return await _context.SaveChangesAsync();
         }
 
-        public async Task ExecuteTransactional(Func<Task> operation)
+        public async Task ExecuteTransactionalAsync(Func<Task> operation)
         {
             var strategy = _context.Database.CreateExecutionStrategy();
             await strategy.Execute(async () =>

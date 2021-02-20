@@ -14,7 +14,7 @@ namespace Posting.IntegrationTests.ApiTests
     public class PostControllerTests : IClassFixture<ApiTestsFixture>
     {
         private readonly HttpClient _client;
-        private readonly IRepository<Post> _postRepository;
+        private readonly IDapperRepository _postRepository;
         private readonly RuntimeMiddlewareService _runtimeMiddleware;
 
         public PostControllerTests(ApiTestsFixture factory)
@@ -22,7 +22,7 @@ namespace Posting.IntegrationTests.ApiTests
             _client = factory.CreateClient();
             var serviceProvider = factory.Server.Services;
             _runtimeMiddleware = serviceProvider.GetRequiredService<RuntimeMiddlewareService>();
-            _postRepository = serviceProvider.GetRequiredService<IRepository<Post>>();
+            _postRepository = serviceProvider.GetRequiredService<IDapperRepository>();
         }
 
         [Fact]
@@ -45,7 +45,7 @@ namespace Posting.IntegrationTests.ApiTests
             // Assert
             var content = await response.Content.ReadAsStringAsync();
             response.EnsureSuccessStatusCode();
-            var targetPost = _postRepository.GetAsync(content);
+            var targetPost = _postRepository.GetAsync<Post>(content);
             targetPost.Should().NotBeNull();
         }
     }

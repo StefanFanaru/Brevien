@@ -12,12 +12,12 @@ namespace Posting.UnitTests.PersistenceTests
     [Collection("Sequential")]
     public class DapperRepositoryTests
     {
-        private readonly DapperRepository<Post> _repository;
+        private readonly DapperRepository _repository;
 
         public DapperRepositoryTests()
         {
             var connectionProvider = TestHelpers.InitializeInMemoryDb();
-            _repository = new DapperRepository<Post>(connectionProvider);
+            _repository = new DapperRepository(connectionProvider);
         }
 
         [Fact]
@@ -25,7 +25,7 @@ namespace Posting.UnitTests.PersistenceTests
         {
             var expected = Builders.GetPostEntity();
             await _repository.InsertAsync(expected);
-            var actual = await _repository.GetAsync(expected.Id);
+            var actual = await _repository.GetAsync<Post>(expected.Id);
 
             actual.Should().BeEquivalentTo(expected);
         }
@@ -44,7 +44,7 @@ namespace Posting.UnitTests.PersistenceTests
             }
 
             // Act
-            var posts = await _repository.GetAllAsync();
+            var posts = await _repository.GetAllAsync<Post>();
 
             // Assert
             var result = posts.ToList();
@@ -58,8 +58,8 @@ namespace Posting.UnitTests.PersistenceTests
             var record = Builders.GetPostEntity();
             await _repository.InsertAsync(record);
 
-            await _repository.DeleteAsync(record.Id);
-            var post = await _repository.GetAsync(record.Id);
+            await _repository.DeleteAsync<Post>(record.Id);
+            var post = await _repository.GetAsync<Post>(record.Id);
 
             post.Should().BeNull();
         }
@@ -70,7 +70,7 @@ namespace Posting.UnitTests.PersistenceTests
             var record = Builders.GetPostEntity();
             await _repository.InsertAsync(record);
 
-            var post = await _repository.GetAsync(record.Id);
+            var post = await _repository.GetAsync<Post>(record.Id);
 
             post.Should().BeEquivalentTo(record);
         }
@@ -84,7 +84,7 @@ namespace Posting.UnitTests.PersistenceTests
 
             record.EditTitle(newTitle);
             await _repository.UpdateAsync(record);
-            var post = await _repository.GetAsync(record.Id);
+            var post = await _repository.GetAsync<Post>(record.Id);
 
             post.Title.Should().Be(newTitle);
             post.UpdatedAt.Should().BeCloseTo(DateTime.UtcNow, 100);
@@ -95,7 +95,7 @@ namespace Posting.UnitTests.PersistenceTests
         {
             var expected = new List<Post> {Builders.GetPostEntity(), Builders.GetPostEntity(), Builders.GetPostEntity()};
             await _repository.InsertBatchAsync(expected);
-            var actual = await _repository.GetAllAsync();
+            var actual = await _repository.GetAllAsync<Post>();
             actual.Should().BeEquivalentTo(expected);
         }
     }

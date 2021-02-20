@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using Ardalis.GuardClauses;
 using IdentityServer.API.Data.ValueObjects;
 using Microsoft.AspNetCore.Identity;
 
-namespace IdentityServer.API.Data.Entites
+namespace IdentityServer.API.Data.Entities
 {
     public class ApplicationUser : IdentityUser
     {
@@ -21,7 +22,7 @@ namespace IdentityServer.API.Data.Entites
         public DateTime? LastModified { get; private set; }
         public DateTime? LastLogin { get; set; }
         public string PictureUrl { get; private set; }
-        public string BlogId { get; set; }
+        public List<BlogOwner> OwnedBlogs { get; set; }
 
         public static ApplicationUser Create(string email, string lastName, string firstName, bool acceptsEmails)
         {

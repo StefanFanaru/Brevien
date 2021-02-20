@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer.API.Common.Constants;
 using IdentityServer.API.Data;
-using IdentityServer.API.Data.Entites;
+using IdentityServer.API.Data.Entities;
 using IdentityServer.API.Services.Verification;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;

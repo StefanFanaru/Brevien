@@ -1,4 +1,4 @@
-using IdentityServer.API.Data.Entites;
+using IdentityServer.API.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,10 +10,6 @@ namespace IdentityServer.API.Data.Configurations
         {
             builder.Property(x => x.Id)
                 .IsRequired()
-                .HasMaxLength(36);
-
-            builder.Property(x => x.BlogId)
-                .IsRequired(false)
                 .HasMaxLength(36);
 
             builder.Property(x => x.FirstName)
@@ -56,8 +52,6 @@ namespace IdentityServer.API.Data.Configurations
                     .HasMaxLength(100)
                     .IsRequired();
             });
-
-            builder.HasIndex(x => x.BlogId).IsUnique();
         }
     }
 }

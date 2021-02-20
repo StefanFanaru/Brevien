@@ -1,4 +1,5 @@
-﻿using System.Data.Common;
+﻿using System.Data.SqlClient;
+using MercuryBus.Consumer.Common;
 using MercuryBus.Events.Subscriber;
 using MercuryBus.Helpers;
 using MercuryBus.Local.Kafka.Consumer;
@@ -16,14 +17,15 @@ namespace Posting.API.Configuration
 
         public static IServiceCollection AddMercuryBus(this IServiceCollection services)
         {
+            services.AddSingleton<IMessageHandlerDecorator, MercuryExecutionStrategyMessageHandlerDecorator>();
             services.AddScoped<IDomainEventHandler<BlogCreatedEvent>, BlogCreatedEventHandler>();
 
-            services.AddMercuryBusSqlKafkaTransport("mercury", Configuration["Settings:KakfaBoostrapServers"],
+            services.AddMercuryBusSqlKafkaTransport("mercury", Configuration["Settings:KafkaBoostrapServers"],
                 MercuryKafkaConsumerConfigurationProperties.Empty(),
                 (serviceProvider, dbContextOptions) =>
                 {
                     var connectionProvider = serviceProvider.GetRequiredService<IDbConnectionProvider>();
-                    dbContextOptions.UseSqlServer((DbConnection) connectionProvider.GetConnection());
+                    dbContextOptions.UseSqlServer(new SqlConnection(Configuration["ConnectionString"]));
                 });
 
             services.AddMercuryBusEventsPublisher();

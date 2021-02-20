@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using MediatR;
 using Moq;
-using Posting.Core.Entities;
 using Posting.Infrastructure.Commands;
 using Posting.Infrastructure.Data.Repositories;
 using Posting.UnitTests.TestData;
@@ -16,12 +15,12 @@ namespace Posting.UnitTests.Commands
     {
         private TestAdminInfo _adminUserInfo;
         private TestBasicUserInfo _basicUserInfo;
-        private DapperRepository<Post> _repository;
+        private DapperRepository _repository;
 
         public PostCommandsTests()
         {
             var connectionProvider = TestHelpers.InitializeInMemoryDb();
-            _repository = new DapperRepository<Post>(connectionProvider);
+            _repository = new DapperRepository(connectionProvider);
             _basicUserInfo = new TestBasicUserInfo();
             _adminUserInfo = new TestAdminInfo();
         }

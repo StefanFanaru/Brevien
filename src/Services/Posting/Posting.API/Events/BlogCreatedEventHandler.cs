@@ -1,22 +1,41 @@
 ﻿using MercuryBus.Events.Subscriber;
-using MercuryBus.Helpers;
-using Microsoft.Extensions.Logging;
+using Posting.Core.Entities.External;
+using Posting.Core.Interfaces.Data;
+using Posting.Infrastructure.Helpers;
 
 namespace Posting.API.Events
 {
     public class BlogCreatedEventHandler : IDomainEventHandler<BlogCreatedEvent>
     {
-        private readonly ILogger _logger;
+        private readonly IDapperRepository _repository;
 
-        public BlogCreatedEventHandler(ILogger<BlogCreatedEventHandler> logger)
+        public BlogCreatedEventHandler(IDapperRepository repository)
         {
-            _logger = logger;
+            _repository = repository;
         }
 
         public void Handle(IDomainEventEnvelope<BlogCreatedEvent> @event)
         {
             var payload = @event.Message.Payload.FromJson<BlogCreatedEvent>();
-            _logger.LogInformation($"Got message BlogCreatedEvent for blog with ID: {payload.BlogId}");
+
+
+            if (_repository.Any<BlogOwner>(("UserId", payload.UserId, null), ("BlogId", payload.BlogId, "AND")))
+            {
+                return;
+            }
+
+            _repository.Insert(new Blog
+            {
+                Id = payload.BlogId,
+                Name = payload.BlogName,
+                Uri = payload.BlogUri
+            });
+
+            _repository.Insert(new BlogOwner
+            {
+                BlogId = payload.BlogId,
+                UserId = payload.UserId
+            });
         }
     }
 }

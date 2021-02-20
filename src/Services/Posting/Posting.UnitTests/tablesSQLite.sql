@@ -39,13 +39,25 @@ CREATE TABLE Reactions
         FOREIGN KEY (PostId) REFERENCES Posts
 );
 
-CREATE TABLE BlogUser
+CREATE TABLE Blogs
 (
-    Id     TEXT NOT NULL,
+    Id   NVARCHAR(36)  NOT NULL,
+    Name NVARCHAR(200) NOT NULL,
+    Uri  NVARCHAR(100) NOT NULL,
+    CONSTRAINT PK_Blogs
+        PRIMARY KEY (Id)
+);
+
+CREATE TABLE BlogOwner
+(
     BlogId TEXT NOT NULL,
     UserId TEXT NOT NULL,
     CONSTRAINT PK_BlogUser
-        PRIMARY KEY (Id)
+        PRIMARY KEY (BlogId, UserId),
+    CONSTRAINT FK_Blogs_Id
+        FOREIGN KEY (BlogId)
+            REFERENCES Blogs (Id)
+            ON DELETE CASCADE
 );
 
 CREATE INDEX IX_Posts_UserId
@@ -66,8 +78,5 @@ CREATE INDEX IX_Reactions_UserId
 CREATE INDEX IX_Reactions_PostId
     on Reactions (PostId);
 
-CREATE INDEX IX_BlogUser_BlogId
-    on BlogUser (BlogId);
-
-CREATE INDEX IX_BlogUser_UserId
-    on BlogUser (UserId)
+CREATE INDEX IX_BlogUser_BlogId_UserId
+    on BlogOwner (BlogId, UserId)

@@ -3,26 +3,30 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentityServer.API.Common.Constants;
-using IdentityServer.API.Data.Entites;
+using IdentityServer.API.Data;
+using IdentityServer.API.Helpers;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace IdentityServer.API.Services
 {
     public class IdentityProfileService : IProfileService
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IdentityContext _dbContext;
 
-        public IdentityProfileService(UserManager<ApplicationUser> userManager)
+        public IdentityProfileService(IdentityContext dbContext)
         {
-            _userManager = userManager;
+            _dbContext = dbContext;
         }
 
         public async Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
             var userId = context.Subject.FindFirst(Claims.UserId).Value;
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _dbContext.Users.Where(x => x.Id == userId)
+                .Include(x => x.OwnedBlogs)
+                .FirstOrDefaultAsync();
+
             var claims = new List<Claim>
             {
                 context.Subject.FindFirst(Claims.UserId),
@@ -32,9 +36,10 @@ namespace IdentityServer.API.Services
                 context.Subject.FindFirst(Claims.LastName),
             };
 
-            if (user != null && !string.IsNullOrWhiteSpace(user.BlogId))
+            if (user?.OwnedBlogs != null && user.OwnedBlogs.Any())
             {
-                claims.Add(new Claim(Claims.BlogId, user.BlogId));
+                var blogsOwned = user.OwnedBlogs.Select(x => x.BlogId).ToJson();
+                claims.Add(new Claim(Claims.OwnedBlogs, blogsOwned));
             }
 
             context.IssuedClaims = claims.ToList();

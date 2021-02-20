@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using IdentityServer.API.Common;
 using IdentityServer.API.Data;
-using IdentityServer.API.Data.Entites;
+using IdentityServer.API.Data.Entities;
 using Microsoft.Extensions.Options;
 using Twilio;
 using Twilio.Exceptions;

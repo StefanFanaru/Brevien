@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Ardalis.GuardClauses;
 using IdentityServer.API.Common;
-using IdentityServer.API.Data.Entites;
+using IdentityServer.API.Data.Entities;
 using IdentityServer.API.Services.Interfaces;
 using IdentityServer4.Events;
 using IdentityServer4.Extensions;

@@ -25,9 +25,7 @@ namespace Posting.API.Configuration
         {
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IUserInfo, AspUserInfo>();
-            services.AddScoped(typeof(IRepository<>), typeof(DapperRepository<>));
-            services.AddScoped<ICommentsRepository, CommentsRepository>();
-            services.AddScoped<IBlogUserRepository, BlogUserRepository>();
+            services.AddScoped<IDapperRepository, DapperRepository>();
             services.AddScoped<IDbConnectionProvider, MsSqlConnectionProvider>();
 
             return services;
@@ -91,7 +89,6 @@ namespace Posting.API.Configuration
         public static void InitializeDatabase(IServiceProvider serviceProvider)
         {
             // Instantiate the runner
-            string jj = "sdf";
             var runner = serviceProvider.GetRequiredService<IMigrationRunner>();
             try
             {

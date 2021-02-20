@@ -52,7 +52,7 @@ GO
 -- CREATE Posting service schema, tables and indexes
 IF NOT EXISTS(SELECT *
               FROM sys.schemas
-              WHERE name = 'mercury')
+              WHERE name = 'posting')
     BEGIN
 
         EXEC ('CREATE SCHEMA posting');
@@ -82,7 +82,9 @@ IF NOT EXISTS(SELECT *
             CONSTRAINT PK_Comments
                 PRIMARY KEY (Id),
             CONSTRAINT FK_Comments_Posts_PostId
-                FOREIGN KEY (PostId) REFERENCES posting.Posts
+                FOREIGN KEY (PostId)
+                    REFERENCES posting.Posts
+                    ON DELETE CASCADE
         )
 
         CREATE TABLE posting.Reactions
@@ -95,16 +97,30 @@ IF NOT EXISTS(SELECT *
             CONSTRAINT PK_Reactions
                 PRIMARY KEY (Id),
             CONSTRAINT FK_Reactions_Posts_PostId
-                FOREIGN KEY (PostId) REFERENCES posting.Posts
+                FOREIGN KEY (PostId)
+                    REFERENCES posting.Posts
+                    ON DELETE CASCADE
         )
 
-        CREATE TABLE posting.BlogUser
+        CREATE TABLE posting.Blogs
         (
-            Id     NVARCHAR(36) NOT NULL,
+            Id   NVARCHAR(36)  NOT NULL,
+            Name NVARCHAR(200) NOT NULL,
+            Uri  NVARCHAR(100) NOT NULL,
+            CONSTRAINT PK_Blogs
+                PRIMARY KEY (Id)
+        )
+
+        CREATE TABLE posting.BlogOwners
+        (
             BlogId NVARCHAR(36) NOT NULL,
             UserId NVARCHAR(36) NOT NULL,
             CONSTRAINT PK_BlogUser
-                PRIMARY KEY (Id)
+                PRIMARY KEY (BlogId, UserId),
+            CONSTRAINT FK_Blogs_Id
+                FOREIGN KEY (BlogId)
+                    REFERENCES posting.Blogs (Id)
+                    ON DELETE CASCADE
         )
 
         CREATE INDEX IX_Posts_UserId
@@ -125,11 +141,7 @@ IF NOT EXISTS(SELECT *
         CREATE INDEX IX_Reactions_PostId
             on posting.Reactions (PostId)
 
-        CREATE INDEX IX_BlogUser_BlogId
-            on posting.BlogUser (BlogId)
-
-        CREATE INDEX IX_BlogUser_UserId
-            on posting.BlogUser (UserId)
-
+        CREATE INDEX IX_BlogUser_BlogId_UserId
+            on posting.BlogOwners (BlogId, UserId)
     END
 GO

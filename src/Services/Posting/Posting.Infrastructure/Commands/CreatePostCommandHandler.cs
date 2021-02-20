@@ -10,10 +10,10 @@ namespace Posting.Infrastructure.Commands
 {
     public class CreatePostCommandHandler : IRequestHandler<CreatePostCommand, IOperationResult<string>>
     {
-        private readonly IRepository<Post> _repository;
+        private readonly IDapperRepository _repository;
         private readonly IUserInfo _userInfo;
 
-        public CreatePostCommandHandler(IRepository<Post> repository, IUserInfo userInfo)
+        public CreatePostCommandHandler(IDapperRepository repository, IUserInfo userInfo)
         {
             _repository = repository;
             _userInfo = userInfo;

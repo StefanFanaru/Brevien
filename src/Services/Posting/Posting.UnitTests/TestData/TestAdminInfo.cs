@@ -11,6 +11,10 @@ namespace Posting.UnitTests.TestData
         public string Email => "jhonny.test@gmail.com";
         public string Name => $"{FirstName} {LastName}";
         public string Role => Roles.Administrator;
-        public string BlogId => "dac5626e-3c4e-4aa5-88f5-ff0cb8fc3da7";
+
+        public string[] OwnedBlogs
+        {
+            get { return new[] {TestConstants.BlogId}; }
+        }
     }
 }

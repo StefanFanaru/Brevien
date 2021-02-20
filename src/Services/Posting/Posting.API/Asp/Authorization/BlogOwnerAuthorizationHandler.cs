@@ -22,7 +22,7 @@ namespace Posting.API.Asp.Authorization
         {
             if (_httpContextAccessor.HttpContext != null)
             {
-                if (!string.IsNullOrWhiteSpace(_userInfo.BlogId))
+                if (!string.IsNullOrWhiteSpace(_userInfo.OwnedBlogs[0]))
                 {
                     context.Succeed(requirement);
                 }
