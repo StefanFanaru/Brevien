@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -6,11 +7,17 @@ namespace Posting.Infrastructure.Data.Repositories
 {
     public static class RepositoryHelpers
     {
-        private static string schema = "posting";
+        public static string Schema { get; set; }
 
         public static string GetTableName<T>()
         {
-            return $"[{schema}].[{typeof(T).Name}s]";
+            var tableName = $"{typeof(T).Name}s";
+            if (!string.IsNullOrEmpty(Schema))
+            {
+                tableName = $"{Schema}.{tableName}";
+            }
+
+            return tableName;
         }
 
         public static List<string> GetEntityProperties<T>()
@@ -20,26 +27,30 @@ namespace Posting.Infrastructure.Data.Repositories
 
         public static string GenerateAnyQuery<T>((string column, string value, string conditionOperator)[] conditions)
         {
-            var query = new StringBuilder(
-                @"SELECT CASE WHEN EXISTS ( 
-                  SELECT * 
-                  FROM");
+            if (!string.IsNullOrWhiteSpace(conditions[0].conditionOperator))
+            {
+                throw new Exception("First condition should not have an operator");
+            }
 
-            query.Append($" {GetTableName<T>()} ");
+            if (conditions.ToList().Skip(1).Any(x => string.IsNullOrWhiteSpace(x.conditionOperator)))
+            {
+                throw new Exception("Mission condition operator");
+            }
+
+            var query = new StringBuilder(
+                @"SELECT CASE WHEN EXISTS (SELECT * FROM");
+
+            query.AppendLine($" {GetTableName<T>()}");
 
             for (int i = 0; i < conditions.Length; i++)
             {
                 if (i == 0)
                 {
-                    query.Append(" WHERE ");
+                    query.AppendLine($"WHERE {conditions[i].column} = '{conditions[i].value}'");
+                    continue;
                 }
 
-                if (i != 0 && !string.IsNullOrEmpty(conditions[i].conditionOperator))
-                {
-                    query.Append($" {conditions[i].conditionOperator} ");
-                }
-
-                query.Append($" {conditions[i].column} = '{conditions[i].value}' ");
+                query.AppendLine($"{conditions[i].conditionOperator} {conditions[i].column} = '{conditions[i].value}'");
             }
 
             query.Append(

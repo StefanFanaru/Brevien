@@ -45,10 +45,5 @@ namespace Posting.UnitTests.Commands
             // Assert
             result.IsSuccess.Should().BeTrue();
         }
-
-        [Fact]
-        public async Task Only_blog_owner_can_create_post()
-        {
-        }
     }
 }

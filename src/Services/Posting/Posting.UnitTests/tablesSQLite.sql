@@ -57,7 +57,6 @@ CREATE TABLE BlogOwner
     CONSTRAINT FK_Blogs_Id
         FOREIGN KEY (BlogId)
             REFERENCES Blogs (Id)
-            ON DELETE CASCADE
 );
 
 CREATE INDEX IX_Posts_UserId

@@ -1,22 +1,21 @@
 ﻿using System.Data;
-using System.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
+using Dapper.Logging;
 using Posting.Core.Interfaces.Data;
 
 namespace Posting.Infrastructure.Data.Configuration
 {
     public class MsSqlConnectionProvider : IDbConnectionProvider
     {
-        private readonly string _connectionString;
+        private readonly IDbConnectionFactory _connectionFactory;
 
-        public MsSqlConnectionProvider(IConfiguration configuration)
+        public MsSqlConnectionProvider(IDbConnectionFactory connectionFactory)
         {
-            _connectionString = configuration["ConnectionString"];
+            _connectionFactory = connectionFactory;
         }
 
         public IDbConnection GetConnection()
         {
-            var connection = new SqlConnection(_connectionString);
+            var connection = _connectionFactory.CreateConnection();
             connection.Open();
             return connection;
         }

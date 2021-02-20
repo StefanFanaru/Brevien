@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Data.SqlClient;
 using System.IdentityModel.Tokens.Jwt;
+using Dapper.Logging;
 using FluentMigrator.Runner;
 using FluentMigrator.Runner.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Posting.API.Asp;
 using Posting.API.Asp.Authorization;
@@ -28,6 +31,18 @@ namespace Posting.API.Configuration
             services.AddScoped<IDapperRepository, DapperRepository>();
             services.AddScoped<IDbConnectionProvider, MsSqlConnectionProvider>();
 
+            return services;
+        }
+
+        public static IServiceCollection AddDapperLogging(this IServiceCollection services)
+        {
+            services.AddDbConnectionFactory(prv => new SqlConnection(Configuration["ConnectionString"]), builder =>
+            {
+                builder.LogLevel = (LogLevel) Enum.Parse(typeof(LogLevel), Configuration["Settings:DapperLogging:Level"]);
+                builder.LogSensitiveData = Configuration.GetValue<bool>("Settings:DapperLogging:LogSensitive");
+
+                return builder;
+            });
             return services;
         }
 

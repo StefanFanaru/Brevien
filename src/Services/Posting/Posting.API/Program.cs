@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Posting.API.Configuration;
+using Posting.Infrastructure.Data.Repositories;
 using Serilog;
 
 namespace Posting.API
@@ -22,8 +23,6 @@ namespace Posting.API
                 .AddCommandLine(args)
                 .Build();
 
-            var dbServer = configuration["Persistence:Server"];
-            var databaseName = configuration["Persistence:DatabaseName"];
             var logConfiguration = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration);
 
@@ -32,6 +31,7 @@ namespace Posting.API
             try
             {
                 Log.Information("Starting host...");
+                RepositoryHelpers.Schema = configuration.GetValue<string>("DatabaseSchema");
 
                 var host = CreateHostBuilder(args).Build();
 

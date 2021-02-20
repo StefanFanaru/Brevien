@@ -2,7 +2,6 @@
 using System.IO;
 using Dapper;
 using Posting.Core.Interfaces.Data;
-using Posting.Infrastructure.Data.Configuration;
 
 namespace Posting.UnitTests
 {

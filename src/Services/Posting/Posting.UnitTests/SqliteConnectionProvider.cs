@@ -2,7 +2,7 @@
 using Microsoft.Data.Sqlite;
 using Posting.Core.Interfaces.Data;
 
-namespace Posting.Infrastructure.Data.Configuration
+namespace Posting.UnitTests
 {
     /// <summary>
     ///     This class facilitates the usage of an in memory SQLite DB. Normally, when the initial connection is closed, the db is

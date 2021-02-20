@@ -35,6 +35,7 @@ namespace Posting.API
                 .AddSwaggerConfiguration()
                 .AddFluentMigrations()
                 .AddAuth()
+                .AddDapperLogging()
                 .AddHttpClients(Configuration, "Blogging");
 
             services.AddControllers().AddApplicationPart(typeof(Startup).Assembly).AddNewtonsoftJson(options =>
